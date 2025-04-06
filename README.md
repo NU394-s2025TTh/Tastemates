@@ -1,4 +1,4 @@
-# Vite + React + Typescript + Eslint + Prettier: an example repo Updated for 2025!
+# Tastemates — Vite + React + TypeScript  + Eslint + Prettier (Spring 2025 Setup)
 
 A starter for React with Typescript with the fast Vite, Vitest and all static code testing with Eslint and formatting with Prettier. As of this writing updated to React 19; and the latest versions of all tools as of March 2025. This was built for use by the [Northwestern University CS394 Class taught by Todd Warren](https://toddwseattle.com/blog/2025-02-05-CS394-2025-Spring-Software-Engineering-Course/)
 
