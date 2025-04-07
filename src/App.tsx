@@ -1,61 +1,49 @@
 import './App.css';
 
-import React, { useState } from 'react';
+import { ClerkLoaded, ClerkLoading, useUser } from '@clerk/clerk-react';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
 
-import logo from './394-2025-Logo.svg';
+import GoogleSignupButton from './GoogleSignupButton';
+import SignupForm from './SignupForm';
+import SSOCallback from './SSOCallback';
 
-function App() {
-  const [count, setCount] = useState(0);
+const HomePage = () => {
+  const { isSignedIn, user } = useUser();
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p className="header">
-          {' '}
-          🚀 Vite + React + Typescript + Vitest 🤘 & <br />
-          Eslint 🔥+ Prettier for Wildcats
-        </p>
+    <div>
+      <h1>Welcome to Tastemates!</h1>
+      <div className="icon">🍲</div>
+      {isSignedIn ? (
+        <>
+          <h2>Welcome, {user?.firstName}!</h2>
+          <p>You are signed in.</p>
+        </>
+      ) : (
+        <>
+          <SignupForm />
+          <GoogleSignupButton />
+        </>
+      )}
+    </div>
+  );
+};
 
-        <div className="body">
-          {' '}
-          <button onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-          <p> Don&apos;t forgot to install Eslint and Prettier in Your Vscode.</p>
-          <p>
-            Mess up the code in <code>App.tsx </code> and save the file.
-          </p>
-          <p>
-            <a
-              className="App-link"
-              href="https://reactjs.org"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learn React
-            </a>
-            {' | '}
-            <a
-              className="App-link"
-              href="https://vitejs.dev/guide/features.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Vite Docs
-            </a>
-            {' | '}
-            <a
-              className="App-link"
-              href="https://vitest.dev/guide/features.html"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Vitest Docs
-            </a>
-          </p>
-        </div>
-      </header>
+function App() {
+  return (
+    <div className="signup-page">
+      <div className="signup-container">
+        <ClerkLoading>
+          <div>Loading...</div>
+        </ClerkLoading>
+        <ClerkLoaded>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/sso-callback" element={<SSOCallback />} />
+          </Routes>
+        </ClerkLoaded>
+      </div>
     </div>
   );
 }
