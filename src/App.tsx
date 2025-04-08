@@ -5,6 +5,7 @@ import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import GoogleSignupButton from './GoogleSignupButton';
+import PreferencesForm from './PreferencesForm';
 import SignupForm from './SignupForm';
 import SSOCallback from './SSOCallback';
 
@@ -13,15 +14,16 @@ const HomePage = () => {
 
   return (
     <div>
-      <h1>Welcome to Tastemates!</h1>
-      <div className="icon">🍲</div>
       {isSignedIn ? (
         <>
           <h2>Welcome, {user?.firstName}!</h2>
-          <p>You are signed in.</p>
+          <p>Help us get a sense of your taste!</p>
+          <PreferencesForm />
         </>
       ) : (
         <>
+          <h1>Welcome to Tastemates!</h1>
+          <div className="icon">🍲</div>
           <SignupForm />
           <GoogleSignupButton />
         </>
