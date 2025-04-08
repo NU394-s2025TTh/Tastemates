@@ -1,0 +1,37 @@
+.name-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.rating-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.review-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 2rem;
+}
+
+.tags-box {
+    display: flex;
+    flex-direction: row;
+}
+
+.tags {
+    padding: 2px;
+    
+}
+
+.profiles.box {
+    display: flex;
+    flex-direction: row;
+}

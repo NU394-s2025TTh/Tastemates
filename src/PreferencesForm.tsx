@@ -1,12 +1,14 @@
 import './PreferencesForm.css';
 
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const PreferencesForm = () => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
   const [priceMin, setPriceMin] = useState<number | ''>('');
   const [priceMax, setPriceMax] = useState<number | ''>('');
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const toggleCuisine = (cuisine: string) => {
     setSelectedCuisines((prev) => {
@@ -25,6 +27,7 @@ const PreferencesForm = () => {
     setMessage(
       `Saved! Min: $${priceMin}, Max: $${priceMax}, Cuisines: ${Array.from(selectedCuisines).join(', ')}`,
     );
+    navigate('/feed-page');
     // TODO: Save to Firebase
   };
 

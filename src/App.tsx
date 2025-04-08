@@ -4,6 +4,7 @@ import { ClerkLoaded, ClerkLoading, useUser } from '@clerk/clerk-react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+import FeedPage from './FeedPage';
 import GoogleSignupButton from './GoogleSignupButton';
 import PreferencesForm from './PreferencesForm';
 import SignupForm from './SignupForm';
@@ -43,6 +44,7 @@ function App() {
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/sso-callback" element={<SSOCallback />} />
+            <Route path="/feed-page" element={<FeedPage />} />
           </Routes>
         </ClerkLoaded>
       </div>

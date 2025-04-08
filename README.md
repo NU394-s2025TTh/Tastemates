@@ -1,4 +1,4 @@
-# Tastemates — Vite + React + TypeScript  + Eslint + Prettier (Spring 2025 Setup)
+# Tastemates — Vite + React + TypeScript + Eslint + Prettier (Spring 2025 Setup)
 
 A starter for React with Typescript with the fast Vite, Vitest and all static code testing with Eslint and formatting with Prettier. As of this writing updated to React 19; and the latest versions of all tools as of March 2025. This was built for use by the [Northwestern University CS394 Class taught by Todd Warren](https://toddwseattle.com/blog/2025-02-05-CS394-2025-Spring-Software-Engineering-Course/)
 
@@ -27,7 +27,6 @@ npx degit toddwseattle/pretty-vitest-react-ts-template project-name
 
 this will create a clean version of the template in the `project-name` folder. omit project-name to create in the current directory. You will then need to initialize git yourself and push to github.
 
-
 ## ✅ For Tastemates Team
 
 > If you're working on the Tastemates project, **you do not need to clone or copy the original template repo** from `toddwseattle`.
@@ -40,7 +39,7 @@ cd Tastemates
 npm install
 ```
 
-## Start 
+## Start
 
 Install packages: `npm run dev`
 
