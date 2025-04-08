@@ -3,7 +3,11 @@ import './Card.css';
 const Card = () => {
   return (
     <div>
-      <img src="src/assets/pizza.png" alt="restaurant img"></img>
+      <img
+        className="restaurant-pic"
+        src="src/assets/pizza.png"
+        alt="restaurant img"
+      ></img>
       <div className="name-box">
         <h1>Primos</h1>
         <img src="src/assets/heart.svg" alt="heart"></img>
@@ -17,15 +21,17 @@ const Card = () => {
         <a href="https://g.co/kgs/st6SdLx">Google Reviews</a>
       </div>
       <div className="tags-box">
-        <div>cuisine</div>
-        <div>price</div>
+        <div className="tags">Italian</div>
+        <div className="tags">$</div>
       </div>
-      <div className="profiles-box">
-        <div>
-          <div>profile pics</div>
-          <div>
-            <p>See who else might want to go</p>
-            <div>arrow</div>
+      <div className="other-profiles-box">
+        <div className="profiles-box">
+          <div className="circle"></div>
+          <div className="who-else-box">
+            <p>
+              See who <br></br> else might want to go
+            </p>
+            <img src="src/assets/arrow.svg" alt="arrow"></img>
           </div>
         </div>
       </div>

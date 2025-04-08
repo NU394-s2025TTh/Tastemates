@@ -27,11 +27,47 @@
 }
 
 .tags {
-    padding: 2px;
-    
+    padding-top: 6px;
+    padding-bottom: 6px;
+    padding-left: 14px;
+    padding-right: 14px;
+    background-color: black;
+    color: white;
+    margin-right: 10px;
+    border-radius: 30px;
 }
 
-.profiles.box {
+.other-profiles-box{
     display: flex;
     flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.profiles-box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.circle {
+    border-radius: 100%;
+    width: 80px;
+    height: 80px;
+    background-color: grey;
+    margin-right: 20px;
+}
+
+.who-else-box {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.restaurant-pic {
+    width: 100%;
+}
+
+p {
+    text-align: left;
 }
