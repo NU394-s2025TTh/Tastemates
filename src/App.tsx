@@ -12,6 +12,7 @@ import PreferencesForm from './PreferencesForm';
 import ProfilePage from './ProfilePage';
 import SignupForm from './SignupForm';
 import SSOCallback from './SSOCallback';
+import { UserProvider } from './userContext';
 
 interface HomePageProps {
   onPreferencesSubmit: () => void;
@@ -73,26 +74,28 @@ function App() {
 
   return (
     <div className="App">
-      <div className="signup-page">
-        <div className="signup-container">
-          <ClerkLoading>
-            <div>Loading...</div>
-          </ClerkLoading>
-          <ClerkLoaded>
-            <Routes>
-              <Route
-                path="/"
-                element={<HomePage onPreferencesSubmit={handlePreferencesSubmit} />}
-              />
-              <Route path="/sso-callback" element={<SSOCallback />} />
-              <Route path="/feed" element={<FeedPage />} />
-              <Route path="/explore" element={<ExplorePage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-            </Routes>
-          </ClerkLoaded>
+      <UserProvider>
+        <div className="signup-page">
+          <div className="signup-container">
+            <ClerkLoading>
+              <div>Loading...</div>
+            </ClerkLoading>
+            <ClerkLoaded>
+              <Routes>
+                <Route
+                  path="/"
+                  element={<HomePage onPreferencesSubmit={handlePreferencesSubmit} />}
+                />
+                <Route path="/sso-callback" element={<SSOCallback />} />
+                <Route path="/feed" element={<FeedPage />} />
+                <Route path="/explore" element={<ExplorePage />} />
+                <Route path="/profile" element={<ProfilePage />} />
+              </Routes>
+            </ClerkLoaded>
+          </div>
         </div>
-      </div>
-      {isSignedIn && hasPreferences && <Navbar />}
+        {isSignedIn && hasPreferences && <Navbar />}
+      </UserProvider>
     </div>
   );
 }

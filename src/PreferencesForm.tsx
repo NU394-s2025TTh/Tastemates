@@ -3,6 +3,8 @@ import './PreferencesForm.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import { useUserContext } from './userContext';
+
 interface PreferencesFormProps {
   onPreferencesSubmit: () => void;
 }
@@ -12,6 +14,7 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({ onPreferencesSubmit }
   const [priceMin, setPriceMin] = useState<number | ''>('');
   const [priceMax, setPriceMax] = useState<number | ''>('');
   const [message, setMessage] = useState('');
+  const { userId } = useUserContext();
   const navigate = useNavigate();
 
   const toggleCuisine = (cuisine: string) => {
@@ -26,15 +29,37 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({ onPreferencesSubmit }
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
+    console.log('SUBMITTED');
     e.preventDefault();
     setMessage(
       `Saved! Min: $${priceMin}, Max: $${priceMax}, Cuisines: ${Array.from(selectedCuisines).join(', ')}`,
     );
     onPreferencesSubmit();
-    navigate('/feed');
-    // TODO: Save to Firebase
+
+    // Add profile information to firebase db
+    try {
+      const response = await fetch('http://localhost:5000/api/create-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'test', //add a form to add username
+          minPrice: priceMin,
+          maxPrice: priceMax,
+          prefs: Array.from(selectedCuisines).join(', '),
+          bio: 'this is a bio', //add form for bio maybe?,
+          uid: userId,
+        }),
+      });
+      const data = await response.json();
+      console.log('Added user to database:', data);
+      navigate('/feed');
+    } catch (error) {
+      console.error('Error adding user to database:', error);
+    }
   };
+
+  // navigate('/feed');
 
   return (
     <form onSubmit={handleSubmit} className="preferences-form">

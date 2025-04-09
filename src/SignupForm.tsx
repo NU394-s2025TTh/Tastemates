@@ -1,21 +1,28 @@
 import { useSignUp } from '@clerk/clerk-react';
 import React, { useState } from 'react';
 
+import { useUserContext } from './userContext';
+
 const SignupForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
   const { signUp, isLoaded } = useSignUp();
+  const { setUserId } = useUserContext();
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;
-
     try {
-      await signUp.create({
-        emailAddress: email,
-        password,
-      });
+      await signUp
+        .create({
+          emailAddress: email,
+          password,
+        })
+        .then((user) => {
+          const userId = user.id;
+          setUserId(userId!);
+        });
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       setMessage('Please check your email to verify your account.');
     } catch (error: unknown) {
