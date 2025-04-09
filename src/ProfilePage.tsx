@@ -54,10 +54,38 @@ const ProfilePage = () => {
         <div>
           <h2>Your Wishlist</h2>
           <div className="wishlist">
-            <Card isFeed={false} />
-            <Card isFeed={false} />
-            <Card isFeed={false} />
-            <Card isFeed={false} />
+            <Card
+              isFeed={false}
+              restaurantName="Frida's"
+              rating={4.7}
+              reviewSrc="https://g.co/kgs/3F6zToD"
+              cuisine="Mexican"
+              price="$"
+            />
+            <Card
+              isFeed={false}
+              restaurantName="Frida's"
+              rating={4.7}
+              reviewSrc="https://g.co/kgs/3F6zToD"
+              cuisine="Mexican"
+              price="$"
+            />
+            <Card
+              isFeed={false}
+              restaurantName="Frida's"
+              rating={4.7}
+              reviewSrc="https://g.co/kgs/3F6zToD"
+              cuisine="Mexican"
+              price="$"
+            />
+            <Card
+              isFeed={false}
+              restaurantName="Frida's"
+              rating={4.7}
+              reviewSrc="https://g.co/kgs/3F6zToD"
+              cuisine="Mexican"
+              price="$"
+            />
             {/* <p>calos</p>
             <p>kasama</p>
             <p>cebu</p>

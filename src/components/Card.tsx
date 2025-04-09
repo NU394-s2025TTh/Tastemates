@@ -6,9 +6,29 @@ import ConnectCard from './ConnectCard';
 
 interface CardProps {
   isFeed: boolean;
+  profileImg?: string;
+  postUser?: string;
+  caption?: string;
+  imgSrc?: string;
+  restaurantName: string;
+  rating: number;
+  reviewSrc: string;
+  cuisine: string;
+  price: string;
 }
 
-const Card: React.FC<CardProps> = ({ isFeed }) => {
+const Card: React.FC<CardProps> = ({
+  isFeed,
+  profileImg,
+  postUser,
+  caption,
+  imgSrc,
+  restaurantName,
+  rating,
+  reviewSrc,
+  cuisine,
+  price,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -17,33 +37,29 @@ const Card: React.FC<CardProps> = ({ isFeed }) => {
         <div className="post-box">
           <div className="poster-box">
             <div className="poster-profile">
-              <img src="src/assets/poster-pic.svg" alt="poster profile pic"></img>
-              <h3>Rachel</h3>
+              <img src={profileImg} alt="poster profile pic"></img>
+              <h3>{postUser}</h3>
             </div>
             <input type="image" src="src/assets/add-user.svg" alt="add user icon" />
           </div>
-          <p>Primos was SOOOOO good. Who&apos;s down to go again next week?</p>
-          <img
-            className="restaurant-pic"
-            src="src/assets/pizza.png"
-            alt="restaurant img"
-          ></img>
+          <p>{caption}</p>
+          <img className="restaurant-pic" src={imgSrc} alt="restaurant img"></img>
         </div>
       )}
       <div className="name-box">
-        <h1>Primos</h1>
+        <h1>{restaurantName}</h1>
         <input type="image" src="src/assets/heart.svg" alt="heart" />
       </div>
       <div className="review-box">
         <div className="rating-box">
-          <h3>4.5</h3>
-          <h3>🍲🍲🍲🍲</h3>
+          <h3>{rating}</h3>
+          <h3>{'🍲'.repeat(Math.round(rating))}</h3>
         </div>
-        <a href="https://g.co/kgs/st6SdLx">Google Reviews</a>
+        <a href={reviewSrc}>Google Reviews</a>
       </div>
       <div className="tags-box">
-        <div className="tags">Italian</div>
-        <div className="tags">$</div>
+        <div className="tags">{cuisine}</div>
+        <div className="tags">{price}</div>
       </div>
       <div className="other-profiles-box">
         <div className="profiles-box">
@@ -55,10 +71,26 @@ const Card: React.FC<CardProps> = ({ isFeed }) => {
             {isOpen && <div className="backdrop"></div>}
             <dialog open={isOpen}>
               <div className="close-button">
-                <button onClick={() => setIsOpen(false)}>x</button>
+                <input
+                  type="image"
+                  src="src/assets/x.svg"
+                  alt="close"
+                  onClick={() => setIsOpen(false)}
+                />
               </div>
-              <ConnectCard isDown={true} />
-              <ConnectCard isDown={false} />
+              <ConnectCard
+                isDown={true}
+                profileImg="src/assets/profile2.svg"
+                user="Pedro"
+                restaurantName="Shang's"
+                phone="773-688-0000"
+              />
+              <ConnectCard
+                isDown={false}
+                profileImg="src/assets/profile2.svg"
+                user="Pedro"
+                restaurantName="Shang's"
+              />
             </dialog>
             <input
               type="image"
