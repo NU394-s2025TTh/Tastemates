@@ -1,5 +1,7 @@
 import './ConnectCard.css';
 
+import { useState } from 'react';
+
 interface ConnectCardProps {
   isDown: boolean;
   profileImg: string;
@@ -15,6 +17,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
   restaurantName,
   phone,
 }) => {
+  const [isFollowing, setIsFollowing] = useState(false);
   return (
     <div className="ConnectCard">
       <img src={profileImg} alt="profile pic"></img>
@@ -30,7 +33,12 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
           <p>
             {user} wants to go to {restaurantName}!
           </p>
-          <input type="image" src="src/assets/add-user-outline.svg" alt="add user" />
+          <input
+            onClick={() => setIsFollowing(!isFollowing)}
+            type="image"
+            src={isFollowing ? 'src/assets/following.svg' : 'src/assets/add-user.svg'}
+            alt="add user"
+          />
         </>
       )}
     </div>
