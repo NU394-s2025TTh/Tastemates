@@ -7,6 +7,7 @@ const FeedPage = () => {
       <Navbar />
       <Card
         isFeed={true}
+        profileImg="src/assets/poster-pic.svg"
         postUser="Rachel"
         caption="Primos was SOOOOO good. Who's down to go again next week?"
         imgSrc="src/assets/pizza.png"

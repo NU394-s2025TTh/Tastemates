@@ -2,22 +2,34 @@ import './ConnectCard.css';
 
 interface ConnectCardProps {
   isDown: boolean;
+  profileImg: string;
+  user: string;
+  restaurantName: string;
+  phone?: string;
 }
 
-const ConnectCard: React.FC<ConnectCardProps> = ({ isDown }) => {
+const ConnectCard: React.FC<ConnectCardProps> = ({
+  isDown,
+  profileImg,
+  user,
+  restaurantName,
+  phone,
+}) => {
   return (
     <div className="ConnectCard">
-      <img src="src/assets/profile2.svg" alt="profile pic"></img>
+      <img src={profileImg} alt="profile pic"></img>
       {isDown ? (
         <>
           <p>
-            Pedro is down to go <br></br>to Shang&apos;s with you!
+            {user} is down to go <br></br>to {restaurantName} with you!
           </p>
-          <p>773-688-0000</p>
+          <p>{phone}</p>
         </>
       ) : (
         <>
-          <p>Pedro wants to go to Shang&apos;s!</p>
+          <p>
+            {user} wants to go to {restaurantName}!
+          </p>
           <input type="image" src="src/assets/add-user-outline.svg" alt="add user" />
         </>
       )}

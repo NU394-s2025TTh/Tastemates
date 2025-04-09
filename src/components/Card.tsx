@@ -6,6 +6,7 @@ import ConnectCard from './ConnectCard';
 
 interface CardProps {
   isFeed: boolean;
+  profileImg?: string;
   postUser?: string;
   caption?: string;
   imgSrc?: string;
@@ -18,6 +19,7 @@ interface CardProps {
 
 const Card: React.FC<CardProps> = ({
   isFeed,
+  profileImg,
   postUser,
   caption,
   imgSrc,
@@ -35,7 +37,7 @@ const Card: React.FC<CardProps> = ({
         <div className="post-box">
           <div className="poster-box">
             <div className="poster-profile">
-              <img src="src/assets/poster-pic.svg" alt="poster profile pic"></img>
+              <img src={profileImg} alt="poster profile pic"></img>
               <h3>{postUser}</h3>
             </div>
             <input type="image" src="src/assets/add-user.svg" alt="add user icon" />
@@ -76,8 +78,19 @@ const Card: React.FC<CardProps> = ({
                   onClick={() => setIsOpen(false)}
                 />
               </div>
-              <ConnectCard isDown={true} />
-              <ConnectCard isDown={false} />
+              <ConnectCard
+                isDown={true}
+                profileImg="src/assets/profile2.svg"
+                user="Pedro"
+                restaurantName="Shang's"
+                phone="773-688-0000"
+              />
+              <ConnectCard
+                isDown={false}
+                profileImg="src/assets/profile2.svg"
+                user="Pedro"
+                restaurantName="Shang's"
+              />
             </dialog>
             <input
               type="image"
