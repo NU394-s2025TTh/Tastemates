@@ -5,7 +5,17 @@ const FeedPage = () => {
   return (
     <>
       <Navbar />
-      <Card isFeed={true} />
+      <Card
+        isFeed={true}
+        postUser="Rachel"
+        caption="Primos was SOOOOO good. Who's down to go again next week?"
+        imgSrc="src/assets/pizza.png"
+        restaurantName="Primos"
+        rating={4.5}
+        reviewSrc="https://g.co/kgs/st6SdLx"
+        cuisine="Italian"
+        price="$"
+      />
     </>
   );
 };
