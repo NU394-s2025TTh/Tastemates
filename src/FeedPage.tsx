@@ -2,9 +2,9 @@ import Card from './components/Card';
 
 const FeedPage = () => {
   return (
-    <div>
-      <Card />
-    </div>
+    <>
+      <Card isFeed={true} />
+    </>
   );
 };
 

@@ -1,8 +1,37 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+.Card {
+    width: 100%;
+}
+
+.post-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.poster-box {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.poster-profile {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    align-items: center;
+}
+
 .name-box {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    margin-top: 5px;
+
 }
 
 .rating-box {
@@ -19,6 +48,7 @@
     justify-content: flex-start;
     align-items: center;
     gap: 2rem;
+    margin-bottom: 10px;
 }
 
 .tags-box {
@@ -66,6 +96,7 @@
 
 .restaurant-pic {
     width: 100%;
+    height: auto;
     border-radius: 5px;
 }
 
