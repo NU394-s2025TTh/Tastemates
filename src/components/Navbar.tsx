@@ -25,7 +25,7 @@ const Navbar = () => {
       <input
         onClick={() => navigate('/profile')}
         type="image"
-        src="src/assets/profile.svg"
+        src="src/assets/profile-page.svg"
         alt="profile"
         className={`icon ${location.pathname === '/profile' ? 'active' : ''}`}
       />
