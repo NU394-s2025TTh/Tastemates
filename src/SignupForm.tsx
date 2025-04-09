@@ -10,12 +10,12 @@ const SignupForm = () => {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isLoaded) return;
-
     try {
       await signUp.create({
         emailAddress: email,
         password,
       });
+
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' });
       setMessage('Please check your email to verify your account.');
     } catch (error: unknown) {

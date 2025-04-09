@@ -1,5 +1,6 @@
 import './PreferencesForm.css';
 
+import { useUser } from '@clerk/clerk-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -8,6 +9,7 @@ const PreferencesForm = () => {
   const [priceMin, setPriceMin] = useState<number | ''>('');
   const [priceMax, setPriceMax] = useState<number | ''>('');
   const [message, setMessage] = useState('');
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const toggleCuisine = (cuisine: string) => {
@@ -22,13 +24,32 @@ const PreferencesForm = () => {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setMessage(
       `Saved! Min: $${priceMin}, Max: $${priceMax}, Cuisines: ${Array.from(selectedCuisines).join(', ')}`,
     );
-    navigate('/feed');
-    // TODO: Save to Firebase
+
+    // Add profile information to firebase db
+    try {
+      const response = await fetch('http://localhost:5000/api/create-user', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: 'test', //add a form to add username
+          minPrice: priceMin,
+          maxPrice: priceMax,
+          prefs: Array.from(selectedCuisines).join(', '),
+          bio: 'this is a bio', //add form for bio maybe?,
+          uid: user!.id,
+        }),
+      });
+      const data = await response.json();
+      console.log('Added user to database:', data);
+      navigate('/feed');
+    } catch (error) {
+      console.error('Error adding user to database:', error);
+    }
   };
 
   return (
