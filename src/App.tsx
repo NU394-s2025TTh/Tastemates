@@ -1,7 +1,7 @@
 import './App.css';
 
 import { ClerkLoaded, ClerkLoading, useUser } from '@clerk/clerk-react';
-import React from 'react';
+import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 import Navbar from './components/Navbar';
@@ -13,7 +13,11 @@ import ProfilePage from './ProfilePage';
 import SignupForm from './SignupForm';
 import SSOCallback from './SSOCallback';
 
-const HomePage = () => {
+interface HomePageProps {
+  onPreferencesSubmit: () => void;
+}
+
+const HomePage: React.FC<HomePageProps> = ({ onPreferencesSubmit }) => {
   const { isSignedIn, user } = useUser();
 
   return (
@@ -22,7 +26,7 @@ const HomePage = () => {
         <>
           <h2>Welcome, {user?.firstName}!</h2>
           <p>Help us get a sense of your taste!</p>
-          <PreferencesForm />
+          <PreferencesForm onPreferencesSubmit={onPreferencesSubmit} />
         </>
       ) : (
         <>
@@ -37,6 +41,13 @@ const HomePage = () => {
 };
 
 function App() {
+  const { isSignedIn } = useUser();
+  const [hasPreferences, setHasPreferences] = useState(false);
+
+  const handlePreferencesSubmit = () => {
+    setHasPreferences(true);
+  };
+
   return (
     <div className="App">
       <div className="signup-page">
@@ -46,7 +57,10 @@ function App() {
           </ClerkLoading>
           <ClerkLoaded>
             <Routes>
-              <Route path="/" element={<HomePage />} />
+              <Route
+                path="/"
+                element={<HomePage onPreferencesSubmit={handlePreferencesSubmit} />}
+              />
               <Route path="/sso-callback" element={<SSOCallback />} />
               <Route path="/feed" element={<FeedPage />} />
               <Route path="/explore" element={<ExplorePage />} />
@@ -55,7 +69,7 @@ function App() {
           </ClerkLoaded>
         </div>
       </div>
-      <Navbar />
+      {isSignedIn && hasPreferences && <Navbar />}
     </div>
   );
 }
