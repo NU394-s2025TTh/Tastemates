@@ -1,20 +1,15 @@
 import './PreferencesForm.css';
 
+import { useUser } from '@clerk/clerk-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useUserContext } from './userContext';
-
-interface PreferencesFormProps {
-  onPreferencesSubmit: () => void;
-}
-
-const PreferencesForm: React.FC<PreferencesFormProps> = ({ onPreferencesSubmit }) => {
+const PreferencesForm = () => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
   const [priceMin, setPriceMin] = useState<number | ''>('');
   const [priceMax, setPriceMax] = useState<number | ''>('');
   const [message, setMessage] = useState('');
-  const { userId } = useUserContext();
+  const { user } = useUser();
   const navigate = useNavigate();
 
   const toggleCuisine = (cuisine: string) => {
@@ -30,12 +25,10 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({ onPreferencesSubmit }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    console.log('SUBMITTED');
     e.preventDefault();
     setMessage(
       `Saved! Min: $${priceMin}, Max: $${priceMax}, Cuisines: ${Array.from(selectedCuisines).join(', ')}`,
     );
-    onPreferencesSubmit();
 
     // Add profile information to firebase db
     try {
@@ -48,7 +41,7 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({ onPreferencesSubmit }
           maxPrice: priceMax,
           prefs: Array.from(selectedCuisines).join(', '),
           bio: 'this is a bio', //add form for bio maybe?,
-          uid: userId,
+          uid: user!.id,
         }),
       });
       const data = await response.json();
@@ -58,8 +51,6 @@ const PreferencesForm: React.FC<PreferencesFormProps> = ({ onPreferencesSubmit }
       console.error('Error adding user to database:', error);
     }
   };
-
-  // navigate('/feed');
 
   return (
     <form onSubmit={handleSubmit} className="preferences-form">
