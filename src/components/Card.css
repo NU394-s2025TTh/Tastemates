@@ -1,105 +1,104 @@
 * {
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .Card {
-    width: 100%;
+  width: 100%;
 }
 
 .post-box {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .poster-box {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .poster-profile {
-    display: flex;
-    flex-direction: row;
-    gap: 10px;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  align-items: center;
 }
 
 .name-box {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 5px;
-
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 5px;
 }
 
 .rating-box {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .review-box {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: center;
-    gap: 2rem;
-    margin-bottom: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 10px;
 }
 
 .tags-box {
-    display: flex;
-    flex-direction: row;
+  display: flex;
+  flex-direction: row;
 }
 
 .tags {
-    padding-top: 6px;
-    padding-bottom: 6px;
-    padding-left: 14px;
-    padding-right: 14px;
-    background-color: black;
-    color: white;
-    margin-right: 10px;
-    border-radius: 30px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 14px;
+  padding-right: 14px;
+  background-color: black;
+  color: white;
+  margin-right: 10px;
+  border-radius: 30px;
 }
 
-.other-profiles-box{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
+.other-profiles-box {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 .profiles-box {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .circle {
-    border-radius: 100%;
-    width: 80px;
-    height: 80px;
-    background-color: grey;
-    margin-right: 20px;
+  border-radius: 100%;
+  width: 80px;
+  height: 80px;
+  background-color: grey;
+  margin-right: 20px;
 }
 
 .who-else-box {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 
 .restaurant-pic {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
+  width: 100%;
+  height: auto;
+  border-radius: 5px;
 }
 
 p {
-    text-align: left;
+  text-align: left;
 }

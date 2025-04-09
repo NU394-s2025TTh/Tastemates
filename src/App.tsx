@@ -1,10 +1,9 @@
 import './App.css';
 
 import { ClerkLoaded, ClerkLoading, useUser } from '@clerk/clerk-react';
-import { useState } from 'react';
+import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import Navbar from './components/Navbar';
 import ExplorePage from './ExplorePage';
 import FeedPage from './FeedPage';
 import GoogleSignupButton from './GoogleSignupButton';
@@ -13,11 +12,7 @@ import ProfilePage from './ProfilePage';
 import SignupForm from './SignupForm';
 import SSOCallback from './SSOCallback';
 
-interface HomePageProps {
-  onPreferencesSubmit: () => void;
-}
-
-const HomePage: React.FC<HomePageProps> = ({ onPreferencesSubmit }) => {
+const HomePage = () => {
   const { isSignedIn, user } = useUser();
 
   return (
@@ -26,7 +21,7 @@ const HomePage: React.FC<HomePageProps> = ({ onPreferencesSubmit }) => {
         <>
           <h2>Welcome, {user?.firstName}!</h2>
           <p>Help us get a sense of your taste!</p>
-          <PreferencesForm onPreferencesSubmit={onPreferencesSubmit} />
+          <PreferencesForm />
         </>
       ) : (
         <>
@@ -41,12 +36,12 @@ const HomePage: React.FC<HomePageProps> = ({ onPreferencesSubmit }) => {
 };
 
 function App() {
-  const { isSignedIn } = useUser();
-  const [hasPreferences, setHasPreferences] = useState(false);
+  // const { isSignedIn } = useUser();
+  // const [hasPreferences, setHasPreferences] = useState(false);
 
-  const handlePreferencesSubmit = () => {
-    setHasPreferences(true);
-  };
+  // const handlePreferencesSubmit = () => {
+  //   setHasPreferences(true);
+  // };
 
   return (
     <div className="App">
@@ -57,10 +52,7 @@ function App() {
           </ClerkLoading>
           <ClerkLoaded>
             <Routes>
-              <Route
-                path="/"
-                element={<HomePage onPreferencesSubmit={handlePreferencesSubmit} />}
-              />
+              <Route path="/" element={<HomePage />} />
               <Route path="/sso-callback" element={<SSOCallback />} />
               <Route path="/feed" element={<FeedPage />} />
               <Route path="/explore" element={<ExplorePage />} />
@@ -69,7 +61,7 @@ function App() {
           </ClerkLoaded>
         </div>
       </div>
-      {isSignedIn && hasPreferences && <Navbar />}
+      {/* {isSignedIn && hasPreferences && <Navbar />} */}
     </div>
   );
 }
