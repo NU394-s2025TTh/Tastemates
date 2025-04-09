@@ -66,6 +66,7 @@
 
 .restaurant-pic {
     width: 100%;
+    border-radius: 5px;
 }
 
 p {

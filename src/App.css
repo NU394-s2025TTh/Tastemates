@@ -4,6 +4,14 @@
 
   --link: #2a0b0b;
 }
+
+.App {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 body {
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;

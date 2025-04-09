@@ -27,7 +27,7 @@ const PreferencesForm = () => {
     setMessage(
       `Saved! Min: $${priceMin}, Max: $${priceMax}, Cuisines: ${Array.from(selectedCuisines).join(', ')}`,
     );
-    navigate('/feed-page');
+    navigate('/feed');
     // TODO: Save to Firebase
   };
 

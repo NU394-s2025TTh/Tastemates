@@ -10,7 +10,7 @@ const Card = () => {
       ></img>
       <div className="name-box">
         <h1>Primos</h1>
-        <img src="src/assets/heart.svg" alt="heart"></img>
+        <input type="image" src="src/assets/heart.svg" alt="heart" />
       </div>
       <div className="review-box">
         <div className="rating-box">
@@ -31,7 +31,7 @@ const Card = () => {
             <p>
               See who <br></br> else might want to go
             </p>
-            <img src="src/assets/arrow.svg" alt="arrow"></img>
+            <input type="image" src="src/assets/arrow.svg" alt="arrow" />
           </div>
         </div>
       </div>
