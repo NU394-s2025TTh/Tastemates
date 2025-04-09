@@ -4,6 +4,7 @@ import { ClerkLoaded, ClerkLoading, useUser } from '@clerk/clerk-react';
 import React from 'react';
 import { Route, Routes } from 'react-router-dom';
 
+// import { UserProvider } from './userContext';
 import ExplorePage from './ExplorePage';
 import FeedPage from './FeedPage';
 import GoogleSignupButton from './GoogleSignupButton';
