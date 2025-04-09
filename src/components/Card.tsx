@@ -1,10 +1,16 @@
 import './Card.css';
 
+import { useState } from 'react';
+
+import ConnectCard from './ConnectCard';
+
 interface CardProps {
   isFeed: boolean;
 }
 
 const Card: React.FC<CardProps> = ({ isFeed }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="Card">
       {isFeed && (
@@ -33,7 +39,6 @@ const Card: React.FC<CardProps> = ({ isFeed }) => {
           <h3>4.5</h3>
           <h3>🍲🍲🍲🍲</h3>
         </div>
-        {/* stars */}
         <a href="https://g.co/kgs/st6SdLx">Google Reviews</a>
       </div>
       <div className="tags-box">
@@ -47,7 +52,20 @@ const Card: React.FC<CardProps> = ({ isFeed }) => {
             <p>
               See who <br></br> else might want to go
             </p>
-            <input type="image" src="src/assets/arrow.svg" alt="arrow" />
+            {isOpen && <div className="backdrop"></div>}
+            <dialog open={isOpen}>
+              <div className="close-button">
+                <button onClick={() => setIsOpen(false)}>x</button>
+              </div>
+              <ConnectCard isDown={true} />
+              <ConnectCard isDown={false} />
+            </dialog>
+            <input
+              type="image"
+              src="src/assets/arrow.svg"
+              alt="arrow"
+              onClick={() => setIsOpen(true)}
+            />
           </div>
         </div>
       </div>

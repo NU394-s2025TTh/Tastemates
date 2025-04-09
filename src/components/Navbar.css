@@ -9,7 +9,7 @@
   width: 30%;
   height: 7%;
   justify-content: space-between;
-  z-index: 1000;
+  z-index: 100;
   flex-shrink: 0;
   gap: 30%;
   box-sizing: border-box;
