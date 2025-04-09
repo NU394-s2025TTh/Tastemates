@@ -53,7 +53,7 @@ const ProfilePage = () => {
         </div>
         <div>
           <h2>Your Wishlist</h2>
-          <div>
+          <div className="wishlist">
             <Card isFeed={false} />
             <Card isFeed={false} />
             <Card isFeed={false} />
