@@ -7,6 +7,16 @@
   width: 100%;
 }
 
+.backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
 .post-box {
   display: flex;
   flex-direction: column;
@@ -101,4 +111,29 @@
 
 p {
   text-align: left;
+}
+
+dialog {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 0;
+    border-radius: 10px;
+    padding: 10px;
+    z-index: 1000;
+    width: 30%;
+}
+
+.close-button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+button {
+    padding-top: 0;
+    padding-bottom: 3px;
+    padding-right: 3px;
+    padding-left: 0;
+    cursor: pointer;
 }
