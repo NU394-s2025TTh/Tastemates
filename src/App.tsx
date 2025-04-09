@@ -20,7 +20,7 @@ const HomePage = () => {
       {isSignedIn ? (
         <>
           <h2>Welcome, {user?.firstName}!</h2>
-          <p>Help us get a sense of your taste!</p>
+          <p style={{ textAlign: 'center' }}>Help us get a sense of your taste!</p>
           <PreferencesForm />
         </>
       ) : (
