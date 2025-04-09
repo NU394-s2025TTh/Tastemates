@@ -30,6 +30,8 @@ const Card: React.FC<CardProps> = ({
   price,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [isWishlist, setIsWishlist] = useState(false);
 
   return (
     <div className="Card">
@@ -40,7 +42,12 @@ const Card: React.FC<CardProps> = ({
               <img src={profileImg} alt="poster profile pic"></img>
               <h3>{postUser}</h3>
             </div>
-            <input type="image" src="src/assets/add-user.svg" alt="add user icon" />
+            <input
+              onClick={() => setIsFollowing(!isFollowing)}
+              type="image"
+              src={isFollowing ? 'src/assets/following.svg' : 'src/assets/add-user.svg'}
+              alt="add user icon"
+            />
           </div>
           <p>{caption}</p>
           <img className="restaurant-pic" src={imgSrc} alt="restaurant img"></img>
@@ -48,7 +55,12 @@ const Card: React.FC<CardProps> = ({
       )}
       <div className="name-box">
         <h1>{restaurantName}</h1>
-        <input type="image" src="src/assets/heart.svg" alt="heart" />
+        <input
+          onClick={() => setIsWishlist(!isWishlist)}
+          type="image"
+          src={isWishlist ? 'src/assets/wishlisted.svg' : 'src/assets/heart.svg'}
+          alt="heart"
+        />
       </div>
       <div className="review-box">
         <div className="rating-box">

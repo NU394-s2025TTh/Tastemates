@@ -137,3 +137,7 @@ button {
   padding-left: 0;
   cursor: pointer;
 }
+
+input[type="image"]:hover {
+  opacity: 0.7;
+}
