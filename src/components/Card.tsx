@@ -69,7 +69,12 @@ const Card: React.FC<CardProps> = ({
             {isOpen && <div className="backdrop"></div>}
             <dialog open={isOpen}>
               <div className="close-button">
-                <button onClick={() => setIsOpen(false)}>x</button>
+                <input
+                  type="image"
+                  src="src/assets/x.svg"
+                  alt="close"
+                  onClick={() => setIsOpen(false)}
+                />
               </div>
               <ConnectCard isDown={true} />
               <ConnectCard isDown={false} />
