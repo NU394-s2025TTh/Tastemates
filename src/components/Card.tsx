@@ -6,9 +6,9 @@ import ConnectCard from './ConnectCard';
 
 interface CardProps {
   isFeed: boolean;
-  postUser: string;
-  caption: string;
-  imgSrc: string;
+  postUser?: string;
+  caption?: string;
+  imgSrc?: string;
   restaurantName: string;
   rating: number;
   reviewSrc: string;
