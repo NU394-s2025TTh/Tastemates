@@ -153,6 +153,6 @@ button {
   cursor: pointer;
 }
 
-input[type="image"]:hover {
+input[type='image']:hover {
   opacity: 0.7;
 }

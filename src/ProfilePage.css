@@ -66,7 +66,9 @@
   display: flex;
   margin-top: 1rem;
   margin-bottom: 1rem;
-  gap: 0.5rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  gap: 0.3rem;
 }
 
 .tastemate-box {
@@ -78,10 +80,16 @@
   background-color: gray;
   border-radius: 100px;
   padding: 1rem;
+  padding-right: 2rem;
+  height: 30px;
 }
 
 .tastemate-pic {
-  width: 30%;
+  /* width: 30%; */
+  height: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
 .tastemate-name {
@@ -89,6 +97,9 @@
 
 .wishlist {
   display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  gap: 3rem;
+  overflow-x: auto;
+  white-space: nowrap;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }

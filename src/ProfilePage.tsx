@@ -25,9 +25,9 @@ const ProfilePage = () => {
         <div className="pref-card">
           <p className="pref-card-title">Your Price Range</p>
           <div className="price-container">
-            <p>Max: $100</p>
+            <p>Min: $20</p>
             <p>——</p>
-            <p>Min: $30</p>
+            <p>Max: $100</p>
           </div>
         </div>
         <div>
@@ -44,6 +44,18 @@ const ProfilePage = () => {
             <div className="tastemate-box">
               <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
               <div className="tastemate-name">nikky</div>
+            </div>
+            <div className="tastemate-box">
+              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <div className="tastemate-name">daniel</div>
+            </div>
+            <div className="tastemate-box">
+              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <div className="tastemate-name">marissa</div>
+            </div>
+            <div className="tastemate-box">
+              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <div className="tastemate-name">zain</div>
             </div>
             <div className="tastemate-box">
               <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
@@ -86,11 +98,6 @@ const ProfilePage = () => {
               cuisine="Mexican"
               price="$"
             />
-            {/* <p>calos</p>
-            <p>kasama</p>
-            <p>cebu</p>
-            <p>daves italian</p>
-            <p>cozy corner</p> */}
           </div>
         </div>
       </div>
