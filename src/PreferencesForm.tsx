@@ -29,6 +29,8 @@ const PreferencesForm = () => {
     setMessage(
       `Saved! Min: $${priceMin}, Max: $${priceMax}, Cuisines: ${Array.from(selectedCuisines).join(', ')}`,
     );
+    // TO DO: get rid of this when we fix db route
+    navigate('/feed');
 
     // Add profile information to firebase db
     try {
