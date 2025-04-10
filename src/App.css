@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
 :root {
   --primay: black;
   --bg-primay: white;
@@ -6,6 +8,7 @@
 }
 
 .App {
+  font-family: "Inter";
   display: flex;
   flex-direction: column;
   justify-content: center;
