@@ -1,6 +1,7 @@
 import cors from 'cors';
 import express from 'express';
 import admin from 'firebase-admin';
+import functions from 'firebase-functions';
 import fetch from 'node-fetch';
 
 const app = express();
@@ -96,3 +97,5 @@ app.post('/api/create-user', async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
 });
+
+exports.api = functions.https.onRequest(app);
