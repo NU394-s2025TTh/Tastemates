@@ -1,6 +1,5 @@
 import './ProfilePage.css';
 
-import defaultPic from './assets/profile.svg';
 import Card from './components/Card';
 import Navbar from './components/Navbar';
 
@@ -10,7 +9,7 @@ const ProfilePage = () => {
       <Navbar />
       <div className="profile-container">
         <div className="pic-container">
-          <img className="user-pic" src={defaultPic} alt="your user profile" />
+          <img className="user-pic" src="/assets/profile.svg" alt="your user profile" />
         </div>
         <h2>Rachel Nguyen</h2>
         <div className="pref-card">
@@ -34,31 +33,59 @@ const ProfilePage = () => {
           <h2>Your Tastemates</h2>
           <div className="tastemates-container">
             <div className="tastemate-box">
-              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <img
+                className="tastemate-pic"
+                src="/assets/profile.svg"
+                alt="your user profile"
+              />
               <div className="tastemate-name">bruce</div>
             </div>
             <div className="tastemate-box">
-              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <img
+                className="tastemate-pic"
+                src="/assets/profile.svg"
+                alt="your user profile"
+              />
               <div className="tastemate-name">laura</div>
             </div>
             <div className="tastemate-box">
-              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <img
+                className="tastemate-pic"
+                src="/assets/profile.svg"
+                alt="your user profile"
+              />
               <div className="tastemate-name">nikky</div>
             </div>
             <div className="tastemate-box">
-              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <img
+                className="tastemate-pic"
+                src="/assets/profile.svg"
+                alt="your user profile"
+              />
               <div className="tastemate-name">daniel</div>
             </div>
             <div className="tastemate-box">
-              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <img
+                className="tastemate-pic"
+                src="/assets/profile.svg"
+                alt="your user profile"
+              />
               <div className="tastemate-name">marissa</div>
             </div>
             <div className="tastemate-box">
-              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <img
+                className="tastemate-pic"
+                src="/assets/profile.svg"
+                alt="your user profile"
+              />
               <div className="tastemate-name">zain</div>
             </div>
             <div className="tastemate-box">
-              <img className="tastemate-pic" src={defaultPic} alt="your user profile" />
+              <img
+                className="tastemate-pic"
+                src="/assets/profile.svg"
+                alt="your user profile"
+              />
               <div className="tastemate-name">aninha</div>
             </div>
           </div>
