@@ -96,6 +96,8 @@
   color: white;
   margin-right: 10px;
   border-radius: 30px;
+  display: flex;
+  align-items: center;
 }
 
 .other-profiles-box {
