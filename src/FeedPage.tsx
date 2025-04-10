@@ -8,14 +8,14 @@ const FeedPage = () => {
       <Card
         isFeed={true}
         profileImg="src/assets/poster-pic.svg"
-        postUser="Rachel"
-        caption="Primos was SOOOOO good. Who's down to go again next week?"
-        imgSrc="src/assets/pizza.png"
-        restaurantName="Primos"
-        rating={4.5}
-        reviewSrc="https://g.co/kgs/st6SdLx"
+        postUser="Pedro"
+        caption="Best dinner of my life! Must try."
+        imgSrc="src/assets/calo.jpg"
+        restaurantName="Calo Ristorante"
+        rating={4.6}
+        reviewSrc="https://g.co/kgs/vXuQeiZ"
         cuisine="Italian"
-        price="$"
+        price="$$"
       />
       <Card
         isFeed={true}
