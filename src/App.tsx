@@ -25,12 +25,16 @@ const HomePage = () => {
           <PreferencesForm />
         </>
       ) : (
-        <>
-          <h1>Welcome to Tastemates!</h1>
-          <div className="icon">🍲</div>
-          <SignupForm />
-          <GoogleSignupButton />
-        </>
+        <div className="App">
+          <div className="signup-page">
+            <div className="signup-container">
+              <h1>Welcome to Tastemates!</h1>
+              <div className="icon">🍲</div>
+              <SignupForm />
+              <GoogleSignupButton />
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
@@ -46,22 +50,18 @@ function App() {
 
   return (
     <div className="App">
-      <div className="signup-page">
-        <div className="signup-container">
-          <ClerkLoading>
-            <div>Loading...</div>
-          </ClerkLoading>
-          <ClerkLoaded>
-            <Routes>
-              <Route path="/" element={<HomePage />} />
-              <Route path="/sso-callback" element={<SSOCallback />} />
-              <Route path="/feed" element={<FeedPage />} />
-              <Route path="/explore" element={<ExplorePage />} />
-              <Route path="/profile" element={<ProfilePage />} />
-            </Routes>
-          </ClerkLoaded>
-        </div>
-      </div>
+      <ClerkLoading>
+        <div>Loading...</div>
+      </ClerkLoading>
+      <ClerkLoaded>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/sso-callback" element={<SSOCallback />} />
+          <Route path="/feed" element={<FeedPage />} />
+          <Route path="/explore" element={<ExplorePage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </ClerkLoaded>
       {/* {isSignedIn && hasPreferences && <Navbar />} */}
     </div>
   );
