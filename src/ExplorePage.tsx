@@ -1,7 +1,8 @@
 import { useState } from 'react';
 
-import Card from './components/Card';
+// import Card from './components/Card';
 import Navbar from './components/Navbar';
+import RestaurantFeed from './components/Restaurants';
 import SearchInput from './components/SearchInput';
 
 const ExplorePage = () => {
@@ -20,7 +21,8 @@ const ExplorePage = () => {
           Showing results for: <strong>{searchQuery}</strong>
         </p>
       )}
-      <Card
+      <RestaurantFeed />
+      {/* <Card
         isFeed={false}
         restaurantName="Frida's"
         rating={4.7}
@@ -43,7 +45,7 @@ const ExplorePage = () => {
         reviewSrc="https://www.google.com/search?sca_esv=bd578a49708ea9c5&sxsrf=AHTn8zo5gRAmz2Zwg2ZCxvfbOrIEI4vb8A:1744250386185&si=APYL9bvoDGWmsM6h2lfKzIb8LfQg_oNQyUOQgna9TyfQHAoqUmE6VPlBvVY1dG8JaSQS0X7w75oSRORgvP19jqWKUZCy1Osxx5V2x1cwMMbxRUcWZ3BmoUrcXr1beCVdfzDMnCGP8-8IV_z_N8Y3LfZGc9ZhydSp_g%3D%3D&q=Tomate+Fresh+Kitchen+Reviews&sa=X&ved=2ahUKEwjg2KuFr8yMAxUNg4kEHTIIBhQQ0bkNegQINRAE&biw=1440&bih=727&dpr=2"
         cuisine="Mexican"
         price="$"
-      />
+      /> */}
     </>
   );
 };
