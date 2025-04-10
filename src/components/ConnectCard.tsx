@@ -20,7 +20,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
   const [isFollowing, setIsFollowing] = useState(false);
   return (
     <div className="ConnectCard">
-      <img src={profileImg} alt="profile pic"></img>
+      <img className="connect-pic" src={profileImg} alt="profile pic"></img>
       {isDown ? (
         <>
           <p>
