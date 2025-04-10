@@ -104,6 +104,30 @@ const Card: React.FC<CardProps> = ({
                   user="Ana"
                   restaurantName={restaurantName}
                 />
+                <ConnectCard
+                  isDown={false}
+                  profileImg="src/assets/profile2.svg"
+                  user="Nikky"
+                  restaurantName={restaurantName}
+                />
+                <ConnectCard
+                  isDown={false}
+                  profileImg="src/assets/profile2.svg"
+                  user="Marissa"
+                  restaurantName={restaurantName}
+                />
+                <ConnectCard
+                  isDown={false}
+                  profileImg="src/assets/profile2.svg"
+                  user="Daniel"
+                  restaurantName={restaurantName}
+                />
+                <ConnectCard
+                  isDown={false}
+                  profileImg="src/assets/profile2.svg"
+                  user="Laura"
+                  restaurantName={restaurantName}
+                />
               </dialog>
               <input
                 type="image"
