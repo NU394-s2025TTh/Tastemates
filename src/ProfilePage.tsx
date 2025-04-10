@@ -6,7 +6,7 @@ import Navbar from './components/Navbar';
 
 const ProfilePage = () => {
   return (
-    <>
+    <div className="Profile">
       <Navbar />
       <div className="profile-container">
         <div className="pic-container">
@@ -94,7 +94,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
