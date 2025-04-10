@@ -76,27 +76,27 @@ const ProfilePage = () => {
             />
             <Card
               isFeed={false}
-              restaurantName="Frida's"
-              rating={4.7}
-              reviewSrc="https://g.co/kgs/3F6zToD"
-              cuisine="Mexican"
-              price="$"
+              restaurantName="Au Cheval"
+              rating={4.6}
+              reviewSrc="https://g.co/kgs/qQgYj3m"
+              cuisine="American"
+              price="$$$"
             />
             <Card
               isFeed={false}
-              restaurantName="Frida's"
-              rating={4.7}
-              reviewSrc="https://g.co/kgs/3F6zToD"
-              cuisine="Mexican"
-              price="$"
+              restaurantName="Kasama"
+              rating={4.5}
+              reviewSrc="https://g.co/kgs/Zo9usNC"
+              cuisine="Filipino"
+              price="$$"
             />
             <Card
               isFeed={false}
-              restaurantName="Frida's"
-              rating={4.7}
-              reviewSrc="https://g.co/kgs/3F6zToD"
-              cuisine="Mexican"
-              price="$"
+              restaurantName="High Five Ramen"
+              rating={4.5}
+              reviewSrc="https://g.co/kgs/62qP8o7"
+              cuisine="Japanese"
+              price="$$"
             />
           </div>
         </div>
