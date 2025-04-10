@@ -19,11 +19,15 @@ const HomePage = () => {
   return (
     <div>
       {isSignedIn ? (
-        <>
-          <h2>Welcome, {user?.firstName}!</h2>
-          <p style={{ textAlign: 'center' }}>Help us get a sense of your taste!</p>
-          <PreferencesForm />
-        </>
+        <div className="App">
+          <div className="signup-page">
+            <div className="signup-container">
+              <h2>Welcome, {user?.firstName}!</h2>
+              <p style={{ textAlign: 'center' }}>Help us get a sense of your taste!</p>
+              <PreferencesForm />
+            </div>
+          </div>
+        </div>
       ) : (
         <div className="App">
           <div className="signup-page">
