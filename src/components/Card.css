@@ -93,7 +93,7 @@
   padding-bottom: 6px;
   padding-left: 14px;
   padding-right: 14px;
-  background-color: black;
+  background-color: #98897e;
   color: white;
   margin-right: 10px;
   border-radius: 30px;
@@ -120,7 +120,7 @@
   border-radius: 100%;
   width: 65px;
   height: 65px;
-  background-color: grey;
+  background-color: #c2b7ae;
   margin-right: -1.4rem;
 }
 
