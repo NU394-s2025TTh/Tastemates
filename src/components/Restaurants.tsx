@@ -11,6 +11,7 @@ interface Restaurant {
   categories: string;
   image_url: string;
   url: string;
+  price: string;
 }
 
 const RestaurantFeed = () => {
