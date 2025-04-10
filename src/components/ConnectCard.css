@@ -12,4 +12,5 @@ button {
   border-radius: 20px;
   padding: 10px;
   margin: 10px;
+  gap: 1rem;
 }

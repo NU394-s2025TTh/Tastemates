@@ -94,15 +94,15 @@ const Card: React.FC<CardProps> = ({
                 <ConnectCard
                   isDown={true}
                   profileImg="src/assets/profile2.svg"
-                  user="Pedro"
-                  restaurantName="Shang's"
+                  user="Ana"
+                  restaurantName={restaurantName}
                   phone="773-688-0000"
                 />
                 <ConnectCard
                   isDown={false}
                   profileImg="src/assets/profile2.svg"
-                  user="Pedro"
-                  restaurantName="Shang's"
+                  user="Ana"
+                  restaurantName={restaurantName}
                 />
               </dialog>
               <input
