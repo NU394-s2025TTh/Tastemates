@@ -102,6 +102,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: start;
+  gap: 1.5rem;
 }
 
 .circle {
@@ -109,13 +111,18 @@
   width: 80px;
   height: 80px;
   background-color: grey;
-  margin-right: 20px;
+  margin-right: -0.7rem;
 }
 
 .who-else-box {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.who-else-pics {
+  display: flex;
 }
 
 .restaurant-pic {
@@ -132,12 +139,21 @@ dialog {
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -40%);
   border-width: 0;
   border-radius: 10px;
   padding: 10px;
   z-index: 1000;
-  width: 35%;
+  max-width: 400px;
+  width: calc(100vw - 4rem);
+  overflow-y: auto;
+}
+
+.connect-scroll {
+  overflow-y: auto;
+  max-height: 70vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .close-button {

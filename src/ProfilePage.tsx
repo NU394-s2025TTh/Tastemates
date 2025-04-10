@@ -38,7 +38,7 @@ const ProfilePage = () => {
                 src="/assets/profile.svg"
                 alt="your user profile"
               />
-              <div className="tastemate-name">bruce</div>
+              <div className="tastemate-name">Bruce</div>
             </div>
             <div className="tastemate-box">
               <img
@@ -46,7 +46,7 @@ const ProfilePage = () => {
                 src="/assets/profile.svg"
                 alt="your user profile"
               />
-              <div className="tastemate-name">laura</div>
+              <div className="tastemate-name">Laura</div>
             </div>
             <div className="tastemate-box">
               <img
@@ -54,7 +54,7 @@ const ProfilePage = () => {
                 src="/assets/profile.svg"
                 alt="your user profile"
               />
-              <div className="tastemate-name">nikky</div>
+              <div className="tastemate-name">Nikky</div>
             </div>
             <div className="tastemate-box">
               <img
@@ -62,7 +62,7 @@ const ProfilePage = () => {
                 src="/assets/profile.svg"
                 alt="your user profile"
               />
-              <div className="tastemate-name">daniel</div>
+              <div className="tastemate-name">Daniel</div>
             </div>
             <div className="tastemate-box">
               <img
@@ -70,7 +70,7 @@ const ProfilePage = () => {
                 src="/assets/profile.svg"
                 alt="your user profile"
               />
-              <div className="tastemate-name">marissa</div>
+              <div className="tastemate-name">Marissa</div>
             </div>
             <div className="tastemate-box">
               <img
@@ -78,7 +78,7 @@ const ProfilePage = () => {
                 src="/assets/profile.svg"
                 alt="your user profile"
               />
-              <div className="tastemate-name">zain</div>
+              <div className="tastemate-name">Zain</div>
             </div>
             <div className="tastemate-box">
               <img
