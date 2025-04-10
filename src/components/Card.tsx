@@ -46,7 +46,7 @@ const Card: React.FC<CardProps> = ({
               <input
                 onClick={() => setIsFollowing(!isFollowing)}
                 type="image"
-                src={isFollowing ? 'src/assets/following.svg' : 'src/assets/add-user.svg'}
+                src={isFollowing ? '/assets/following.svg' : '/assets/add-user.svg'}
                 alt="add user icon"
               />
             </div>
@@ -59,7 +59,7 @@ const Card: React.FC<CardProps> = ({
           <input
             onClick={() => setIsWishlist(!isWishlist)}
             type="image"
-            src={isWishlist ? 'src/assets/wishlisted.svg' : 'src/assets/heart.svg'}
+            src={isWishlist ? '/assets/wishlisted.svg' : '/assets/heart.svg'}
             alt="heart"
           />
         </div>
@@ -86,52 +86,52 @@ const Card: React.FC<CardProps> = ({
                 <div className="close-button">
                   <input
                     type="image"
-                    src="src/assets/x.svg"
+                    src="/assets/x.svg"
                     alt="close"
                     onClick={() => setIsOpen(false)}
                   />
                 </div>
                 <ConnectCard
                   isDown={true}
-                  profileImg="src/assets/profile2.svg"
+                  profileImg="/assets/profile2.svg"
                   user="Ana"
                   restaurantName={restaurantName}
                   phone="773-688-0000"
                 />
                 <ConnectCard
                   isDown={false}
-                  profileImg="src/assets/profile2.svg"
+                  profileImg="/assets/profile2.svg"
                   user="Ana"
                   restaurantName={restaurantName}
                 />
                 <ConnectCard
                   isDown={false}
-                  profileImg="src/assets/profile2.svg"
+                  profileImg="/assets/profile2.svg"
                   user="Nikky"
                   restaurantName={restaurantName}
                 />
                 <ConnectCard
                   isDown={false}
-                  profileImg="src/assets/profile2.svg"
+                  profileImg="/assets/profile2.svg"
                   user="Marissa"
                   restaurantName={restaurantName}
                 />
                 <ConnectCard
                   isDown={false}
-                  profileImg="src/assets/profile2.svg"
+                  profileImg="/assets/profile2.svg"
                   user="Daniel"
                   restaurantName={restaurantName}
                 />
                 <ConnectCard
                   isDown={false}
-                  profileImg="src/assets/profile2.svg"
+                  profileImg="/assets/profile2.svg"
                   user="Laura"
                   restaurantName={restaurantName}
                 />
               </dialog>
               <input
                 type="image"
-                src="src/assets/arrow.svg"
+                src="/assets/arrow.svg"
                 alt="arrow"
                 onClick={() => setIsOpen(true)}
               />

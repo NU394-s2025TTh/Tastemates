@@ -11,21 +11,21 @@ const Navbar = () => {
       <input
         onClick={() => navigate('/feed')}
         type="image"
-        src="src/assets/feed.svg"
+        src="/assets/feed.svg"
         alt="feed"
         className={`icon ${location.pathname === '/feed' ? 'active' : ''}`}
       />
       <input
         onClick={() => navigate('/explore')}
         type="image"
-        src="src/assets/explore.svg"
+        src="/assets/explore.svg"
         alt="explore"
         className={`icon ${location.pathname === '/explore' ? 'active' : ''}`}
       />
       <input
         onClick={() => navigate('/profile')}
         type="image"
-        src="src/assets/profile-page.svg"
+        src="/assets/profile-page.svg"
         alt="profile"
         className={`icon ${location.pathname === '/profile' ? 'active' : ''}`}
       />

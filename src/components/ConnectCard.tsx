@@ -36,7 +36,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
           <input
             onClick={() => setIsFollowing(!isFollowing)}
             type="image"
-            src={isFollowing ? 'src/assets/following.svg' : 'src/assets/add-user.svg'}
+            src={isFollowing ? '/assets/following.svg' : '/assets/add-user.svg'}
             alt="add user"
           />
         </>

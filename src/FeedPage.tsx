@@ -7,10 +7,10 @@ const FeedPage = () => {
       <Navbar />
       <Card
         isFeed={true}
-        profileImg="src/assets/poster-pic.svg"
+        profileImg="/assets/poster-pic.svg"
         postUser="Pedro"
         caption="Best dinner of my life! Must try."
-        imgSrc="src/assets/calo.jpg"
+        imgSrc="/assets/calo.jpg"
         restaurantName="Calo Ristorante"
         rating={4.6}
         reviewSrc="https://g.co/kgs/vXuQeiZ"
@@ -19,10 +19,10 @@ const FeedPage = () => {
       />
       <Card
         isFeed={true}
-        profileImg="src/assets/poster-pic.svg"
+        profileImg="/assets/poster-pic.svg"
         postUser="Carly"
         caption="Primos was SOOOOO good. Who's down to go again next week?"
-        imgSrc="src/assets/pizza.png"
+        imgSrc="/assets/pizza.png"
         restaurantName="Primos"
         rating={4.5}
         reviewSrc="https://g.co/kgs/st6SdLx"
