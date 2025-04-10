@@ -102,6 +102,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: start;
+  gap: 1.5rem;
 }
 
 .circle {
@@ -109,13 +111,18 @@
   width: 80px;
   height: 80px;
   background-color: grey;
-  margin-right: 20px;
+  margin-right: -0.7rem;
 }
 
 .who-else-box {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.who-else-pics {
+  display: flex;
 }
 
 .restaurant-pic {

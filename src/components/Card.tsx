@@ -76,9 +76,13 @@ const Card: React.FC<CardProps> = ({
         </div>
         <div className="other-profiles-box">
           <div className="profiles-box">
-            <div className="circle"></div>
+            <div className="who-else-pics">
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+            </div>
             <div className="who-else-box">
-              <p>
+              <p className="see-who-text">
                 See who <br></br> else might want to go
               </p>
               {isOpen && <div className="backdrop"></div>}
