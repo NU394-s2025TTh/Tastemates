@@ -19,6 +19,7 @@
   .navbar {
     left: 10%;
     width: 80%;
+    max-width: 500px;
   }
 }
 @media screen and (min-width: 600px) {
