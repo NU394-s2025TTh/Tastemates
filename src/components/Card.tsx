@@ -40,7 +40,11 @@ const Card: React.FC<CardProps> = ({
           <div className="post-box">
             <div className="poster-box">
               <div className="poster-profile">
-                <img src={profileImg} alt="poster profile pic"></img>
+                <img
+                  className="profile-pic"
+                  src={profileImg}
+                  alt="poster profile pic"
+                ></img>
                 <h3>{postUser}</h3>
               </div>
               <input
