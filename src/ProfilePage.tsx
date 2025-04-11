@@ -1,6 +1,8 @@
 import './ProfilePage.css';
 
+import { signOut } from 'firebase/auth';
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import Card from './components/Card';
 import Navbar from './components/Navbar';
@@ -9,6 +11,16 @@ import { auth, db, get, ref } from './firebase';
 const ProfilePage = () => {
   const [preferences, setPreferences] = useState<any>(null);
   const [userName, setUserName] = useState<string>('User');
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -116,6 +128,9 @@ const ProfilePage = () => {
             />
           </div>
         </div>
+        <button className="signout-button" onClick={handleSignOut}>
+          Sign Out
+        </button>
       </div>
     </div>
   );
