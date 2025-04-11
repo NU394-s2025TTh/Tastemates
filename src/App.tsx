@@ -4,6 +4,7 @@ import './App.css';
 import React, { useEffect, useState } from 'react';
 import { Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 
+import logo from './assets/Tastemates.png';
 import ExplorePage from './ExplorePage';
 import FeedPage from './FeedPage';
 import { auth, db, get, provider, ref, signInWithPopup } from './firebase';
@@ -54,9 +55,17 @@ const HomePage = () => {
     <div className="App">
       <div className="signup-page">
         <div className="signup-container">
+          <img src={logo} alt="Tastemates Logo" className="logo-image" />
           <h1>Welcome!</h1>
           <p style={{ textAlign: 'center' }}>Sign in to get started</p>
-          <button onClick={handleGoogleSignIn}>Sign in with Google</button>
+          <button className="google-signin-button" onClick={handleGoogleSignIn}>
+            <img
+              src="https://developers.google.com/identity/images/g-logo.png"
+              alt="Google Logo"
+              className="google-icon"
+            />
+            Sign in with Google
+          </button>
         </div>
       </div>
     </div>

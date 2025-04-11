@@ -1,7 +1,9 @@
 import './Card.css';
 
+import { getAuth } from 'firebase/auth';
 import { useEffect, useState } from 'react';
 
+import { isRestaurantWishlisted, toggleWishlist } from '../firebaseUtils';
 import ConnectCard from './ConnectCard';
 
 interface CardProps {
@@ -33,6 +35,9 @@ const Card: React.FC<CardProps> = ({
   const [isFollowing, setIsFollowing] = useState(false);
   const [isWishlist, setIsWishlist] = useState(false);
 
+  const auth = getAuth();
+  const user = auth.currentUser;
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -41,6 +46,32 @@ const Card: React.FC<CardProps> = ({
     }
   }, [isOpen]);
 
+  // Check if restaurant is already in wishlist on mount
+  useEffect(() => {
+    const fetchWishlistStatus = async () => {
+      if (!user || !restaurantName) return;
+      try {
+        const isWishlisted = await isRestaurantWishlisted(restaurantName);
+        setIsWishlist(isWishlisted);
+      } catch (error) {
+        console.error('Error fetching wishlist:', error);
+      }
+    };
+    fetchWishlistStatus();
+  }, [user, restaurantName]);
+
+  const handleWishlistClick = async () => {
+    if (!user) return;
+    const newState = await toggleWishlist({
+      restaurantName,
+      rating,
+      reviewSrc,
+      cuisine,
+      price,
+    });
+    setIsWishlist(newState);
+  };
+
   return (
     <div className="Card">
       <div className="card-container">
@@ -48,11 +79,7 @@ const Card: React.FC<CardProps> = ({
           <div className="post-box">
             <div className="poster-box">
               <div className="poster-profile">
-                <img
-                  className="profile-pic"
-                  src={profileImg}
-                  alt="poster profile pic"
-                ></img>
+                <img className="profile-pic" src={profileImg} alt="poster profile pic" />
                 <h3>{postUser}</h3>
               </div>
               <input
@@ -63,13 +90,13 @@ const Card: React.FC<CardProps> = ({
               />
             </div>
             <p>{caption}</p>
-            <img className="restaurant-pic" src={imgSrc} alt="restaurant img"></img>
+            <img className="restaurant-pic" src={imgSrc} alt="restaurant img" />
           </div>
         )}
         <div className="name-box">
           <h1>{restaurantName}</h1>
           <input
-            onClick={() => setIsWishlist(!isWishlist)}
+            onClick={handleWishlistClick}
             type="image"
             src={isWishlist ? '/assets/wishlisted.svg' : '/assets/heart.svg'}
             alt="heart"
@@ -95,7 +122,7 @@ const Card: React.FC<CardProps> = ({
             </div>
             <div className="who-else-box">
               <p className="see-who-text">
-                See who <br></br> else might want to go
+                See who <br /> else might want to go
               </p>
               {isOpen && <div className="backdrop"></div>}
               <dialog open={isOpen}>
