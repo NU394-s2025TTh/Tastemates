@@ -7,7 +7,7 @@
     "build": "tsc && vite build",
     "serve": "vite preview",
     "test": "vitest --ui",
-    "lint:fix": "eslint ./src --ext .jsx,.js,.ts,.tsx --quiet --fix",
+    "lint:fix": "eslint . --fix",
     "lint:format": "prettier  --log-level warn --write \"./**/*.{js,jsx,ts,tsx,css,md,json}\" ",
     "lint": "npm run lint:format && npm run lint:fix ",
     "type-check": "tsc",
@@ -22,9 +22,11 @@
     "firebase": "^11.6.0",
     "firebase-admin": "^13.2.0",
     "node-fetch": "^3.3.2",
+    "rc-slider": "^11.1.8",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "react-router-dom": "^7.5.0"
+    "react-router-dom": "^7.5.0",
+    "react-slider": "^2.0.6"
   },
   "devDependencies": {
     "@testing-library/react": "^16.2.0",
@@ -36,7 +38,7 @@
     "@vitejs/plugin-react": "^4.3.4",
     "@vitest/coverage-v8": "^3.0.8",
     "@vitest/ui": "^3.0.8",
-    "eslint": "^9.24.0",
+    "eslint": "^8.57.1",
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-import": "^2.29.1",
     "eslint-plugin-jsx-a11y": "^6.8.0",

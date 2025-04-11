@@ -87,7 +87,10 @@ module.exports = [{
         "prettier/prettier": ["error", {}, {
             usePrettierrc: true,
         }],
-
+        '@typescript-eslint/no-unused-vars': 'warn',
+        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/no-unused-expressions': 'warn',
+        '@typescript-eslint/no-require-imports': 'warn',
         "react/react-in-jsx-scope": "off",
         "jsx-a11y/accessible-emoji": "off",
         "react/prop-types": "off",

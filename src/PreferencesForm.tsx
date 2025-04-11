@@ -1,56 +1,46 @@
 import './PreferencesForm.css';
 
-import { useUser } from '@clerk/clerk-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+import { auth, db, ref, set } from './firebase';
 
 const PreferencesForm = () => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
   const [priceMin, setPriceMin] = useState<number | ''>('');
   const [priceMax, setPriceMax] = useState<number | ''>('');
   const [message, setMessage] = useState('');
-  const { user } = useUser();
   const navigate = useNavigate();
 
   const toggleCuisine = (cuisine: string) => {
     setSelectedCuisines((prev) => {
       const next = new Set(prev);
-      if (next.has(cuisine)) {
-        next.delete(cuisine);
-      } else {
-        next.add(cuisine);
-      }
+      next.has(cuisine) ? next.delete(cuisine) : next.add(cuisine);
       return new Set(next);
     });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setMessage(
-      `Saved! Min: $${priceMin}, Max: $${priceMax}, Cuisines: ${Array.from(selectedCuisines).join(', ')}`,
-    );
-    // TO DO: get rid of this when we fix db route
-    navigate('/feed');
+    const user = auth.currentUser;
 
-    // Add profile information to firebase db
+    if (!user) {
+      setMessage("You're not signed in. Please sign in with Google.");
+      return;
+    }
+
     try {
-      const response = await fetch('http://localhost:5000/api/create-user', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: 'test', //add a form to add username
-          minPrice: priceMin,
-          maxPrice: priceMax,
-          prefs: Array.from(selectedCuisines).join(', '),
-          bio: 'this is a bio', //add form for bio maybe?,
-          uid: user!.id,
-        }),
+      await set(ref(db, `users/${user.uid}/preferences`), {
+        minPrice: priceMin,
+        maxPrice: priceMax,
+        cuisines: Array.from(selectedCuisines),
       });
-      const data = await response.json();
-      console.log('Added user to database:', data);
+
+      setMessage('Preferences saved!');
       navigate('/feed');
     } catch (error) {
-      console.error('Error adding user to database:', error);
+      console.error('Error saving preferences:', error);
+      setMessage('Something went wrong while saving your preferences.');
     }
   };
 
