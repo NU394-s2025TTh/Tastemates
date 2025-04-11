@@ -1,6 +1,7 @@
 .navbar {
   display: flex;
-  background-color: rgb(226, 226, 226);
+  /* background-color: rgb(226, 226, 226); */
+  background-color: #e8e4de;
   position: fixed;
   bottom: 0;
   margin-bottom: 20px;
@@ -19,6 +20,7 @@
   .navbar {
     left: 10%;
     width: 80%;
+    max-width: 500px;
   }
 }
 @media screen and (min-width: 600px) {

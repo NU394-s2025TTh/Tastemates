@@ -1,6 +1,6 @@
 import './Card.css';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import ConnectCard from './ConnectCard';
 
@@ -33,6 +33,14 @@ const Card: React.FC<CardProps> = ({
   const [isFollowing, setIsFollowing] = useState(false);
   const [isWishlist, setIsWishlist] = useState(false);
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
+  }, [isOpen]);
+
   return (
     <div className="Card">
       <div className="card-container">
@@ -40,7 +48,11 @@ const Card: React.FC<CardProps> = ({
           <div className="post-box">
             <div className="poster-box">
               <div className="poster-profile">
-                <img src={profileImg} alt="poster profile pic"></img>
+                <img
+                  className="profile-pic"
+                  src={profileImg}
+                  alt="poster profile pic"
+                ></img>
                 <h3>{postUser}</h3>
               </div>
               <input
@@ -76,9 +88,13 @@ const Card: React.FC<CardProps> = ({
         </div>
         <div className="other-profiles-box">
           <div className="profiles-box">
-            <div className="circle"></div>
+            <div className="who-else-pics">
+              <div className="circle"></div>
+              <div className="circle"></div>
+              <div className="circle"></div>
+            </div>
             <div className="who-else-box">
-              <p>
+              <p className="see-who-text">
                 See who <br></br> else might want to go
               </p>
               {isOpen && <div className="backdrop"></div>}
@@ -91,43 +107,39 @@ const Card: React.FC<CardProps> = ({
                     onClick={() => setIsOpen(false)}
                   />
                 </div>
-                <ConnectCard
-                  isDown={true}
-                  profileImg="/assets/profile2.svg"
-                  user="Ana"
-                  restaurantName={restaurantName}
-                  phone="773-688-0000"
-                />
-                <ConnectCard
-                  isDown={false}
-                  profileImg="/assets/profile2.svg"
-                  user="Ana"
-                  restaurantName={restaurantName}
-                />
-                <ConnectCard
-                  isDown={false}
-                  profileImg="/assets/profile2.svg"
-                  user="Nikky"
-                  restaurantName={restaurantName}
-                />
-                <ConnectCard
-                  isDown={false}
-                  profileImg="/assets/profile2.svg"
-                  user="Marissa"
-                  restaurantName={restaurantName}
-                />
-                <ConnectCard
-                  isDown={false}
-                  profileImg="/assets/profile2.svg"
-                  user="Daniel"
-                  restaurantName={restaurantName}
-                />
-                <ConnectCard
-                  isDown={false}
-                  profileImg="/assets/profile2.svg"
-                  user="Laura"
-                  restaurantName={restaurantName}
-                />
+                <div className="connect-scroll">
+                  <ConnectCard
+                    isDown={true}
+                    profileImg="/assets/profile2.svg"
+                    user="Ana"
+                    restaurantName={restaurantName}
+                    phone="773-688-0000"
+                  />
+                  <ConnectCard
+                    isDown={false}
+                    profileImg="/assets/profile2.svg"
+                    user="Nikky"
+                    restaurantName={restaurantName}
+                  />
+                  <ConnectCard
+                    isDown={false}
+                    profileImg="/assets/profile2.svg"
+                    user="Marissa"
+                    restaurantName={restaurantName}
+                  />
+                  <ConnectCard
+                    isDown={false}
+                    profileImg="/assets/profile2.svg"
+                    user="Daniel"
+                    restaurantName={restaurantName}
+                  />
+                  <ConnectCard
+                    isDown={false}
+                    profileImg="/assets/profile2.svg"
+                    user="Laura"
+                    restaurantName={restaurantName}
+                  />
+                </div>
               </dialog>
               <input
                 type="image"

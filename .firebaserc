@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "taste-mates-agile"
-  }
+    "default": "taste-mates-agile",
+    "tastemates": "taste-mates-agile"
+  },
+  "targets": {},
+  "etags": {}
 }
