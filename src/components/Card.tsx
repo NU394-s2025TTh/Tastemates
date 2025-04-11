@@ -62,7 +62,13 @@ const Card: React.FC<CardProps> = ({
 
   const handleWishlistClick = async () => {
     if (!user) return;
-    const newState = await toggleWishlist(restaurantName);
+    const newState = await toggleWishlist({
+      restaurantName,
+      rating,
+      reviewSrc,
+      cuisine,
+      price,
+    });
     setIsWishlist(newState);
   };
 

@@ -1,17 +1,24 @@
 import { getAuth } from 'firebase/auth';
 import { get, getDatabase, ref, remove, set } from 'firebase/database';
 
+export interface Restaurant {
+  restaurantName: string;
+  rating: number;
+  reviewSrc: string;
+  cuisine: string;
+  price: string;
+}
+
 /**
  * Toggles a restaurant in the user's wishlist.
- * Adds it if not present, removes it if already wishlisted.
- * Returns the updated wishlist status (true = added, false = removed).
+ * Saves full restaurant info if adding.
  */
-export const toggleWishlist = async (restaurantName: string): Promise<boolean> => {
+export const toggleWishlist = async (restaurant: Restaurant): Promise<boolean> => {
   const user = getAuth().currentUser;
-  if (!user) return false; // Always return a boolean
+  if (!user) return false;
 
   const db = getDatabase();
-  const wishlistRef = ref(db, `wishlists/${user.uid}/${restaurantName}`);
+  const wishlistRef = ref(db, `wishlists/${user.uid}/${restaurant.restaurantName}`);
 
   try {
     const snapshot = await get(wishlistRef);
@@ -19,7 +26,7 @@ export const toggleWishlist = async (restaurantName: string): Promise<boolean> =
       await remove(wishlistRef);
       return false;
     } else {
-      await set(wishlistRef, true);
+      await set(wishlistRef, restaurant);
       return true;
     }
   } catch (error) {
@@ -28,9 +35,6 @@ export const toggleWishlist = async (restaurantName: string): Promise<boolean> =
   }
 };
 
-/**
- * Checks whether the restaurant is already in the user's wishlist.
- */
 export const isRestaurantWishlisted = async (
   restaurantName: string,
 ): Promise<boolean> => {
