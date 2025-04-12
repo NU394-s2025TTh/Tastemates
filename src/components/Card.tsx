@@ -17,6 +17,7 @@ interface CardProps {
   reviewSrc: string;
   cuisine: string;
   price: string;
+  timestamp?: number;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -30,6 +31,7 @@ const Card: React.FC<CardProps> = ({
   reviewSrc,
   cuisine,
   price,
+  timestamp,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -89,7 +91,15 @@ const Card: React.FC<CardProps> = ({
                 alt="add user icon"
               />
             </div>
-            <p>{caption}</p>
+            <p className="caption">{caption}</p>
+            {timestamp && (
+              <p className="timestamp">
+                {new Date(timestamp).toLocaleString(undefined, {
+                  dateStyle: 'medium',
+                  timeStyle: 'short',
+                })}
+              </p>
+            )}
             <img className="restaurant-pic" src={imgSrc} alt="restaurant img" />
           </div>
         )}

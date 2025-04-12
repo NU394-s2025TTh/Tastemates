@@ -34,6 +34,7 @@ const PreferencesForm = () => {
         minPrice: priceMin,
         maxPrice: priceMax,
         cuisines: Array.from(selectedCuisines),
+        photoURL: user.photoURL,
       });
 
       setMessage('Preferences saved!');

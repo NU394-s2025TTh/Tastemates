@@ -1,4 +1,3 @@
-// App.tsx
 import './App.css';
 
 import React, { useEffect, useState } from 'react';
@@ -24,7 +23,7 @@ const HomePage = () => {
       // Check for preferences in Realtime DB
       const snapshot = await get(ref(db, `users/${user.uid}/preferences`));
       if (snapshot.exists()) {
-        navigate('/explore');
+        navigate('/feed');
       } else {
         navigate('/preferences');
       }

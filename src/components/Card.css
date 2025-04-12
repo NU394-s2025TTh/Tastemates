@@ -55,6 +55,17 @@
 .profile-pic {
   width: 50px;
   height: auto;
+  border-radius: 50%;
+}
+
+.caption {
+  margin-bottom: 0;
+}
+
+.timestamp {
+  font-size: 0.85rem;
+  color: gray;
+  margin-top: 0.5rem;
 }
 
 .name-box {
