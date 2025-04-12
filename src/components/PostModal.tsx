@@ -2,6 +2,8 @@ import './PostModal.css';
 
 import React, { useEffect, useState } from 'react';
 
+import { auth, db, get, push, ref } from '../firebase';
+
 interface Restaurant {
   name: string;
   rating: number;
@@ -20,7 +22,6 @@ interface PostModalProps {
 const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [search, setSearch] = useState('');
-  const [selectedRestaurant, setSelectedRestaurant] = useState('');
   const [rating, setRating] = useState('');
   const [caption, setCaption] = useState('');
   const [error, setError] = useState('');
@@ -43,7 +44,6 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
       fetchRestaurants();
       // Reset input fields when modal is opened
       setSearch('');
-      setSelectedRestaurant('');
       setRating('');
       setCaption('');
       setError('');
@@ -51,8 +51,8 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
     }
   }, [isOpen]);
 
-  const handleSubmit = () => {
-    const isValid = restaurants.some(
+  const handleSubmit = async () => {
+    const matchedRestaurant = restaurants.find(
       (r) => r.name.toLowerCase() === search.toLowerCase(),
     );
 
@@ -61,15 +61,45 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
       return;
     }
 
-    if (!isValid) {
+    if (!matchedRestaurant) {
       setError('Please select a restaurant from the list.');
       return;
     }
 
-    setSelectedRestaurant(search);
-    setError('');
-    console.log({ selectedRestaurant: search, rating, caption });
-    onClose();
+    const user = auth.currentUser;
+    if (!user) {
+      setError('You must be signed in.');
+      return;
+    }
+
+    // Get user's profile image and name from database
+    const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
+    const photoURL = prefSnap.val()?.photoURL || user.photoURL || '/assets/profile.svg';
+    const postUser = user.displayName || 'Anonymous';
+
+    // Compose post object
+    const postData = {
+      userId: user.uid,
+      postUser,
+      profileImg: photoURL,
+      caption,
+      restaurantName: matchedRestaurant.name,
+      imgSrc: matchedRestaurant.image_url,
+      rating: parseFloat(rating),
+      reviewSrc: matchedRestaurant.url,
+      cuisine: matchedRestaurant.categories,
+      price: matchedRestaurant.price || '$$',
+      timestamp: Date.now(),
+    };
+
+    // Push to Firebase
+    try {
+      await push(ref(db, 'posts'), postData);
+      onClose();
+    } catch (err) {
+      console.error('Error posting to Firebase:', err);
+      setError('Something went wrong. Try again.');
+    }
   };
 
   const filteredRestaurants = restaurants.filter((r) =>
@@ -117,7 +147,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
                   <button
                     onClick={() => handleSelect(r.name)}
                     onKeyDown={(e) => handleKeyDown(e, r.name)}
-                    className="dropdown-item-button" // optional styling class
+                    className="dropdown-item-button"
                   >
                     {r.name}
                   </button>

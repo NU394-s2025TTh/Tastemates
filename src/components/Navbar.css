@@ -11,6 +11,7 @@
   justify-content: space-between;
   z-index: 100;
   box-sizing: border-box;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
 }
 
 .nav-item {

@@ -19,6 +19,7 @@ const ProfilePage = () => {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
   const [userName, setUserName] = useState<string>('User');
   const [wishlist, setWishlist] = useState<Restaurant[]>([]);
+  const [photoURL, setPhotoURL] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -64,6 +65,7 @@ const ProfilePage = () => {
         const prefs = prefSnap.val();
         setPreferences(prefs);
         setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
+        setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
       }
 
       const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
@@ -83,7 +85,11 @@ const ProfilePage = () => {
       <Navbar />
       <div className="profile-container">
         <div className="pic-container">
-          <img className="user-pic" src="/assets/profile.svg" alt="your user profile" />
+          <img
+            className="user-pic"
+            src={photoURL || '/assets/profile.svg'}
+            alt="your user profile"
+          />
         </div>
         <h2>{userName}</h2>
 

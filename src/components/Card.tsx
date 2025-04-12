@@ -1,8 +1,10 @@
 import './Card.css';
 
 import { getAuth } from 'firebase/auth';
+import { ref as dbRef, remove } from 'firebase/database';
 import { useEffect, useState } from 'react';
 
+import { db } from '../firebase';
 import { isRestaurantWishlisted, toggleWishlist } from '../firebaseUtils';
 import ConnectCard from './ConnectCard';
 
@@ -17,6 +19,8 @@ interface CardProps {
   reviewSrc: string;
   cuisine: string;
   price: string;
+  timestamp?: number;
+  postId?: string;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -30,6 +34,8 @@ const Card: React.FC<CardProps> = ({
   reviewSrc,
   cuisine,
   price,
+  timestamp,
+  postId,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
@@ -72,6 +78,14 @@ const Card: React.FC<CardProps> = ({
     setIsWishlist(newState);
   };
 
+  const handleDelete = async (id: string) => {
+    try {
+      await remove(dbRef(db, `posts/${id}`));
+    } catch (error) {
+      console.error('Error deleting post:', error);
+    }
+  };
+
   return (
     <div className="Card">
       <div className="card-container">
@@ -89,7 +103,16 @@ const Card: React.FC<CardProps> = ({
                 alt="add user icon"
               />
             </div>
-            <p>{caption}</p>
+            <p className="caption">{caption}</p>
+            {timestamp && (
+              <p className="timestamp">
+                {new Date(timestamp).toLocaleString(undefined, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </p>
+            )}
             <img className="restaurant-pic" src={imgSrc} alt="restaurant img" />
           </div>
         )}
@@ -177,6 +200,11 @@ const Card: React.FC<CardProps> = ({
             </div>
           </div>
         </div>
+        {isFeed && user?.displayName === postUser && postId && (
+          <button className="delete-button" onClick={() => handleDelete(postId)}>
+            Delete Post
+          </button>
+        )}
       </div>
     </div>
   );
