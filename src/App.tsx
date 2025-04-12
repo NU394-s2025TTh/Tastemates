@@ -55,7 +55,7 @@ const HomePage = () => {
       <div className="signup-page">
         <div className="signup-container">
           <img src={logo} alt="Tastemates Logo" className="logo-image" />
-          <h1>Welcome!</h1>
+          <h1 style={{ marginTop: '0' }}>Welcome!</h1>
           <p style={{ textAlign: 'center' }}>Sign in to get started</p>
           <button className="google-signin-button" onClick={handleGoogleSignIn}>
             <img
