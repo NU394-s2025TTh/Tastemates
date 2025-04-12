@@ -56,7 +56,7 @@ const RestaurantFeed = () => {
             }
             restaurantName={restaurant.name}
             rating={restaurant.rating}
-            reviewSrc={'ReviewSrc'}
+            reviewSrc={restaurant.url}
             cuisine={restaurant.categories}
             price={restaurant.price}
           />
