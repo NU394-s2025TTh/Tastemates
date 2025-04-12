@@ -6,29 +6,25 @@ const Navbar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const navItems = [
+    { path: '/feed', icon: '/assets/feed.svg', label: 'Feed' },
+    { path: '/explore', icon: '/assets/explore.svg', label: 'Explore' },
+    { path: '/profile', icon: '/assets/profile-page.svg', label: 'Profile' },
+  ];
+
   return (
     <div className="navbar">
-      <input
-        onClick={() => navigate('/feed')}
-        type="image"
-        src="/assets/feed.svg"
-        alt="feed"
-        className={`icon ${location.pathname === '/feed' ? 'active' : ''}`}
-      />
-      <input
-        onClick={() => navigate('/explore')}
-        type="image"
-        src="/assets/explore.svg"
-        alt="explore"
-        className={`icon ${location.pathname === '/explore' ? 'active' : ''}`}
-      />
-      <input
-        onClick={() => navigate('/profile')}
-        type="image"
-        src="/assets/profile-page.svg"
-        alt="profile"
-        className={`icon ${location.pathname === '/profile' ? 'active' : ''}`}
-      />
+      {navItems.map(({ path, icon, label }) => (
+        <button
+          key={path}
+          className={`nav-item ${location.pathname === path ? 'active' : ''}`}
+          onClick={() => navigate(path)}
+          aria-label={label} // Improve accessibility by adding an aria-label
+        >
+          <img src={icon} alt={label} className="nav-icon" />
+          <p className="nav-label">{label}</p>
+        </button>
+      ))}
     </div>
   );
 };
