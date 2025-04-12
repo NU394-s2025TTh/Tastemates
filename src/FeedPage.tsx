@@ -21,6 +21,7 @@ interface Post {
   cuisine: string;
   price: string;
   timestamp: number;
+  postId?: string;
 }
 
 const FeedPage = () => {
@@ -32,7 +33,10 @@ const FeedPage = () => {
     const unsubscribe = onValue(postsRef, (snapshot) => {
       const data = snapshot.val();
       if (data) {
-        const loadedPosts = Object.values(data) as Post[];
+        const loadedPosts = Object.entries(data).map(([id, post]) => ({
+          ...(post as Post),
+          postId: id,
+        }));
         loadedPosts.sort((a, b) => b.timestamp - a.timestamp);
         setPosts(loadedPosts);
       }
@@ -68,6 +72,7 @@ const FeedPage = () => {
               cuisine={post.cuisine}
               price={post.price}
               timestamp={post.timestamp}
+              postId={post.postId}
             />
           ))
         ) : (
