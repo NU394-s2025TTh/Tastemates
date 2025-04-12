@@ -1,6 +1,7 @@
+import './ExplorePage.css';
+
 import { useState } from 'react';
 
-// import Card from './components/Card';
 import Navbar from './components/Navbar';
 import RestaurantFeed from './components/Restaurants';
 import SearchInput from './components/SearchInput';
@@ -13,7 +14,7 @@ const ExplorePage = () => {
     // TO DO: actually search and connect w Yelp API
   };
   return (
-    <>
+    <div className="explore-page">
       <Navbar />
       <SearchInput onSearch={handleSearch} />
       {searchQuery && (
@@ -22,7 +23,7 @@ const ExplorePage = () => {
         </p>
       )}
       <RestaurantFeed />
-    </>
+    </div>
   );
 };
 
