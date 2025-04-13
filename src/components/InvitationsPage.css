@@ -1,0 +1,21 @@
+.invitations-page {
+  font-family: 'Inter', sans-serif;
+  background: #e8e4de;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  min-height: 40rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: #333;
+  padding: 0.25rem 0.5rem;
+}

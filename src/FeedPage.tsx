@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import logoPic from './assets/logo.png';
 import logoText from './assets/logo-text.png';
 import Card from './components/Card';
+import InvitationsPage from './components/InvitationsPage';
 import Navbar from './components/Navbar';
 import PostModal from './components/PostModal';
 import { db } from './firebase';
@@ -27,6 +28,7 @@ interface Post {
 const FeedPage = () => {
   const [isPostModalOpen, setPostModalOpen] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
+  const [showRequests, setShowRequests] = useState(false);
 
   useEffect(() => {
     const postsRef = ref(db, 'posts');
@@ -45,16 +47,26 @@ const FeedPage = () => {
     return () => unsubscribe();
   }, []);
 
-  return (
+  return showRequests ? (
+    <InvitationsPage onBack={() => setShowRequests(false)} />
+  ) : (
     <div className="feed-page">
       <Navbar />
       <div className="top-wrapper">
         <img src={logoPic} alt="Tastemates Logo" className="logo-img" />
         <img src={logoText} alt="Tastemates" className="logo-text" />
       </div>
-      <button onClick={() => setPostModalOpen(true)} className="new-post-button">
-        + New Post
-      </button>
+      <div className="button-row">
+        <button onClick={() => setPostModalOpen(true)} className="new-post-button">
+          + New Post
+        </button>
+        <button
+          onClick={() => setShowRequests((prev) => !prev)}
+          className="requests-button"
+        >
+          💌
+        </button>
+      </div>
       <PostModal isOpen={isPostModalOpen} onClose={() => setPostModalOpen(false)} />
       <div>
         {posts.length > 0 ? (
@@ -76,9 +88,7 @@ const FeedPage = () => {
             />
           ))
         ) : (
-          <div style={{ fontSize: '2rem', marginTop: '3rem', fontWeight: 'bold' }}>
-            No posts yet. Be the first to share!
-          </div>
+          <div className="no-posts-msg">No posts yet. Be the first to share!</div>
         )}
       </div>
     </div>
