@@ -44,13 +44,25 @@
 }
 
 .requests-button {
-  padding: 0.5rem;
-  font-size: 1.2rem;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
   background-color: #98897e;
   color: #fff;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+}
+
+.requests-content {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.icon-white {
+  height: 1rem;
+  width: 1rem;
+  filter: brightness(0) invert(1);
 }
 
 .no-posts-msg {
