@@ -1,7 +1,8 @@
 import './Card.css';
 
 import { getAuth } from 'firebase/auth';
-import { get, ref, remove, set } from 'firebase/database';
+import { get, getDatabase, ref, remove, set } from 'firebase/database';
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { db } from '../firebase';
@@ -24,6 +25,12 @@ interface CardProps {
   postId?: string;
 }
 
+interface Wishlister {
+  uid: string;
+  photoURL: string;
+  displayName: string;
+}
+
 const Card: React.FC<CardProps> = ({
   isFeed,
   profileImg,
@@ -44,6 +51,8 @@ const Card: React.FC<CardProps> = ({
     'none',
   );
   const [isWishlist, setIsWishlist] = useState(false);
+  const [wishlisters, setWishlisters] = useState<Wishlister[]>([]);
+  const [loadingWishlisters, setLoadingWishlisters] = useState(true);
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -69,6 +78,62 @@ const Card: React.FC<CardProps> = ({
     };
     fetchWishlistStatus();
   }, [user, restaurantName]);
+
+  useEffect(() => {
+    const fetchWishlisters = async () => {
+      const db = getDatabase();
+
+      try {
+        const snapshot = await get(ref(db, 'wishlists'));
+        if (snapshot.exists()) {
+          const allWishlists = snapshot.val() as Record<string, Record<string, any>>;
+
+          const matchingUsers = Object.entries(allWishlists)
+            .filter(([_, wishlist]) => {
+              if (!wishlist) return false;
+              return Object.keys(wishlist).some(
+                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
+              );
+            })
+            .map(([uid, wishlist]) => {
+              const restaurantKey = Object.keys(wishlist).find(
+                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
+              );
+              return restaurantKey ? uid : null;
+            })
+            .filter(Boolean) as string[];
+
+          const userDataPromises = matchingUsers.map(async (uid) => {
+            const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
+            const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
+            return {
+              uid,
+              photoURL: prefs.photoURL || '/assets/profile.svg',
+              displayName: prefs.displayName || 'Anonymous',
+            };
+          });
+
+          const usersData = await Promise.all(userDataPromises);
+
+          // Filter out the current user from the wishlisters
+          const filteredUsersData = usersData.filter(
+            (userData) => userData.uid !== user?.uid,
+          );
+
+          setWishlisters(filteredUsersData);
+        } else {
+          setWishlisters([]);
+        }
+      } catch (error) {
+        console.error('Error fetching wishlisters:', error);
+        setWishlisters([]);
+      } finally {
+        setLoadingWishlisters(false);
+      }
+    };
+
+    fetchWishlisters();
+  }, [restaurantName, user?.uid]); // Added user?.uid as dependency to ensure correct filtering
 
   useEffect(() => {
     const checkFollowStatus = async () => {
@@ -225,68 +290,48 @@ const Card: React.FC<CardProps> = ({
           <div className="tags">{cuisine}</div>
           <div className="tags">{price}</div>
         </div>
-        <div className="other-profiles-box">
-          <div className="profiles-box">
-            <div className="who-else-pics">
-              <div className="circle"></div>
-              <div className="circle"></div>
-              <div className="circle"></div>
-            </div>
-            <div className="who-else-box">
-              <p className="see-who-text">
-                See who <br /> else might want to go
-              </p>
-              {isOpen && <div className="backdrop"></div>}
-              <dialog open={isOpen}>
-                <div className="close-button">
-                  <input
-                    type="image"
-                    src="/assets/x.svg"
-                    alt="close"
-                    onClick={() => setIsOpen(false)}
-                  />
-                </div>
-                <div className="connect-scroll">
+        <div className="profiles-box">
+          <div className="who-else-pics">
+            {wishlisters.length > 0
+              ? wishlisters
+                  .slice(0, 3)
+                  .map((user, idx) => (
+                    <img key={idx} src={user.photoURL} alt={user.displayName} />
+                  ))
+              : ''}
+          </div>
+          <div className="who-else-box">
+            {wishlisters.length > 0 ? (
+              <button className="see-who-wrapper" onClick={() => setIsOpen(true)}>
+                <p className="see-who-text">
+                  See who else might <br /> want to go
+                  <ChevronRight className="arrow-icon" size={24} />
+                </p>
+              </button>
+            ) : (
+              ''
+            )}
+            {isOpen && <div className="backdrop"></div>}
+            <dialog open={isOpen}>
+              <div className="close-button">
+                <input
+                  type="image"
+                  src="/assets/x.svg"
+                  alt="close"
+                  onClick={() => setIsOpen(false)}
+                />
+              </div>
+              <div className="connect-scroll">
+                {wishlisters.map((w) => (
                   <ConnectCard
-                    isDown={true}
-                    profileImg="/assets/profile2.svg"
-                    user="Ana"
-                    restaurantName={restaurantName}
-                    phone="773-688-0000"
-                  />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Nikky"
-                    restaurantName={restaurantName}
-                  />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Marissa"
+                    key={w.uid}
+                    profileImg={w.photoURL}
+                    user={w.displayName}
                     restaurantName={restaurantName}
                   />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Daniel"
-                    restaurantName={restaurantName}
-                  />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Laura"
-                    restaurantName={restaurantName}
-                  />
-                </div>
-              </dialog>
-              <input
-                type="image"
-                src="/assets/arrow.svg"
-                alt="arrow"
-                onClick={() => setIsOpen(true)}
-              />
-            </div>
+                ))}
+              </div>
+            </dialog>
           </div>
         </div>
         {isFeed && user?.uid === userId && postId && (
