@@ -16,7 +16,7 @@ button {
 }
 
 .connect-pic {
-  width: 5rem;
+  width: 4rem;
   border-radius: 50%;
 }
 
@@ -37,4 +37,7 @@ button {
   margin-top: 0;
   color: gray;
   font-weight: bold;
+  font-size: 0.8rem;
+  max-width: 13rem;
+  overflow-x: auto;
 }
