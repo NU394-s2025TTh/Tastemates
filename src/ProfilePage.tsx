@@ -1,12 +1,14 @@
 import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
+import { Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
 import { useNavigate } from 'react-router-dom';
 
 import Card from './components/Card';
 import Navbar from './components/Navbar';
+import TastemateModal from './components/TastemateModal';
 import { auth, db, get, ref, set } from './firebase';
 import { Restaurant } from './firebaseUtils';
 
@@ -21,6 +23,7 @@ const ProfilePage = () => {
   const [wishlist, setWishlist] = useState<Restaurant[]>([]);
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [tastemates, setTastemates] = useState<any[]>([]);
+  const [selectedTastemate, setSelectedTastemate] = useState<any>(null);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -217,6 +220,19 @@ const ProfilePage = () => {
                     alt={mate.displayName}
                   />
                   <div className="tastemate-name">{mate.displayName || 'User'}</div>
+                  <Info
+                    className="view-details-button"
+                    size={20}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedTastemate(mate)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setSelectedTastemate(mate);
+                      }
+                    }}
+                    aria-label={`View info for ${mate.displayName}`}
+                  />
                 </div>
               ))
             ) : (
@@ -246,6 +262,12 @@ const ProfilePage = () => {
         <button className="signout-button" onClick={handleSignOut}>
           Sign Out
         </button>
+        {selectedTastemate && (
+          <TastemateModal
+            tastemate={selectedTastemate}
+            onClose={() => setSelectedTastemate(null)}
+          />
+        )}
       </div>
     </div>
   );

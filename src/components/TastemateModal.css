@@ -1,0 +1,73 @@
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+}
+
+.modal-content {
+  background: #fff;
+  border-radius: 1rem;
+  padding: 2rem;
+  max-width: 400px;
+  width: 80%;
+  text-align: center;
+  position: relative;
+}
+
+.modal-pic {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.modal-cuisines {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.modal-close {
+  margin-top: 0.5rem;
+  padding: 0.5rem 0.5rem;
+  border-radius: 7px;
+  border: none;
+  background: #98897e;
+  color: white;
+  cursor: pointer;
+  font-size: 1.3rem;
+}
+
+.modal-close:hover {
+  opacity: 0.7;
+}
+
+.contact-centered {
+  text-align: center;
+  justify-content: center;
+}
+
+.contact-centered-email {
+  margin-bottom: 0.5rem;
+  text-align: center;
+  justify-content: center;
+}
+
+.contact-centered-phone {
+  margin-top: 0;
+  text-align: center;
+  justify-content: center;
+}
+
+.fav-cuisines {
+  margin-bottom: 1rem;
+}

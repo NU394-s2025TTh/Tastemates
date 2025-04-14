@@ -146,3 +146,16 @@
 .signout-button:hover {
   background-color: #222;
 }
+
+.view-details-button {
+  margin: 0;
+  color: #5a4d45;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.view-details-button:hover {
+  transform: scale(1.15);
+  color: #5a4d45;
+}
