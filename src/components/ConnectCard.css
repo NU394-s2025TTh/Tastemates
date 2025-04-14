@@ -17,4 +17,24 @@ button {
 
 .connect-pic {
   width: 5rem;
+  border-radius: 50%;
+}
+
+.accepted-request {
+  filter: hue-rotate(250deg);
+  opacity: 1 !important;
+  cursor: default;
+  transition: none;
+}
+
+.wants-to-go {
+  color: black;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.contact-info {
+  margin-top: 0;
+  color: gray;
+  font-weight: bold;
 }
