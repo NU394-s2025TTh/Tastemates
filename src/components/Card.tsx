@@ -143,18 +143,26 @@ const Card: React.FC<CardProps> = ({
     const checkFollowStatus = async () => {
       if (!user || !postUser || user.uid === userId) return;
 
-      const requestRef = ref(db, `tastemateRequests/${userId}/${user.uid}`);
-      const requestSnap = await get(requestRef);
+      const dbRef = getDatabase();
 
-      if (!requestSnap.exists()) {
+      const receiverViewRef = ref(dbRef, `tastemateRequests/${userId}/${user.uid}`);
+      const senderViewRef = ref(dbRef, `tastemateRequests/${user.uid}/${userId}`);
+
+      const [receiverSnap, senderSnap] = await Promise.all([
+        get(receiverViewRef),
+        get(senderViewRef),
+      ]);
+
+      const receiverStatus = receiverSnap.exists() ? receiverSnap.val().status : null;
+      const senderStatus = senderSnap.exists() ? senderSnap.val().status : null;
+
+      if (receiverStatus === 'accepted' || senderStatus === 'accepted') {
+        setFollowStatus('accepted');
+      } else if (receiverStatus === 'pending') {
+        setFollowStatus('pending');
+      } else {
         setFollowStatus('none');
-        return;
       }
-
-      const status = requestSnap.val().status;
-      if (status === 'pending') setFollowStatus('pending');
-      else if (status === 'accepted') setFollowStatus('accepted');
-      else setFollowStatus('none');
     };
 
     checkFollowStatus();

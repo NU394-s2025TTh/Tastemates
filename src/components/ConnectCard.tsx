@@ -32,17 +32,28 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
       if (!currentUserId || !targetUserId) return;
 
       const db = getDatabase();
-      const requestRef = ref(db, `tastemateRequests/${targetUserId}/${currentUserId}`);
-      const requestSnap = await get(requestRef);
 
-      if (!requestSnap.exists()) {
+      const receiverViewRef = ref(
+        db,
+        `tastemateRequests/${targetUserId}/${currentUserId}`,
+      );
+      const senderViewRef = ref(db, `tastemateRequests/${currentUserId}/${targetUserId}`);
+
+      const [receiverSnap, senderSnap] = await Promise.all([
+        get(receiverViewRef),
+        get(senderViewRef),
+      ]);
+
+      const receiverStatus = receiverSnap.exists() ? receiverSnap.val().status : null;
+      const senderStatus = senderSnap.exists() ? senderSnap.val().status : null;
+
+      if (receiverStatus === 'accepted' || senderStatus === 'accepted') {
+        setFollowStatus('accepted');
+      } else if (receiverStatus === 'pending') {
+        setFollowStatus('pending');
+      } else {
         setFollowStatus('none');
-        return;
       }
-
-      const status = requestSnap.val().status;
-      if (status === 'pending') setFollowStatus('pending');
-      else if (status === 'accepted') setFollowStatus('accepted');
     };
 
     checkFollowStatus();
@@ -108,7 +119,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
         )}
       </div>
       <input
-        onClick={() => handleFollowClick}
+        onClick={handleFollowClick}
         type="image"
         src={
           followStatus === 'pending'
