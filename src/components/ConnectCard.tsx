@@ -95,24 +95,31 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
   return (
     <div className="ConnectCard">
       <img className="connect-pic" src={profileImg} alt="profile pic"></img>
-      <>
-        <p>
+      <div>
+        <p className="wants-to-go">
           {user} wants to go to {restaurantName}!
         </p>
-        <input
-          onClick={() => handleFollowClick}
-          type="image"
-          src={
-            followStatus === 'pending'
+        {followStatus === 'accepted' && (
+          <p className="contact-info">
+            {phone && phone.trim() !== ''
+              ? `Text them at ${phone}`
+              : `Email them at ${email}`}
+          </p>
+        )}
+      </div>
+      <input
+        onClick={() => handleFollowClick}
+        type="image"
+        src={
+          followStatus === 'pending'
+            ? '/assets/following.svg'
+            : followStatus === 'accepted'
               ? '/assets/following.svg'
-              : followStatus === 'accepted'
-                ? '/assets/following.svg'
-                : '/assets/add-user.svg'
-          }
-          className={followStatus === 'accepted' ? 'accepted-request' : ''}
-          alt="add user"
-        />
-      </>
+              : '/assets/add-user.svg'
+        }
+        className={followStatus === 'accepted' ? 'accepted-request' : ''}
+        alt="add user"
+      />
     </div>
   );
 };

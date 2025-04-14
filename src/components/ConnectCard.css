@@ -26,3 +26,15 @@ button {
   cursor: default;
   transition: none;
 }
+
+.wants-to-go {
+  color: black;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.contact-info {
+  margin-top: 0;
+  color: gray;
+  font-weight: bold;
+}
