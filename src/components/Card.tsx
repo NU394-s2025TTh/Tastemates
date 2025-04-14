@@ -40,7 +40,9 @@ const Card: React.FC<CardProps> = ({
   postId,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>(
+    'none',
+  );
   const [isWishlist, setIsWishlist] = useState(false);
 
   const auth = getAuth();
@@ -67,6 +69,27 @@ const Card: React.FC<CardProps> = ({
     };
     fetchWishlistStatus();
   }, [user, restaurantName]);
+
+  useEffect(() => {
+    const checkFollowStatus = async () => {
+      if (!user || !postUser || user.uid === userId) return;
+
+      const requestRef = ref(db, `tastemateRequests/${userId}/${user.uid}`);
+      const requestSnap = await get(requestRef);
+
+      if (!requestSnap.exists()) {
+        setFollowStatus('none');
+        return;
+      }
+
+      const status = requestSnap.val().status;
+      if (status === 'pending') setFollowStatus('pending');
+      else if (status === 'accepted') setFollowStatus('accepted');
+      else setFollowStatus('none');
+    };
+
+    checkFollowStatus();
+  }, [user, userId, postUser]);
 
   const handleWishlistClick = async () => {
     if (!user) return;
@@ -96,6 +119,22 @@ const Card: React.FC<CardProps> = ({
     const senderId = user.uid;
     const receiverId = userId;
 
+    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+    const requestSnap = await get(requestRef);
+
+    if (followStatus === 'accepted') {
+      // Already connected — maybe no action or toast
+      return;
+    }
+
+    if (followStatus === 'pending') {
+      // Unsend the pending request
+      await remove(requestRef);
+      setFollowStatus('none');
+      return;
+    }
+
+    // Send a new request
     const receiverSnap = await get(ref(db, `users/${receiverId}`));
     if (!receiverSnap.exists()) return;
 
@@ -106,34 +145,25 @@ const Card: React.FC<CardProps> = ({
       ? receiverPhotoSnap.val()
       : '/assets/profile.svg';
 
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+    const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
+    const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
 
-    if (isFollowing) {
-      // Unsend: Remove existing request
-      await remove(requestRef);
-      setIsFollowing(false);
-    } else {
-      // Send: Create new request
-      const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
-      const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
-
-      await set(requestRef, {
-        senderId,
-        senderName: user.displayName,
-        senderPhoto: user.photoURL || '/assets/profile.svg',
-        senderCuisine: senderPrefs.cuisines || [],
-        senderPrice: {
-          min: senderPrefs.minPrice ?? 0,
-          max: senderPrefs.maxPrice ?? 100,
-        },
-        receiverId,
-        receiverName: postUser,
-        receiverPhoto: receiverPhoto,
-        status: 'pending',
-        timestamp: Date.now(),
-      });
-      setIsFollowing(true);
-    }
+    await set(requestRef, {
+      senderId,
+      senderName: user.displayName,
+      senderPhoto: user.photoURL || '/assets/profile.svg',
+      senderCuisine: senderPrefs.cuisines || [],
+      senderPrice: {
+        min: senderPrefs.minPrice ?? 0,
+        max: senderPrefs.maxPrice ?? 100,
+      },
+      receiverId,
+      receiverName: postUser,
+      receiverPhoto,
+      status: 'pending',
+      timestamp: Date.now(),
+    });
+    setFollowStatus('pending');
   };
 
   return (
@@ -146,12 +176,21 @@ const Card: React.FC<CardProps> = ({
                 <img className="profile-pic" src={profileImg} alt="poster profile pic" />
                 <h3>{postUser}</h3>
               </div>
-              <input
-                onClick={handleFollowClick}
-                type="image"
-                src={isFollowing ? '/assets/following.svg' : '/assets/add-user.svg'}
-                alt="add user icon"
-              />
+              {userId != user?.uid && (
+                <input
+                  onClick={handleFollowClick}
+                  type="image"
+                  src={
+                    followStatus === 'pending'
+                      ? '/assets/following.svg'
+                      : followStatus === 'accepted'
+                        ? '/assets/following.svg'
+                        : '/assets/add-user.svg'
+                  }
+                  className={followStatus === 'accepted' ? 'accepted-request' : ''}
+                  alt="add user icon"
+                />
+              )}
             </div>
             <p className="caption">{caption}</p>
             {timestamp && (

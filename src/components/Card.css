@@ -212,3 +212,7 @@ button {
 input[type='image']:hover {
   opacity: 0.7;
 }
+
+.accepted-request {
+  color: green;
+}
