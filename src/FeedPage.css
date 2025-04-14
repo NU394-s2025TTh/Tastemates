@@ -70,3 +70,18 @@
   margin-top: 3rem;
   font-weight: bold;
 }
+
+.badge {
+  position: absolute;
+  top: -20px;
+  right: -25px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

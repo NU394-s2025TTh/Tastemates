@@ -1,5 +1,6 @@
 import './FeedPage.css';
 
+import { getAuth } from 'firebase/auth';
 import { onValue, ref } from 'firebase/database';
 import React, { useEffect, useState } from 'react';
 
@@ -30,6 +31,7 @@ const FeedPage = () => {
   const [isPostModalOpen, setPostModalOpen] = useState(false);
   const [posts, setPosts] = useState<Post[]>([]);
   const [showRequests, setShowRequests] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
     const postsRef = ref(db, 'posts');
@@ -43,6 +45,28 @@ const FeedPage = () => {
         loadedPosts.sort((a, b) => b.timestamp - a.timestamp);
         setPosts(loadedPosts);
       }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const cachedCount = localStorage.getItem('pendingCount');
+    if (cachedCount) setPendingCount(Number(cachedCount));
+
+    const auth = getAuth();
+    const user = auth.currentUser;
+    if (!user) return;
+
+    const requestsRef = ref(db, `tastemateRequests/${user.uid}`);
+    const unsubscribe = onValue(requestsRef, (snapshot) => {
+      const data = snapshot.val();
+      const pending = data
+        ? Object.values(data).filter((req: any) => req.status === 'pending').length
+        : 0;
+
+      localStorage.setItem('pendingCount', pending.toString());
+      setPendingCount(pending);
     });
 
     return () => unsubscribe();
@@ -65,7 +89,7 @@ const FeedPage = () => {
           onClick={() => setShowRequests((prev) => !prev)}
           className="requests-button"
         >
-          <span className="requests-content">
+          <span className="requests-content" style={{ position: 'relative' }}>
             <svg
               className="icon-white"
               xmlns="http://www.w3.org/2000/svg"
@@ -74,6 +98,7 @@ const FeedPage = () => {
               <path d="M12 6.5a4.5 4.5 0 1 1 4.5 4.5A4.49 4.49 0 0 1 12 6.5m6 6.5h-3a3 3 0 0 0-3 3v6h9v-6a3 3 0 0 0-3-3M6.5 6A3.5 3.5 0 1 0 10 9.5 3.5 3.5 0 0 0 6.5 6m1 9h-2A2.5 2.5 0 0 0 3 17.5V22h7v-4.5A2.5 2.5 0 0 0 7.5 15" />
             </svg>
             Tastemate Requests
+            {pendingCount > 0 && <span className="badge">{pendingCount}</span>}
           </span>
         </button>
       </div>
