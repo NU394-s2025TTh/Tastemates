@@ -127,6 +127,30 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     setFollowStatuses((prev) => ({ ...prev, [requestId]: 'pending' }));
   };
 
+  const handleAcceptRequest = async (receiverId: string, senderId: string) => {
+    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+    await set(requestRef, {
+      ...(await get(requestRef)).val(),
+      status: 'accepted',
+    });
+
+    setReceivedRequests((prev) =>
+      prev.filter((req) => !(req.receiverId === receiverId && req.senderId === senderId)),
+    );
+  };
+
+  const handleDeclineRequest = async (receiverId: string, senderId: string) => {
+    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+    await set(requestRef, {
+      ...(await get(requestRef)).val(),
+      status: 'declined',
+    });
+
+    setReceivedRequests((prev) =>
+      prev.filter((req) => !(req.receiverId === receiverId && req.senderId === senderId)),
+    );
+  };
+
   return (
     <div className="invitations-page">
       <Navbar />
@@ -150,10 +174,18 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
               </p>
             </div>
             <div className="button-row">
-              <button className="accept-button" title="Accept">
+              <button
+                className="accept-button"
+                title="Accept"
+                onClick={() => handleAcceptRequest(req.receiverId, req.senderId)}
+              >
                 <Check strokeWidth={2.5} />
               </button>
-              <button className="decline-button" title="Decline">
+              <button
+                className="decline-button"
+                title="Decline"
+                onClick={() => handleDeclineRequest(req.receiverId, req.senderId)}
+              >
                 <X size={18} strokeWidth={2.5} />
               </button>
             </div>

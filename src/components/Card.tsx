@@ -309,7 +309,9 @@ const Card: React.FC<CardProps> = ({
                 </p>
               </button>
             ) : (
-              ''
+              <p className="see-who-text not-feed">
+                Nobody else has wishlisted this <br /> restaurant yet.
+              </p>
             )}
             {isOpen && <div className="backdrop"></div>}
             <dialog open={isOpen}>
