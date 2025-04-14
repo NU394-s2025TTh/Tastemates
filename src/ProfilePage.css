@@ -109,9 +109,8 @@
 
 .wishlist {
   display: flex;
-  gap: 3rem;
+  gap: 1rem;
   overflow-x: auto;
-  white-space: nowrap;
   margin-top: 1rem;
   margin-bottom: 1rem;
 }
