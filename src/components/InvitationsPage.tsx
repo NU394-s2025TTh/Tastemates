@@ -20,6 +20,13 @@ interface TastemateRequest {
   status: 'pending' | 'accepted' | 'declined';
 }
 
+interface UserProfile {
+  uid: string;
+  displayName: string;
+  photoURL: string;
+  isUserSender: boolean;
+}
+
 interface InvitationsPageProps {
   onBack: () => void;
 }
@@ -27,6 +34,7 @@ interface InvitationsPageProps {
 const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
   const [receivedRequests, setReceivedRequests] = useState<TastemateRequest[]>([]);
   const [sentRequests, setSentRequests] = useState<TastemateRequest[]>([]);
+  const [tastemates, setTastemates] = useState<UserProfile[]>([]);
   const [followStatuses, setFollowStatuses] = useState<
     Record<string, 'none' | 'pending' | 'accepted'>
   >({});
@@ -37,6 +45,35 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     if (!user) return;
 
     const requestsRef = ref(db, 'tastemateRequests');
+
+    const fetchTastemates = async (data: any) => {
+      const accepted: UserProfile[] = [];
+
+      for (const receiverId in data) {
+        for (const senderId in data[receiverId]) {
+          const request = data[receiverId][senderId];
+
+          if (request.status === 'accepted') {
+            const isUserSender = request.senderId === user.uid;
+            const otherUserId = isUserSender ? request.receiverId : request.senderId;
+
+            const userSnap = await get(ref(db, `users/${otherUserId}/preferences`));
+            const displayName = userSnap.val()?.displayName || 'Unnamed';
+            const photoURL = userSnap.val()?.photoURL || '/assets/profile.svg';
+
+            accepted.push({
+              uid: otherUserId,
+              displayName,
+              photoURL,
+              isUserSender,
+            });
+          }
+        }
+      }
+
+      setTastemates(accepted);
+    };
+
     onValue(
       requestsRef,
       (snapshot) => {
@@ -68,6 +105,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
         setReceivedRequests(received);
         setSentRequests(sent);
         setFollowStatuses(statuses);
+        fetchTastemates(data);
       },
       (error) => {
         console.error('Error fetching requests:', error);
@@ -192,45 +230,74 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
           </div>
         ))
       ) : (
-        <p>No received requests</p>
+        <p>No pending requests</p>
       )}
 
       <h2 className="second-header">Sent Requests</h2>
-      {sentRequests.length > 0 ? (
-        sentRequests.map((req) => (
-          <div key={req.id} className="request-card">
-            <img
-              src={req.receiverPhoto}
-              alt={req.receiverName}
-              className="request-photo"
-            />
+      {sentRequests.filter((req) => req.status === 'pending').length > 0 ? (
+        sentRequests
+          .filter((req) => req.status === 'pending')
+          .map((req) => (
+            <div key={req.id} className="request-card">
+              <img
+                src={req.receiverPhoto}
+                alt={req.receiverName}
+                className="request-photo"
+              />
+              <div className="request-info">
+                <p className="request-info-name">{req.receiverName}</p>
+                <p className="request-info-sub">Sent request - {req.status}</p>
+              </div>
+              <div className="follow-button-wrapper">
+                <input
+                  onClick={() =>
+                    handleFollowClick(req.receiverId, req.id, req.receiverName)
+                  }
+                  type="image"
+                  src={
+                    followStatuses[req.id] === 'pending'
+                      ? '/assets/following.svg'
+                      : followStatuses[req.id] === 'accepted'
+                        ? '/assets/following.svg'
+                        : '/assets/add-user.svg'
+                  }
+                  className={
+                    followStatuses[req.id] === 'accepted' ? 'accepted-request' : ''
+                  }
+                  alt="add user icon"
+                />
+              </div>
+            </div>
+          ))
+      ) : (
+        <p>No pending requests</p>
+      )}
+
+      <h2 className="second-header">Tastemates</h2>
+      {tastemates.length > 0 ? (
+        tastemates.map((mate) => (
+          <div key={mate.uid} className="request-card">
+            <img src={mate.photoURL} alt={mate.displayName} className="request-photo" />
             <div className="request-info">
-              <p className="request-info-name">{req.receiverName}</p>
-              <p className="request-info-sub">Sent request - {req.status}</p>
+              <p className="request-info-name">{mate.displayName}</p>
+              <p className="request-info-sub">
+                {mate.isUserSender
+                  ? 'You sent this request'
+                  : 'You accepted this request'}
+              </p>
             </div>
             <div className="follow-button-wrapper">
               <input
-                onClick={() =>
-                  handleFollowClick(req.receiverId, req.id, req.receiverName)
-                }
                 type="image"
-                src={
-                  followStatuses[req.id] === 'pending'
-                    ? '/assets/following.svg'
-                    : followStatuses[req.id] === 'accepted'
-                      ? '/assets/following.svg'
-                      : '/assets/add-user.svg'
-                }
-                className={
-                  followStatuses[req.id] === 'accepted' ? 'accepted-request' : ''
-                }
+                src="/assets/following.svg"
+                className="accepted-request"
                 alt="add user icon"
               />
             </div>
           </div>
         ))
       ) : (
-        <p>No sent requests</p>
+        <p>No tastemates yet</p>
       )}
     </div>
   );
