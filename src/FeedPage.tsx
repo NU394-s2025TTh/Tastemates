@@ -22,6 +22,7 @@ interface Post {
   cuisine: string;
   price: string;
   timestamp: number;
+  userId: string;
   postId?: string;
 }
 
@@ -93,6 +94,7 @@ const FeedPage = () => {
               cuisine={post.cuisine}
               price={post.price}
               timestamp={post.timestamp}
+              userId={post.userId}
               postId={post.postId}
             />
           ))

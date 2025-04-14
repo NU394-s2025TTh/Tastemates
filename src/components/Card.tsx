@@ -1,7 +1,7 @@
 import './Card.css';
 
 import { getAuth } from 'firebase/auth';
-import { ref as dbRef, remove } from 'firebase/database';
+import { get, ref, remove, set } from 'firebase/database';
 import { useEffect, useState } from 'react';
 
 import { db } from '../firebase';
@@ -20,6 +20,7 @@ interface CardProps {
   cuisine: string;
   price: string;
   timestamp?: number;
+  userId: string;
   postId?: string;
 }
 
@@ -35,6 +36,7 @@ const Card: React.FC<CardProps> = ({
   cuisine,
   price,
   timestamp,
+  userId,
   postId,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -79,10 +81,58 @@ const Card: React.FC<CardProps> = ({
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await remove(dbRef(db, `posts/${id}`));
-    } catch (error) {
-      console.error('Error deleting post:', error);
+    if (user && user.uid === userId) {
+      try {
+        await remove(ref(db, `posts/${id}`));
+      } catch (error) {
+        console.error('Error deleting post:', error);
+      }
+    }
+  };
+
+  const handleFollowClick = async () => {
+    if (!user || !postUser || user.uid === userId) return;
+
+    const senderId = user.uid;
+    const receiverId = userId;
+
+    const receiverSnap = await get(ref(db, `users/${receiverId}`));
+    if (!receiverSnap.exists()) return;
+
+    const receiverPhotoSnap = await get(
+      ref(db, `users/${receiverId}/preferences/photoURL`),
+    );
+    const receiverPhoto = receiverPhotoSnap.exists()
+      ? receiverPhotoSnap.val()
+      : '/assets/profile.svg';
+
+    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+
+    if (isFollowing) {
+      // Unsend: Remove existing request
+      await remove(requestRef);
+      setIsFollowing(false);
+    } else {
+      // Send: Create new request
+      const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
+      const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
+
+      await set(requestRef, {
+        senderId,
+        senderName: user.displayName,
+        senderPhoto: user.photoURL || '/assets/profile.svg',
+        senderCuisine: senderPrefs.cuisines || [],
+        senderPrice: {
+          min: senderPrefs.minPrice ?? 0,
+          max: senderPrefs.maxPrice ?? 100,
+        },
+        receiverId,
+        receiverName: postUser,
+        receiverPhoto: receiverPhoto,
+        status: 'pending',
+        timestamp: Date.now(),
+      });
+      setIsFollowing(true);
     }
   };
 
@@ -97,7 +147,7 @@ const Card: React.FC<CardProps> = ({
                 <h3>{postUser}</h3>
               </div>
               <input
-                onClick={() => setIsFollowing(!isFollowing)}
+                onClick={handleFollowClick}
                 type="image"
                 src={isFollowing ? '/assets/following.svg' : '/assets/add-user.svg'}
                 alt="add user icon"
@@ -200,7 +250,7 @@ const Card: React.FC<CardProps> = ({
             </div>
           </div>
         </div>
-        {isFeed && user?.displayName === postUser && postId && (
+        {isFeed && user?.uid === userId && postId && (
           <button className="delete-button" onClick={() => handleDelete(postId)}>
             Delete Post
           </button>

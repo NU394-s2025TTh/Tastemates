@@ -178,7 +178,12 @@ const ProfilePage = () => {
           <div className="wishlist">
             {wishlist.length > 0 ? (
               wishlist.map((restaurant) => (
-                <Card key={restaurant.restaurantName} isFeed={false} {...restaurant} />
+                <Card
+                  key={restaurant.restaurantName}
+                  isFeed={false}
+                  {...restaurant}
+                  userId=""
+                />
               ))
             ) : (
               <p>No wishlisted restaurants yet.</p>
