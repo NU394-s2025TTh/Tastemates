@@ -29,6 +29,8 @@ interface Wishlister {
   uid: string;
   photoURL: string;
   displayName: string;
+  phoneNumber?: string;
+  email: string;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -110,6 +112,8 @@ const Card: React.FC<CardProps> = ({
               uid,
               photoURL: prefs.photoURL || '/assets/profile.svg',
               displayName: prefs.displayName || 'Anonymous',
+              phoneNumber: prefs.phoneNumber || '',
+              email: prefs.email || '',
             };
           });
 
@@ -309,7 +313,7 @@ const Card: React.FC<CardProps> = ({
                 </p>
               </button>
             ) : (
-              <p className="see-who-text not-feed">
+              <p className="see-who-text">
                 Nobody else has wishlisted this <br /> restaurant yet.
               </p>
             )}
@@ -330,6 +334,10 @@ const Card: React.FC<CardProps> = ({
                     profileImg={w.photoURL}
                     user={w.displayName}
                     restaurantName={restaurantName}
+                    phone={w.phoneNumber}
+                    email={w.email}
+                    currentUserId={user!.uid}
+                    targetUserId={w.uid}
                   />
                 ))}
               </div>

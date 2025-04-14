@@ -126,7 +126,10 @@
 }
 
 .accepted-request {
-  color: green;
+  filter: hue-rotate(250deg);
+  opacity: 1 !important;
+  cursor: default;
+  transition: none;
 }
 
 .follow-button-wrapper {

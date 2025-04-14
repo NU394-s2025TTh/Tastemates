@@ -19,3 +19,10 @@ button {
   width: 5rem;
   border-radius: 50%;
 }
+
+.accepted-request {
+  filter: hue-rotate(250deg);
+  opacity: 1 !important;
+  cursor: default;
+  transition: none;
+}

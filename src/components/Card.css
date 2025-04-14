@@ -225,8 +225,8 @@ input[type='image']:hover {
 }
 
 .accepted-request {
-  color: green;
-}
-
-.not-feed {
+  filter: hue-rotate(250deg);
+  opacity: 1 !important;
+  cursor: default;
+  transition: none;
 }
