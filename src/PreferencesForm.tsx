@@ -10,6 +10,7 @@ const PreferencesForm = () => {
   const [priceMin, setPriceMin] = useState<number | ''>('');
   const [priceMax, setPriceMax] = useState<number | ''>('');
   const [message, setMessage] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState('');
   const navigate = useNavigate();
 
   const toggleCuisine = (cuisine: string) => {
@@ -35,6 +36,9 @@ const PreferencesForm = () => {
         maxPrice: priceMax,
         cuisines: Array.from(selectedCuisines),
         photoURL: user.photoURL,
+        displayName: user.displayName,
+        phoneNumber: phoneNumber || null, // null if left blank
+        email: user.email || null,
       });
 
       setMessage('Preferences saved!');
@@ -90,6 +94,15 @@ const PreferencesForm = () => {
           className="price-input"
         />
       </div>
+
+      <h2 className="section-title">Phone number (optional):</h2>
+      <input
+        type="tel"
+        placeholder="e.g., (555) 123-4567"
+        value={phoneNumber}
+        onChange={(e) => setPhoneNumber(e.target.value)}
+        className="phone-input"
+      />
 
       <button type="submit" className="submit-button">
         Confirm preferences

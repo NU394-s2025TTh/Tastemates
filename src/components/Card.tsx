@@ -1,7 +1,8 @@
 import './Card.css';
 
 import { getAuth } from 'firebase/auth';
-import { ref as dbRef, remove } from 'firebase/database';
+import { get, getDatabase, ref, remove, set } from 'firebase/database';
+import { ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { db } from '../firebase';
@@ -20,7 +21,16 @@ interface CardProps {
   cuisine: string;
   price: string;
   timestamp?: number;
+  userId: string;
   postId?: string;
+}
+
+interface Wishlister {
+  uid: string;
+  photoURL: string;
+  displayName: string;
+  phoneNumber?: string;
+  email: string;
 }
 
 const Card: React.FC<CardProps> = ({
@@ -35,11 +45,16 @@ const Card: React.FC<CardProps> = ({
   cuisine,
   price,
   timestamp,
+  userId,
   postId,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false);
+  const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>(
+    'none',
+  );
   const [isWishlist, setIsWishlist] = useState(false);
+  const [wishlisters, setWishlisters] = useState<Wishlister[]>([]);
+  const [loadingWishlisters, setLoadingWishlisters] = useState(true);
 
   const auth = getAuth();
   const user = auth.currentUser;
@@ -66,6 +81,93 @@ const Card: React.FC<CardProps> = ({
     fetchWishlistStatus();
   }, [user, restaurantName]);
 
+  useEffect(() => {
+    const fetchWishlisters = async () => {
+      const db = getDatabase();
+
+      try {
+        const snapshot = await get(ref(db, 'wishlists'));
+        if (snapshot.exists()) {
+          const allWishlists = snapshot.val() as Record<string, Record<string, any>>;
+
+          const matchingUsers = Object.entries(allWishlists)
+            .filter(([_, wishlist]) => {
+              if (!wishlist) return false;
+              return Object.keys(wishlist).some(
+                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
+              );
+            })
+            .map(([uid, wishlist]) => {
+              const restaurantKey = Object.keys(wishlist).find(
+                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
+              );
+              return restaurantKey ? uid : null;
+            })
+            .filter(Boolean) as string[];
+
+          const userDataPromises = matchingUsers.map(async (uid) => {
+            const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
+            const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
+            return {
+              uid,
+              photoURL: prefs.photoURL || '/assets/profile.svg',
+              displayName: prefs.displayName || 'Anonymous',
+              phoneNumber: prefs.phoneNumber || '',
+              email: prefs.email || '',
+            };
+          });
+
+          const usersData = await Promise.all(userDataPromises);
+
+          // Filter out the current user from the wishlisters
+          const filteredUsersData = usersData.filter(
+            (userData) => userData.uid !== user?.uid,
+          );
+
+          setWishlisters(filteredUsersData);
+        } else {
+          setWishlisters([]);
+        }
+      } catch (error) {
+        console.error('Error fetching wishlisters:', error);
+        setWishlisters([]);
+      } finally {
+        setLoadingWishlisters(false);
+      }
+    };
+
+    fetchWishlisters();
+  }, [restaurantName, user?.uid]); // Added user?.uid as dependency to ensure correct filtering
+
+  useEffect(() => {
+    const checkFollowStatus = async () => {
+      if (!user || !postUser || user.uid === userId) return;
+
+      const dbRef = getDatabase();
+
+      const receiverViewRef = ref(dbRef, `tastemateRequests/${userId}/${user.uid}`);
+      const senderViewRef = ref(dbRef, `tastemateRequests/${user.uid}/${userId}`);
+
+      const [receiverSnap, senderSnap] = await Promise.all([
+        get(receiverViewRef),
+        get(senderViewRef),
+      ]);
+
+      const receiverStatus = receiverSnap.exists() ? receiverSnap.val().status : null;
+      const senderStatus = senderSnap.exists() ? senderSnap.val().status : null;
+
+      if (receiverStatus === 'accepted' || senderStatus === 'accepted') {
+        setFollowStatus('accepted');
+      } else if (receiverStatus === 'pending') {
+        setFollowStatus('pending');
+      } else {
+        setFollowStatus('none');
+      }
+    };
+
+    checkFollowStatus();
+  }, [user, userId, postUser]);
+
   const handleWishlistClick = async () => {
     if (!user) return;
     const newState = await toggleWishlist({
@@ -79,11 +181,66 @@ const Card: React.FC<CardProps> = ({
   };
 
   const handleDelete = async (id: string) => {
-    try {
-      await remove(dbRef(db, `posts/${id}`));
-    } catch (error) {
-      console.error('Error deleting post:', error);
+    if (user && user.uid === userId) {
+      try {
+        await remove(ref(db, `posts/${id}`));
+      } catch (error) {
+        console.error('Error deleting post:', error);
+      }
     }
+  };
+
+  const handleFollowClick = async () => {
+    if (!user || !postUser || user.uid === userId) return;
+
+    const senderId = user.uid;
+    const receiverId = userId;
+
+    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+    const requestSnap = await get(requestRef);
+
+    if (followStatus === 'accepted') {
+      // Already connected — maybe no action or toast
+      return;
+    }
+
+    if (followStatus === 'pending') {
+      // Unsend the pending request
+      await remove(requestRef);
+      setFollowStatus('none');
+      return;
+    }
+
+    // Send a new request
+    const receiverSnap = await get(ref(db, `users/${receiverId}`));
+    if (!receiverSnap.exists()) return;
+
+    const receiverPhotoSnap = await get(
+      ref(db, `users/${receiverId}/preferences/photoURL`),
+    );
+    const receiverPhoto = receiverPhotoSnap.exists()
+      ? receiverPhotoSnap.val()
+      : '/assets/profile.svg';
+
+    const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
+    const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
+
+    await set(requestRef, {
+      senderId,
+      senderName: user.displayName,
+      senderPhoto: user.photoURL || '/assets/profile.svg',
+      senderCuisine: senderPrefs.cuisines || [],
+      senderPrice: {
+        min: senderPrefs.minPrice ?? 0,
+        max: senderPrefs.maxPrice ?? 100,
+      },
+      receiverId,
+      receiverName: postUser,
+      receiverPhoto,
+      status: 'pending',
+      timestamp: Date.now(),
+    });
+    setFollowStatus('pending');
   };
 
   return (
@@ -96,12 +253,21 @@ const Card: React.FC<CardProps> = ({
                 <img className="profile-pic" src={profileImg} alt="poster profile pic" />
                 <h3>{postUser}</h3>
               </div>
-              <input
-                onClick={() => setIsFollowing(!isFollowing)}
-                type="image"
-                src={isFollowing ? '/assets/following.svg' : '/assets/add-user.svg'}
-                alt="add user icon"
-              />
+              {userId != user?.uid && (
+                <input
+                  onClick={handleFollowClick}
+                  type="image"
+                  src={
+                    followStatus === 'pending'
+                      ? '/assets/following.svg'
+                      : followStatus === 'accepted'
+                        ? '/assets/following.svg'
+                        : '/assets/add-user.svg'
+                  }
+                  className={followStatus === 'accepted' ? 'accepted-request' : ''}
+                  alt="add user icon"
+                />
+              )}
             </div>
             <p className="caption">{caption}</p>
             {timestamp && (
@@ -136,71 +302,57 @@ const Card: React.FC<CardProps> = ({
           <div className="tags">{cuisine}</div>
           <div className="tags">{price}</div>
         </div>
-        <div className="other-profiles-box">
-          <div className="profiles-box">
-            <div className="who-else-pics">
-              <div className="circle"></div>
-              <div className="circle"></div>
-              <div className="circle"></div>
-            </div>
-            <div className="who-else-box">
+        <div className="profiles-box">
+          <div className="who-else-pics">
+            {wishlisters.length > 0
+              ? wishlisters
+                  .slice(0, 3)
+                  .map((user, idx) => (
+                    <img key={idx} src={user.photoURL} alt={user.displayName} />
+                  ))
+              : ''}
+          </div>
+          <div className="who-else-box">
+            {wishlisters.length > 0 ? (
+              <button className="see-who-wrapper" onClick={() => setIsOpen(true)}>
+                <p className="see-who-text">
+                  See who else might <br /> want to go
+                  <ChevronRight className="arrow-icon" size={24} />
+                </p>
+              </button>
+            ) : (
               <p className="see-who-text">
-                See who <br /> else might want to go
+                Nobody else has wishlisted this <br /> restaurant yet.
               </p>
-              {isOpen && <div className="backdrop"></div>}
-              <dialog open={isOpen}>
-                <div className="close-button">
-                  <input
-                    type="image"
-                    src="/assets/x.svg"
-                    alt="close"
-                    onClick={() => setIsOpen(false)}
-                  />
-                </div>
-                <div className="connect-scroll">
+            )}
+            {isOpen && <div className="backdrop"></div>}
+            <dialog open={isOpen}>
+              <div className="close-button">
+                <input
+                  type="image"
+                  src="/assets/x.svg"
+                  alt="close"
+                  onClick={() => setIsOpen(false)}
+                />
+              </div>
+              <div className="connect-scroll">
+                {wishlisters.map((w) => (
                   <ConnectCard
-                    isDown={true}
-                    profileImg="/assets/profile2.svg"
-                    user="Ana"
+                    key={w.uid}
+                    profileImg={w.photoURL}
+                    user={w.displayName}
                     restaurantName={restaurantName}
-                    phone="773-688-0000"
+                    phone={w.phoneNumber}
+                    email={w.email}
+                    currentUserId={user!.uid}
+                    targetUserId={w.uid}
                   />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Nikky"
-                    restaurantName={restaurantName}
-                  />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Marissa"
-                    restaurantName={restaurantName}
-                  />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Daniel"
-                    restaurantName={restaurantName}
-                  />
-                  <ConnectCard
-                    isDown={false}
-                    profileImg="/assets/profile2.svg"
-                    user="Laura"
-                    restaurantName={restaurantName}
-                  />
-                </div>
-              </dialog>
-              <input
-                type="image"
-                src="/assets/arrow.svg"
-                alt="arrow"
-                onClick={() => setIsOpen(true)}
-              />
-            </div>
+                ))}
+              </div>
+            </dialog>
           </div>
         </div>
-        {isFeed && user?.displayName === postUser && postId && (
+        {isFeed && user?.uid === userId && postId && (
           <button className="delete-button" onClick={() => handleDelete(postId)}>
             Delete Post
           </button>

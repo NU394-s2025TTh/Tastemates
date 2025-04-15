@@ -1,12 +1,14 @@
 import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
+import { Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
 import { useNavigate } from 'react-router-dom';
 
 import Card from './components/Card';
 import Navbar from './components/Navbar';
+import TastemateModal from './components/TastemateModal';
 import { auth, db, get, ref, set } from './firebase';
 import { Restaurant } from './firebaseUtils';
 
@@ -20,6 +22,8 @@ const ProfilePage = () => {
   const [userName, setUserName] = useState<string>('User');
   const [wishlist, setWishlist] = useState<Restaurant[]>([]);
   const [photoURL, setPhotoURL] = useState<string | null>(null);
+  const [tastemates, setTastemates] = useState<any[]>([]);
+  const [selectedTastemate, setSelectedTastemate] = useState<any>(null);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -75,7 +79,52 @@ const ProfilePage = () => {
       }
     };
 
+    const fetchTastemates = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      try {
+        const tastemateSnap = await get(ref(db, 'tastemateRequests'));
+        if (!tastemateSnap.exists()) return;
+
+        const requests = tastemateSnap.val();
+        const tastemateIds = new Set<string>();
+
+        for (const otherUserId in requests) {
+          const nestedRequests = requests[otherUserId];
+
+          for (const nestedUserId in nestedRequests) {
+            const request = nestedRequests[nestedUserId];
+
+            const isAccepted = request.status === 'accepted';
+            const involvesCurrentUser =
+              otherUserId === user.uid || nestedUserId === user.uid;
+
+            if (isAccepted && involvesCurrentUser) {
+              const tastemateId = otherUserId === user.uid ? nestedUserId : otherUserId;
+              tastemateIds.add(tastemateId);
+            }
+          }
+        }
+
+        const tastematePromises = Array.from(tastemateIds).map(async (uid) => {
+          const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
+          const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
+          return {
+            uid,
+            ...prefs,
+          };
+        });
+
+        const tastemateData = await Promise.all(tastematePromises);
+        setTastemates(tastemateData);
+      } catch (error) {
+        console.error('Error fetching tastemates:', error);
+      }
+    };
+
     fetchData();
+    fetchTastemates();
   }, []);
 
   if (!preferences) return <div>Loading preferences...</div>;
@@ -157,31 +206,55 @@ const ProfilePage = () => {
 
         <div>
           <h2>Your Tastemates</h2>
-          <div className="tastemates-container">
-            {['bruce', 'laura', 'nikky', 'daniel', 'marissa', 'zain', 'aninha'].map(
-              (name) => (
-                <div className="tastemate-box" key={name}>
+          <div
+            className={
+              tastemates.length > 0 ? 'tastemates-container' : 'tastemates-empty'
+            }
+          >
+            {tastemates.length > 0 ? (
+              tastemates.map((mate) => (
+                <div className="tastemate-box" key={mate.uid}>
                   <img
                     className="tastemate-pic"
-                    src="/assets/profile.svg"
-                    alt="profile"
+                    src={mate.photoURL}
+                    alt={mate.displayName}
                   />
-                  <div className="tastemate-name">{name}</div>
+                  <div className="tastemate-name">{mate.displayName || 'User'}</div>
+                  <Info
+                    className="view-details-button"
+                    size={20}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedTastemate(mate)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        setSelectedTastemate(mate);
+                      }
+                    }}
+                    aria-label={`View info for ${mate.displayName}`}
+                  />
                 </div>
-              ),
+              ))
+            ) : (
+              <p className="no-tastemates">No tastemates found yet.</p>
             )}
           </div>
         </div>
 
         <div>
           <h2>Your Wishlist</h2>
-          <div className="wishlist">
+          <div className={wishlist.length > 0 ? 'wishlist' : 'tastemates-empty'}>
             {wishlist.length > 0 ? (
               wishlist.map((restaurant) => (
-                <Card key={restaurant.restaurantName} isFeed={false} {...restaurant} />
+                <Card
+                  key={restaurant.restaurantName}
+                  isFeed={false}
+                  {...restaurant}
+                  userId=""
+                />
               ))
             ) : (
-              <p>No wishlisted restaurants yet.</p>
+              <p className="no-tastemates">No wishlisted restaurants yet.</p>
             )}
           </div>
         </div>
@@ -189,6 +262,12 @@ const ProfilePage = () => {
         <button className="signout-button" onClick={handleSignOut}>
           Sign Out
         </button>
+        {selectedTastemate && (
+          <TastemateModal
+            tastemate={selectedTastemate}
+            onClose={() => setSelectedTastemate(null)}
+          />
+        )}
       </div>
     </div>
   );

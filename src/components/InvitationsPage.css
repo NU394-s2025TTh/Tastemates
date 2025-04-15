@@ -1,0 +1,137 @@
+.invitations-page {
+  font-family: 'Inter', sans-serif;
+  background: #e8e4de;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  max-width: 400px;
+  width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-align: left;
+  min-height: 40rem;
+  padding-bottom: 3rem;
+}
+
+.back-container {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  margin-left: 0rem;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  color: gray;
+  margin-left: -0.5rem;
+}
+
+.back-title {
+  padding-top: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: gray;
+}
+
+.request-card {
+  display: flex;
+  background: white;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 20px;
+  padding: 1rem;
+  margin: 1rem;
+  gap: 1rem;
+}
+
+.invitations-page h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.first-header {
+  margin-top: 0;
+}
+
+.second-header {
+  margin-top: 2rem;
+}
+
+.request-photo {
+  width: 4rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.request-info {
+  flex-grow: 1;
+}
+
+.request-info-name {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0;
+  color: #222;
+}
+
+.request-info-sub {
+  font-size: 0.85rem;
+  color: #555;
+  margin: 0.25rem 0;
+}
+
+.button-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.accept-button,
+.decline-button {
+  padding: 0.1rem;
+  border: none;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.accept-button {
+  background-color: #d1f5d3; /* muted green */
+  color: #2e7d32;
+}
+
+.decline-button {
+  background-color: #fcd7d7; /* muted red */
+  color: #c62828;
+}
+
+.accept-button:hover {
+  background-color: #b9ecbc;
+}
+
+.decline-button:hover {
+  background-color: #f8bfbf;
+}
+
+.accepted-request {
+  filter: hue-rotate(250deg);
+  opacity: 1 !important;
+  cursor: default;
+  transition: none;
+}
+
+.follow-button-wrapper {
+  padding: 1rem;
+}

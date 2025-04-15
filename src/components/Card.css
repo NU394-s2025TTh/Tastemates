@@ -22,6 +22,7 @@
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   max-width: 400px;
   width: 100%;
+  min-width: 350px;
   box-sizing: border-box;
 }
 
@@ -128,41 +129,52 @@
   align-items: center;
 }
 
-.other-profiles-box {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
 .profiles-box {
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: start;
-  gap: 1.5rem;
+  justify-content: center;
+  padding-top: 1rem;
 }
 
-.circle {
-  border-radius: 100%;
-  width: 65px;
-  height: 65px;
-  background-color: #c2b7ae;
-  margin-right: -1.4rem;
+.who-else-pics img {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin-left: -15px;
+  border: 2px solid white;
 }
 
 .who-else-box {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
+  align-items: center;
+  justify-content: center;
   margin-left: 1rem;
   margin-right: 1rem;
 }
 
-.who-else-pics {
-  display: flex;
-  margin-left: 1rem;
+.see-who-wrapper {
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.see-who-text {
+  font-size: 1rem;
+  font-weight: bold;
+  color: gray;
+  margin: 0;
+}
+
+.arrow-icon {
+  cursor: pointer;
+  margin-bottom: -7px;
+  margin-left: -2px;
+  transition: transform 0.3s ease;
+}
+
+.see-who-wrapper:hover {
+  transform: translateX(5px);
 }
 
 .restaurant-pic {
@@ -211,4 +223,11 @@ button {
 
 input[type='image']:hover {
   opacity: 0.7;
+}
+
+.accepted-request {
+  filter: hue-rotate(250deg);
+  opacity: 1 !important;
+  cursor: default;
+  transition: none;
 }
