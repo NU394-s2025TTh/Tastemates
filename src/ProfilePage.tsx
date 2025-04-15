@@ -57,6 +57,35 @@ const ProfilePage = () => {
     }
   };
 
+  //add profile picture functionality
+  const handlePhotoUpload = async (event: any) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+
+    reader.onload = async (e) => {
+      const base64String = e.target?.result as string;
+      const user = auth.currentUser; //understand this instance auth
+      if (!user) return;
+
+      const userPrefRef = ref(db, `users/${user.uid}/preferences`);
+      try {
+        await set(userPrefRef, {
+          ...preferences,
+          photoURL: base64String,
+        });
+
+        setPhotoURL(base64String);
+        setPreferences((prev: any) => ({ ...prev, photoURL: base64String }));
+      } catch (error) {
+        console.error('Error uploading photo:', error);
+      }
+    };
+
+    reader.readAsDataURL(file);
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       const user = auth.currentUser;
@@ -139,6 +168,7 @@ const ProfilePage = () => {
             src={photoURL || '/assets/profile.svg'}
             alt="your user profile"
           />
+          <input type="file" accept="image/*" onChange={handlePhotoUpload} />
         </div>
         <h2>{userName}</h2>
 
