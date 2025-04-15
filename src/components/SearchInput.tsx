@@ -25,7 +25,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isPref, setIsPref] = useState(false);
   const [preferences, setPreferences] = useState<any>(null);
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+  const [priceRange, setPriceRange] = useState<number[]>([1, 2, 3, 4]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -36,7 +36,17 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
       if (prefSnap.exists()) {
         const prefs = prefSnap.val();
         setPreferences(prefs);
-        setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
+
+        const min = prefs.minPrice || 0;
+        const max = prefs.maxPrice || 100;
+
+        const newPriceRange = [];
+        if (min <= 10 || max <= 10) newPriceRange.push(1);
+        if (min <= 30 && max >= 11) newPriceRange.push(2);
+        if (min <= 60 && max >= 31) newPriceRange.push(3);
+        if (max > 60) newPriceRange.push(4);
+
+        setPriceRange(newPriceRange);
       }
     };
 
@@ -49,22 +59,30 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
       const lng = -87.675171;
       const radius = 10000;
       let term = searchText + '+restaurant';
+      let price = [1, 2, 3, 4];
 
       if (!searchText.trim()) {
         term = 'restaurant';
+      } else {
+        setIsPref(false);
       }
       if (isPref) {
         preferences.cuisines.map((pref: string) => {
           term += '+' + pref;
         });
+
+        price = priceRange;
       }
-      console.log(term);
+      console.log(
+        `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}&price=${price}`,
+      );
 
       try {
         const response = await fetch(
-          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}`,
+          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}&price=${price}`,
         );
         const data = await response.json();
+        console.log(data);
         setRestaurants(data);
       } catch (err) {
         console.error('Failed to fetch restaurants:', err);
@@ -119,7 +137,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
           />
         ))
       )}
-      {isLoading && restaurants.length === 0 && (
+      {!isLoading && restaurants.length === 0 && (
         <div style={{ fontSize: '2rem', marginTop: '3rem', fontWeight: 'bold' }}>
           No restaurants found.
         </div>

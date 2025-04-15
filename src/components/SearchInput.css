@@ -17,11 +17,12 @@
   border-style: solid;
   margin-top: 1rem;
   padding: 0.7rem;
+  transition: color 0.3s ease;
 }
 
 .pref-button:hover {
-  border-color: grey;
-  color: grey;
+  border-color: #98897e;
+  color: #98897e;
 }
 
 .pref-button.active {
