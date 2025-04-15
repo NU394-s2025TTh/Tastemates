@@ -187,3 +187,24 @@
   text-align: center;
   color: grey;
 }
+
+.name-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.user-name {
+  margin: 0 auto;
+}
+
+.edit-icon-button {
+  transform: scale(1.15);
+  color: #5a4d45;
+  position: absolute;
+  right: 3rem;
+  cursor: pointer;
+}

@@ -1,0 +1,93 @@
+/* EditPreferencesModal.css */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.cuisine-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: start;
+  justify-content: left;
+}
+
+.cuisine-buttons button {
+  border: none;
+  background-color: #eee;
+  color: black;
+  border-radius: 100px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: medium;
+}
+
+.cuisine-buttons button.selected {
+  /* background-color: #98897e; */
+  color: white;
+  background-color: #a3d9b1;
+  border-radius: 100px;
+  color: black;
+  padding: 1rem;
+  margin: 0;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1rem;
+  color: white;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
+}
+.modal-actions button {
+  background-color: #98897e;
+  padding: 1rem;
+  font-weight: bold;
+  font-size: medium;
+}
+.modal-actions button:hover {
+  transform: scale(1.05);
+  background-color: #7c6c60; /* slightly darker on hover */
+}
+
+.phone-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.phone-row label {
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+.phone-row input {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

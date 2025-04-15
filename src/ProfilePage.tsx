@@ -3,11 +3,14 @@ import './ProfilePage.css';
 import { signOut } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
 import { Info } from 'lucide-react';
+// import editIcon from './assets/edit.svg';
+import { Edit } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
 import { useNavigate } from 'react-router-dom';
 
 import Card from './components/Card';
+import EditPreferencesModal from './components/EditPreferencesModal';
 import Navbar from './components/Navbar';
 import TastemateModal from './components/TastemateModal';
 import { auth, db, get, ref, set } from './firebase';
@@ -26,6 +29,7 @@ const ProfilePage = () => {
   const [tastemates, setTastemates] = useState<any[]>([]);
   const [selectedTastemate, setSelectedTastemate] = useState<any>(null);
   const [number, setNumber] = useState<any>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -57,6 +61,10 @@ const ProfilePage = () => {
     } catch (error) {
       console.error('Error updating price preferences:', error);
     }
+  };
+
+  const handleEdit = async () => {
+    setShowEditModal(true);
   };
 
   //add profile picture functionality
@@ -174,7 +182,22 @@ const ProfilePage = () => {
           />
           <input type="file" accept="image/*" onChange={handlePhotoUpload} />
         </div>
-        <h2>{userName}</h2>
+        <div className="name-row">
+          <h2 className="user-name">{userName}</h2>
+          <Edit
+            className="edit-icon-button"
+            size={20}
+            role="button"
+            tabIndex={0}
+            onClick={() => handleEdit()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleEdit();
+              }
+            }}
+            aria-label="Edit profile"
+          />
+        </div>
         {number && <p className="phone-number">Phone: {number}</p>}
 
         <div className="pref-card">
@@ -297,6 +320,13 @@ const ProfilePage = () => {
         <button className="signout-button" onClick={handleSignOut}>
           Sign Out
         </button>
+        {showEditModal && (
+          <EditPreferencesModal
+            existingPrefs={preferences}
+            onClose={() => setShowEditModal(false)}
+            setPreferences={setPreferences}
+          />
+        )}
         {selectedTastemate && (
           <TastemateModal
             tastemate={selectedTastemate}
