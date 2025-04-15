@@ -21,7 +21,7 @@ interface CardProps {
   cuisine: string;
   price: string;
   timestamp?: number;
-  userId: string;
+  userId?: string;
   postId?: string;
 }
 
