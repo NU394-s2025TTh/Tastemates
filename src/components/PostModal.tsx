@@ -31,7 +31,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
     const fetchRestaurants = async () => {
       try {
         const response = await fetch(
-          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&term=restaurant`,
+          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&term=restaurant&price=1,2,3,4`,
         );
         const data = await response.json();
         setRestaurants(data);
