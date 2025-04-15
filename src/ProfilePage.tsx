@@ -25,6 +25,7 @@ const ProfilePage = () => {
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [tastemates, setTastemates] = useState<any[]>([]);
   const [selectedTastemate, setSelectedTastemate] = useState<any>(null);
+  const [number, setNumber] = useState<any>(null);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -91,15 +92,13 @@ const ProfilePage = () => {
     const changedUser = onAuthStateChanged(auth, (user) => {
       if (!user) return;
       const fetchData = async () => {
-        // const user = auth.currentUser;
-        // if (!user) return;
-
         setUserName(user.displayName || 'User');
 
         const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
         if (prefSnap.exists()) {
           const prefs = prefSnap.val();
           setPreferences(prefs);
+          setNumber(prefs.phoneNumber);
           setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
           setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
         }
@@ -176,6 +175,7 @@ const ProfilePage = () => {
           <input type="file" accept="image/*" onChange={handlePhotoUpload} />
         </div>
         <h2>{userName}</h2>
+        {number && <p className="phone-number">Phone: {number}</p>}
 
         <div className="pref-card">
           <p className="pref-card-title">Your Favorite Cuisines</p>
