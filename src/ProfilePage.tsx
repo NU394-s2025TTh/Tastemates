@@ -1,12 +1,16 @@
 import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Info } from 'lucide-react';
+// import editIcon from './assets/edit.svg';
+import { Edit } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
 import { useNavigate } from 'react-router-dom';
 
 import Card from './components/Card';
+import EditPreferencesModal from './components/EditPreferencesModal';
 import Navbar from './components/Navbar';
 import TastemateModal from './components/TastemateModal';
 import { auth, db, get, ref, set } from './firebase';
@@ -24,6 +28,8 @@ const ProfilePage = () => {
   const [photoURL, setPhotoURL] = useState<string | null>(null);
   const [tastemates, setTastemates] = useState<any[]>([]);
   const [selectedTastemate, setSelectedTastemate] = useState<any>(null);
+  const [number, setNumber] = useState<any>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
   const handleSignOut = async () => {
@@ -57,6 +63,10 @@ const ProfilePage = () => {
     }
   };
 
+  const handleEdit = async () => {
+    setShowEditModal(true);
+  };
+
   //add profile picture functionality
   const handlePhotoUpload = async (event: any) => {
     const file = event.target.files[0];
@@ -87,73 +97,75 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
+    const changedUser = onAuthStateChanged(auth, (user) => {
       if (!user) return;
+      const fetchData = async () => {
+        setUserName(user.displayName || 'User');
 
-      setUserName(user.displayName || 'User');
-
-      const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
-      if (prefSnap.exists()) {
-        const prefs = prefSnap.val();
-        setPreferences(prefs);
-        setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
-        setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
-      }
-
-      const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
-      if (wishlistSnap.exists()) {
-        const data = wishlistSnap.val();
-        setWishlist(Object.values(data));
-      }
-    };
-
-    const fetchTastemates = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      try {
-        const tastemateSnap = await get(ref(db, 'tastemateRequests'));
-        if (!tastemateSnap.exists()) return;
-
-        const requests = tastemateSnap.val();
-        const tastemateIds = new Set<string>();
-
-        for (const otherUserId in requests) {
-          const nestedRequests = requests[otherUserId];
-
-          for (const nestedUserId in nestedRequests) {
-            const request = nestedRequests[nestedUserId];
-
-            const isAccepted = request.status === 'accepted';
-            const involvesCurrentUser =
-              otherUserId === user.uid || nestedUserId === user.uid;
-
-            if (isAccepted && involvesCurrentUser) {
-              const tastemateId = otherUserId === user.uid ? nestedUserId : otherUserId;
-              tastemateIds.add(tastemateId);
-            }
-          }
+        const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
+        if (prefSnap.exists()) {
+          const prefs = prefSnap.val();
+          setPreferences(prefs);
+          setNumber(prefs.phoneNumber);
+          setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
+          setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
         }
 
-        const tastematePromises = Array.from(tastemateIds).map(async (uid) => {
-          const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
-          const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
-          return {
-            uid,
-            ...prefs,
-          };
-        });
+        const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
+        if (wishlistSnap.exists()) {
+          const data = wishlistSnap.val();
+          setWishlist(Object.values(data));
+        }
+      };
 
-        const tastemateData = await Promise.all(tastematePromises);
-        setTastemates(tastemateData);
-      } catch (error) {
-        console.error('Error fetching tastemates:', error);
-      }
-    };
+      const fetchTastemates = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
 
-    fetchData();
-    fetchTastemates();
+        try {
+          const tastemateSnap = await get(ref(db, 'tastemateRequests'));
+          if (!tastemateSnap.exists()) return;
+
+          const requests = tastemateSnap.val();
+          const tastemateIds = new Set<string>();
+
+          for (const otherUserId in requests) {
+            const nestedRequests = requests[otherUserId];
+
+            for (const nestedUserId in nestedRequests) {
+              const request = nestedRequests[nestedUserId];
+
+              const isAccepted = request.status === 'accepted';
+              const involvesCurrentUser =
+                otherUserId === user.uid || nestedUserId === user.uid;
+
+              if (isAccepted && involvesCurrentUser) {
+                const tastemateId = otherUserId === user.uid ? nestedUserId : otherUserId;
+                tastemateIds.add(tastemateId);
+              }
+            }
+          }
+
+          const tastematePromises = Array.from(tastemateIds).map(async (uid) => {
+            const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
+            const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
+            return {
+              uid,
+              ...prefs,
+            };
+          });
+
+          const tastemateData = await Promise.all(tastematePromises);
+          setTastemates(tastemateData);
+        } catch (error) {
+          console.error('Error fetching tastemates:', error);
+        }
+      };
+
+      fetchData();
+      fetchTastemates();
+    });
+    return () => changedUser();
   }, []);
 
   if (!preferences) return <div>Loading preferences...</div>;
@@ -170,7 +182,23 @@ const ProfilePage = () => {
           />
           <input type="file" accept="image/*" onChange={handlePhotoUpload} />
         </div>
-        <h2>{userName}</h2>
+        <div className="name-row">
+          <h2 className="user-name">{userName}</h2>
+          <Edit
+            className="edit-icon-button"
+            size={20}
+            role="button"
+            tabIndex={0}
+            onClick={() => handleEdit()}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                handleEdit();
+              }
+            }}
+            aria-label="Edit profile"
+          />
+        </div>
+        {number && <p className="phone-number">Phone: {number}</p>}
 
         <div className="pref-card">
           <p className="pref-card-title">Your Favorite Cuisines</p>
@@ -292,6 +320,13 @@ const ProfilePage = () => {
         <button className="signout-button" onClick={handleSignOut}>
           Sign Out
         </button>
+        {showEditModal && (
+          <EditPreferencesModal
+            existingPrefs={preferences}
+            onClose={() => setShowEditModal(false)}
+            setPreferences={setPreferences}
+          />
+        )}
         {selectedTastemate && (
           <TastemateModal
             tastemate={selectedTastemate}
