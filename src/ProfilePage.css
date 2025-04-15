@@ -15,18 +15,42 @@
 }
 
 .pic-container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center; 
+	margin-bottom: 20px;
 }
-
+  
 .user-pic {
-  width: 15%;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ccc;
-  display: block;
+	width: 150px; 
+	height: 150px;
+	border-radius: 50%;
+	object-fit: cover; 
+	margin-bottom: 10px; 
 }
+.choose-file-button {
+	background-color: #f0f0f0; 
+	color: #333; 
+	border: 1px solid #ccc;
+	padding: 5px 10px; 
+	font-size: 0.8em;
+	border-radius: 5px;
+	cursor: pointer;
+	text-align: center;
+  }
+  
+  /* Hide the default file input */
+  #upload-photo {
+	opacity: 0;
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+  }
 
 .pref-card {
   background-color: #c2b7ae;
