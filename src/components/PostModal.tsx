@@ -26,22 +26,34 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
   const [caption, setCaption] = useState('');
   const [error, setError] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    console.log('FeedPage re-rendered');
     const fetchRestaurants = async () => {
       try {
         const response = await fetch(
-          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&term=restaurant`,
+          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&term=restaurant&price=1,2,3,4`,
         );
+
         const data = await response.json();
-        setRestaurants(data);
+
+        // Ensure the response is an array
+        if (Array.isArray(data)) {
+          setRestaurants(data);
+        } else {
+          console.warn('Expected array but got:', data);
+          setRestaurants([]); // fallback
+        }
       } catch (err) {
         console.error('Failed to fetch restaurants:', err);
+        setRestaurants([]);
       }
     };
 
     if (isOpen) {
       fetchRestaurants();
+      // setLoading(true);
       // Reset input fields when modal is opened
       setSearch('');
       setRating('');
@@ -122,69 +134,71 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="close-button" onClick={onClose}>
-          &times;
-        </button>
-        <h2>Create a Post</h2>
+        <>
+          <button className="close-button" onClick={onClose}>
+            &times;
+          </button>
+          <h2>Create a Post</h2>
 
-        {/* Restaurant Autocomplete */}
-        <div className="dropdown-container">
+          {/* Restaurant Autocomplete */}
+          <div className="dropdown-container">
+            <input
+              type="text"
+              placeholder="Search restaurants..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setShowDropdown(true);
+              }}
+              onFocus={() => setShowDropdown(true)}
+              className="modal-input"
+            />
+            {showDropdown && (
+              <ul className="dropdown-list">
+                {(search ? filteredRestaurants : restaurants).slice(0, 10).map((r, i) => (
+                  <li key={i} className="dropdown-item">
+                    <button
+                      onClick={() => handleSelect(r.name)}
+                      onKeyDown={(e) => handleKeyDown(e, r.name)}
+                      className="dropdown-item-button"
+                    >
+                      {r.name}
+                    </button>
+                  </li>
+                ))}
+                {(search ? filteredRestaurants : restaurants).length === 0 && (
+                  <li className="no-match">No matches found</li>
+                )}
+              </ul>
+            )}
+          </div>
+
+          {/* Rating */}
           <input
-            type="text"
-            placeholder="Search restaurants..."
-            value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setShowDropdown(true);
-            }}
-            onFocus={() => setShowDropdown(true)}
+            type="number"
+            placeholder="Rating (0.0 - 5.0)"
+            min="0"
+            max="5"
+            step="0.1"
+            value={rating}
+            onChange={(e) => setRating(e.target.value)}
             className="modal-input"
           />
-          {showDropdown && (
-            <ul className="dropdown-list">
-              {(search ? filteredRestaurants : restaurants).slice(0, 10).map((r, i) => (
-                <li key={i} className="dropdown-item">
-                  <button
-                    onClick={() => handleSelect(r.name)}
-                    onKeyDown={(e) => handleKeyDown(e, r.name)}
-                    className="dropdown-item-button"
-                  >
-                    {r.name}
-                  </button>
-                </li>
-              ))}
-              {(search ? filteredRestaurants : restaurants).length === 0 && (
-                <li className="no-match">No matches found</li>
-              )}
-            </ul>
-          )}
-        </div>
 
-        {/* Rating */}
-        <input
-          type="number"
-          placeholder="Rating (0.0 - 5.0)"
-          min="0"
-          max="5"
-          step="0.1"
-          value={rating}
-          onChange={(e) => setRating(e.target.value)}
-          className="modal-input"
-        />
+          {/* Caption */}
+          <textarea
+            placeholder="Write your caption..."
+            value={caption}
+            onChange={(e) => setCaption(e.target.value)}
+            className="modal-input"
+          />
 
-        {/* Caption */}
-        <textarea
-          placeholder="Write your caption..."
-          value={caption}
-          onChange={(e) => setCaption(e.target.value)}
-          className="modal-input"
-        />
+          {error && <p className="error-message">{error}</p>}
 
-        {error && <p className="error-message">{error}</p>}
-
-        <button onClick={handleSubmit} className="submit-button">
-          Submit
-        </button>
+          <button onClick={handleSubmit} className="submit-button">
+            Submit
+          </button>
+        </>
       </div>
     </div>
   );
