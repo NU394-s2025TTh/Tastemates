@@ -1,6 +1,7 @@
 import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
+import { onAuthStateChanged } from 'firebase/auth';
 import { Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
@@ -87,73 +88,77 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      const user = auth.currentUser;
+    const changedUser = onAuthStateChanged(auth, (user) => {
       if (!user) return;
+      const fetchData = async () => {
+        // const user = auth.currentUser;
+        // if (!user) return;
 
-      setUserName(user.displayName || 'User');
+        setUserName(user.displayName || 'User');
 
-      const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
-      if (prefSnap.exists()) {
-        const prefs = prefSnap.val();
-        setPreferences(prefs);
-        setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
-        setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
-      }
-
-      const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
-      if (wishlistSnap.exists()) {
-        const data = wishlistSnap.val();
-        setWishlist(Object.values(data));
-      }
-    };
-
-    const fetchTastemates = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
-
-      try {
-        const tastemateSnap = await get(ref(db, 'tastemateRequests'));
-        if (!tastemateSnap.exists()) return;
-
-        const requests = tastemateSnap.val();
-        const tastemateIds = new Set<string>();
-
-        for (const otherUserId in requests) {
-          const nestedRequests = requests[otherUserId];
-
-          for (const nestedUserId in nestedRequests) {
-            const request = nestedRequests[nestedUserId];
-
-            const isAccepted = request.status === 'accepted';
-            const involvesCurrentUser =
-              otherUserId === user.uid || nestedUserId === user.uid;
-
-            if (isAccepted && involvesCurrentUser) {
-              const tastemateId = otherUserId === user.uid ? nestedUserId : otherUserId;
-              tastemateIds.add(tastemateId);
-            }
-          }
+        const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
+        if (prefSnap.exists()) {
+          const prefs = prefSnap.val();
+          setPreferences(prefs);
+          setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
+          setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
         }
 
-        const tastematePromises = Array.from(tastemateIds).map(async (uid) => {
-          const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
-          const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
-          return {
-            uid,
-            ...prefs,
-          };
-        });
+        const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
+        if (wishlistSnap.exists()) {
+          const data = wishlistSnap.val();
+          setWishlist(Object.values(data));
+        }
+      };
 
-        const tastemateData = await Promise.all(tastematePromises);
-        setTastemates(tastemateData);
-      } catch (error) {
-        console.error('Error fetching tastemates:', error);
-      }
-    };
+      const fetchTastemates = async () => {
+        const user = auth.currentUser;
+        if (!user) return;
 
-    fetchData();
-    fetchTastemates();
+        try {
+          const tastemateSnap = await get(ref(db, 'tastemateRequests'));
+          if (!tastemateSnap.exists()) return;
+
+          const requests = tastemateSnap.val();
+          const tastemateIds = new Set<string>();
+
+          for (const otherUserId in requests) {
+            const nestedRequests = requests[otherUserId];
+
+            for (const nestedUserId in nestedRequests) {
+              const request = nestedRequests[nestedUserId];
+
+              const isAccepted = request.status === 'accepted';
+              const involvesCurrentUser =
+                otherUserId === user.uid || nestedUserId === user.uid;
+
+              if (isAccepted && involvesCurrentUser) {
+                const tastemateId = otherUserId === user.uid ? nestedUserId : otherUserId;
+                tastemateIds.add(tastemateId);
+              }
+            }
+          }
+
+          const tastematePromises = Array.from(tastemateIds).map(async (uid) => {
+            const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
+            const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
+            return {
+              uid,
+              ...prefs,
+            };
+          });
+
+          const tastemateData = await Promise.all(tastematePromises);
+          setTastemates(tastemateData);
+        } catch (error) {
+          console.error('Error fetching tastemates:', error);
+        }
+      };
+
+      fetchData();
+      fetchTastemates();
+    });
+    return () => changedUser();
   }, []);
 
   if (!preferences) return <div>Loading preferences...</div>;
