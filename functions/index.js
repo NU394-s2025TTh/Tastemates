@@ -1,108 +1,87 @@
-// const functions = require('firebase-functions');
-// const admin = require('firebase-admin');
-// const fetch = require('node-fetch');
-// const cors = require('cors');
-// // import cors from 'cors';
-// // import express from 'express';
+const functions = require('firebase-functions');
+const admin = require('firebase-admin');
+const fetch = require('node-fetch');
+const cors = require('cors');
 
-// // const app = express();
-// // const PORT = 5000;
-// admin.initializeApp();
-// const API_KEY =
-//   'K2I23-hV2tLghIZwEP15o6ymQSsHyupVgK6zrSQFaER_iNN-k7moVRNwBiYvpkulLfptuAOuU48Wn8NpI3KlrmKouJbvGMdP7eWQFAIsULQn23EXSYZltbH8Lqb1Z3Yx';
+admin.initializeApp();
+const API_KEY =
+  'K2I23-hV2tLghIZwEP15o6ymQSsHyupVgK6zrSQFaER_iNN-k7moVRNwBiYvpkulLfptuAOuU48Wn8NpI3KlrmKouJbvGMdP7eWQFAIsULQn23EXSYZltbH8Lqb1Z3Yx';
 
-// // app.use(cors());
-// // app.use(express.json());
+const corsHandler = cors({ origin: true });
 
-// // process.env.GOOGLE_APPLICATION_CREDENTIALS =
-// //   '/Users/caelbaumgarten/Desktop/taste-mates-agile-firebase-adminsdk-fbsvc-43f020217c.json';
+// Fetches data from the yelp api, must be done in the backend for security purposes
+exports.restaurants = functions.https.onRequest(async (req, res) => {
+  corsHandler(req, res, async () => {
+    const { lat, lng, term, radius, price } = req.query;
 
-// // admin.initializeApp({
-// //   credential: admin.credential.applicationDefault(),
-// // });
+    if (!lat || !lng || !term || !radius || !price) {
+      return res
+        .status(400)
+        .json({ error: 'Missing required query parameters: lat, lng, term, and price' });
+    }
+    const url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&radius=${radius}&term=${term}&price=${price}&limit=20`;
 
-// // const db = admin.firestore();
-// const corsHandler = cors({ origin: true });
+    try {
+      const response = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      });
 
-// // let count = 0; // We use this to create new ids for each user in the db
+      const data = await response.json();
+      if (data.businesses) {
+        // Only retrieve the data we need from the restaurants
+        const restaurants = data.businesses.map((restaurant) => ({
+          name: restaurant.name,
+          rating: restaurant.rating,
+          address: restaurant.location.display_address.join(', '),
+          categories: restaurant.categories.map((c) => c.title).join(', '),
+          image_url: restaurant.image_url,
+          url: restaurant.url,
+          price: restaurant.price,
+        }));
+        res.json(restaurants);
+      } else {
+        res.status(400).json({ error: data.error_message });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+});
 
-// //
-// //   ENDPOINTS
-// //
+// Adds a user to the firebase db when a profile is finished
+// app.post('/api/create-user', async (req, res) => {
+//   const { username, minPrice, maxPrice, prefs, bio, uid } = req.body;
 
-// // Fetches data from the yelp api, must be done in the backend for security purposes
-// exports.restaurants = functions.https.onRequest(async (req, res) => {
-//  corsHandler(req, res, async () => {
-//   const { lat, lng, term, radius } = req.query;
-
-//   if (!lat || !lng || !term || !radius) {
-//     return res
-//       .status(400)
-//       .json({ error: 'Missing required query parameters: lat, lng, and term' });
+//   // Make sure request is complete
+//   if (!username || !minPrice || !maxPrice || !prefs || !bio) {
+//     return res.status(400).json({ error: 'Missing required body parameters' });
 //   }
-//   const url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&radius=${radius}&limit=20`;
+
 //   try {
-//     const response = await fetch(url, {
-//       headers: {
-//         Authorization: `Bearer ${API_KEY}`,
-//         'Content-Type': 'application/json',
+//     await db.collection('users').doc(String(uid)).set(
+//       {
+//         username: username,
+//         minPrice: minPrice,
+//         maxPrice: maxPrice,
+//         prefs: prefs,
+//         bio: bio,
+//         createdAt: admin.firestore.FieldValue.serverTimestamp(), // Not sure if we'll need this but just in case
 //       },
-//     });
-
-//     const data = await response.json();
-//     if (data.businesses) {
-//       // Only retrieve the data we need from the restaurants
-//       const restaurants = data.businesses.map((restaurant) => ({
-//         name: restaurant.name,
-//         rating: restaurant.rating,
-//         address: restaurant.location.display_address.join(', '),
-//         categories: restaurant.categories.map((c) => c.title).join(', '),
-//         image_url: restaurant.image_url,
-//         url: restaurant.url,
-//         price: restaurant.price,
-
-//       }));
-//       res.json(restaurants);
-//     } else {
-//       res.status(400).json({ error: data.error_message });
-//     }
+//       { merge: true },
+//     );
+//     res.status(200).json({ message: 'Profile saved successfully!' });
+//     // count = count + 1; // Increment count for the next user's id
 //   } catch (error) {
-//     res.status(500).json({ error: error.message });
+//     console.error(error);
+//     res.status(500).json({ error: 'Failed to save profile' });
 //   }
-// })
 // });
 
-// // Adds a user to the firebase db when a profile is finished
-// // app.post('/api/create-user', async (req, res) => {
-// //   const { username, minPrice, maxPrice, prefs, bio, uid } = req.body;
+// app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
 
-// //   // Make sure request is complete
-// //   if (!username || !minPrice || !maxPrice || !prefs || !bio) {
-// //     return res.status(400).json({ error: 'Missing required body parameters' });
-// //   }
-
-// //   try {
-// //     await db.collection('users').doc(String(uid)).set(
-// //       {
-// //         username: username,
-// //         minPrice: minPrice,
-// //         maxPrice: maxPrice,
-// //         prefs: prefs,
-// //         bio: bio,
-// //         createdAt: admin.firestore.FieldValue.serverTimestamp(), // Not sure if we'll need this but just in case
-// //       },
-// //       { merge: true },
-// //     );
-// //     res.status(200).json({ message: 'Profile saved successfully!' });
-// //     // count = count + 1; // Increment count for the next user's id
-// //   } catch (error) {
-// //     console.error(error);
-// //     res.status(500).json({ error: 'Failed to save profile' });
-// //   }
-// // });
-
-// // app.listen(PORT, () => {
-// //   console.log(`Server running on http://localhost:${PORT}`);
-// // });
-
-// // exports.api = functions.https.onRequest(app);
+// exports.api = functions.https.onRequest(app);

@@ -19,25 +19,24 @@ const RestaurantFeed = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchRestaurants = async () => {
-      const lat = 42.055984;
-      const lng = -87.675171;
-      const radius = 10000;
-      const term = 'restaurant';
-      try {
-        const response = await fetch(
-          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}`,
-        );
-        const data = await response.json();
-        setRestaurants(data);
-      } catch (err) {
-        console.error('Failed to fetch restaurants:', err);
-      } finally {
-        setIsLoading(false); // Set loading to false after data is fetched or on error
-      }
-    };
-
-    fetchRestaurants();
+    // const fetchRestaurants = async () => {
+    //   const lat = 42.055984;
+    //   const lng = -87.675171;
+    //   const radius = 10000;
+    //   const term = 'restaurant';
+    //   try {
+    //     const response = await fetch(
+    //       `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}`,
+    //     );
+    //     const data = await response.json();
+    //     setRestaurants(data);
+    //   } catch (err) {
+    //     console.error('Failed to fetch restaurants:', err);
+    //   } finally {
+    //     setIsLoading(false); // Set loading to false after data is fetched or on error
+    //   }
+    // };
+    // fetchRestaurants();
   }, []);
 
   return (
