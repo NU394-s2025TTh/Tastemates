@@ -70,7 +70,7 @@
 }
 
 .delete-button {
-  background: #98897e;
+  background: gray;
   padding: 0.5rem;
   border-radius: 20px;
   color: white;
@@ -82,7 +82,7 @@
 }
 
 .delete-button:hover {
-  background: #ba3c3c;
+  background: #d42511;
 }
 
 .name-box {
@@ -100,6 +100,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: 0.5rem;
+  color: #127335;
 }
 
 .review-box {
@@ -121,8 +122,8 @@
   padding-bottom: 6px;
   padding-left: 14px;
   padding-right: 14px;
-  background-color: #98897e;
-  color: white;
+  background-color: #A3D9B1;
+  color: black;
   margin-right: 10px;
   border-radius: 30px;
   display: flex;
@@ -162,7 +163,7 @@
 .see-who-text {
   font-size: 1rem;
   font-weight: bold;
-  color: gray;
+  color: #0b8036;
   margin: 0;
 }
 
