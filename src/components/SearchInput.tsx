@@ -2,6 +2,7 @@ import './SearchInput.css';
 
 import React, { useEffect, useState } from 'react';
 
+import { auth, db, get, ref } from '../firebase';
 import Card from './Card';
 
 interface SearchInputProps {
@@ -22,6 +23,25 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
   const [searchText, setSearchText] = useState('');
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isPref, setIsPref] = useState(false);
+  const [preferences, setPreferences] = useState<any>(null);
+  const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const user = auth.currentUser;
+      if (!user) return;
+
+      const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
+      if (prefSnap.exists()) {
+        const prefs = prefSnap.val();
+        setPreferences(prefs);
+        setPriceRange([prefs.minPrice || 0, prefs.maxPrice || 100]);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   useEffect(() => {
     const fetchRestaurants = async () => {
@@ -33,6 +53,13 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
       if (!searchText.trim()) {
         term = 'restaurant';
       }
+      if (isPref) {
+        preferences.cuisines.map((pref: string) => {
+          term += '+' + pref;
+        });
+      }
+      console.log(term);
+
       try {
         const response = await fetch(
           `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}`,
@@ -45,8 +72,9 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
         setIsLoading(false); // Set loading to false after data is fetched or on error
       }
     };
+
     fetchRestaurants();
-  }, [searchText]);
+  }, [searchText, isPref]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
@@ -63,6 +91,14 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
         onChange={handleChange}
         className="container"
       />
+      {!isLoading && (
+        <button
+          onClick={() => setIsPref(!isPref)}
+          className={`pref-button ${isPref ? 'active' : ''}`}
+        >
+          Based on my preferences
+        </button>
+      )}
       {isLoading ? (
         <div style={{ fontSize: '2rem', marginTop: '3rem', fontWeight: 'bold' }}>
           Loading restaurants...

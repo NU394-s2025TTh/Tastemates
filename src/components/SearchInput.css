@@ -7,3 +7,25 @@
   border: 0rem;
   font-size: large;
 }
+
+.pref-button {
+  font-size: large;
+  border-radius: 40px;
+  background-color: transparent;
+  border-width: 2px;
+  border-color: black;
+  border-style: solid;
+  margin-top: 1rem;
+  padding: 0.7rem;
+}
+
+.pref-button:hover {
+  border-color: grey;
+  color: grey;
+}
+
+.pref-button.active {
+  background-color: #98897e;
+  border-color: #98897e;
+  color: white;
+}
