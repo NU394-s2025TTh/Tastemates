@@ -22,7 +22,7 @@ const ExplorePage = () => {
           Showing results for: <strong>{searchQuery}</strong>
         </p>
       )}
-      <RestaurantFeed />
+      {/* <RestaurantFeed /> */}
     </div>
   );
 };
