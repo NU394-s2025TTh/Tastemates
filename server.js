@@ -36,7 +36,7 @@ app.get('/api/restaurants', async (req, res) => {
       .status(400)
       .json({ error: 'Missing required query parameters: lat, lng, and term' });
   }
-  const url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&radius=${radius}&limit=20`;
+  const url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&radius=${radius}&term=${term}&limit=20`;
   try {
     const response = await fetch(url, {
       headers: {
@@ -46,6 +46,7 @@ app.get('/api/restaurants', async (req, res) => {
     });
 
     const data = await response.json();
+
     if (data.businesses) {
       // Only retrieve the data we need from the restaurants
       const restaurants = data.businesses.map((restaurant) => ({

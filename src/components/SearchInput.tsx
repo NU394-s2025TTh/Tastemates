@@ -28,7 +28,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
       const lat = 42.055984;
       const lng = -87.675171;
       const radius = 10000;
-      let term = searchText;
+      let term = searchText + '+restaurant';
 
       if (!searchText.trim()) {
         term = 'restaurant';
@@ -82,6 +82,11 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
             price={restaurant.price}
           />
         ))
+      )}
+      {isLoading && restaurants.length === 0 && (
+        <div style={{ fontSize: '2rem', marginTop: '3rem', fontWeight: 'bold' }}>
+          No restaurants found.
+        </div>
       )}
     </div>
   );
