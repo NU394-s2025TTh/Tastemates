@@ -306,12 +306,9 @@ const ProfilePage = () => {
           <div className={wishlist.length > 0 ? 'wishlist' : 'tastemates-empty'}>
             {wishlist.length > 0 ? (
               wishlist.map((restaurant) => (
-                <Card
-                  key={restaurant.restaurantName}
-                  isFeed={false}
-                  {...restaurant}
-                  userId=""
-                />
+                <div className="child" key={restaurant.restaurantName}>
+                  <Card isFeed={false} {...restaurant} userId="" />
+                </div>
               ))
             ) : (
               <p className="no-tastemates">No wishlisted restaurants yet.</p>
