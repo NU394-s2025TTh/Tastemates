@@ -61,6 +61,12 @@
   padding-top: 1rem;
 }
 
+.pref-card-edit {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .pref-card-title {
   color: black;
   font-weight: bold;
@@ -204,7 +210,5 @@
 .edit-icon-button {
   transform: scale(1.15);
   color: #5a4d45;
-  position: absolute;
-  right: 3rem;
   cursor: pointer;
 }

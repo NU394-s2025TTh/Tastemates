@@ -184,24 +184,26 @@ const ProfilePage = () => {
         </div>
         <div className="name-row">
           <h2 className="user-name">{userName}</h2>
-          <Edit
-            className="edit-icon-button"
-            size={20}
-            role="button"
-            tabIndex={0}
-            onClick={() => handleEdit()}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                handleEdit();
-              }
-            }}
-            aria-label="Edit profile"
-          />
         </div>
         {number && <p className="phone-number">Phone: {number}</p>}
 
         <div className="pref-card">
-          <p className="pref-card-title">Your Favorite Cuisines</p>
+          <div className="pref-card-edit">
+            <p className="pref-card-title">Your Favorite Cuisines</p>
+            <Edit
+              className="edit-icon-button"
+              size={20}
+              role="button"
+              tabIndex={0}
+              onClick={() => handleEdit()}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  handleEdit();
+                }
+              }}
+              aria-label="Edit profile"
+            />
+          </div>
           <div className="cuisine-box">
             {preferences.cuisines?.length ? (
               preferences.cuisines.map((cuisine: string) => (
