@@ -17,7 +17,9 @@ button {
 
 .connect-pic {
   width: 4rem;
+  height: 4rem;
   border-radius: 50%;
+  object-fit: cover;
 }
 
 .accepted-request {
