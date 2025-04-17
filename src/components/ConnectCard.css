@@ -23,7 +23,6 @@ button {
 }
 
 .accepted-request {
-  filter: hue-rotate(250deg);
   opacity: 1 !important;
   cursor: default;
   transition: none;

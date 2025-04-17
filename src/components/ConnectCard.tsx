@@ -123,7 +123,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
           followStatus === 'pending'
             ? '/assets/following.svg'
             : followStatus === 'accepted'
-              ? '/assets/following.svg'
+              ? '/assets/friends.svg'
               : '/assets/add-user.svg'
         }
         className={followStatus === 'accepted' ? 'accepted-request' : ''}

@@ -261,7 +261,7 @@ const Card: React.FC<CardProps> = ({
                     followStatus === 'pending'
                       ? '/assets/following.svg'
                       : followStatus === 'accepted'
-                        ? '/assets/following.svg'
+                        ? '/assets/friends.svg'
                         : '/assets/add-user.svg'
                   }
                   className={followStatus === 'accepted' ? 'accepted-request' : ''}
