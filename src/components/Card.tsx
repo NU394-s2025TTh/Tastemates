@@ -296,7 +296,9 @@ const Card: React.FC<CardProps> = ({
             <h3>{rating}</h3>
             <h3>{'🍲'.repeat(Math.round(rating))}</h3>
           </div>
-          <a href={reviewSrc}>Yelp Reviews</a>
+          <a href={reviewSrc} target="_blank" rel="noreferrer">
+            Yelp Reviews
+          </a>
         </div>
         <div className="tags-box">
           <div className="tags">{cuisine}</div>
