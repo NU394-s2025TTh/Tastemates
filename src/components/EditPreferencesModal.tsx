@@ -66,6 +66,11 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
               'Brazilian',
               'Filipino',
               'Korean',
+              'Chinese',
+              'Japanese',
+              'American',
+              'Thai',
+              'French',
             ].map((cuisine) => (
               <button
                 type="button"

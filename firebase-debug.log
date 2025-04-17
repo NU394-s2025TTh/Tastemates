@@ -1,0 +1,22 @@
+[debug] [2025-04-17T03:37:43.383Z] ----------------------------------------------------------------------
+[debug] [2025-04-17T03:37:43.385Z] Command:       /usr/local/bin/node /usr/local/bin/firebase deploy
+[debug] [2025-04-17T03:37:43.386Z] CLI Version:   14.1.0
+[debug] [2025-04-17T03:37:43.386Z] Platform:      darwin
+[debug] [2025-04-17T03:37:43.386Z] Node Version:  v20.14.0
+[debug] [2025-04-17T03:37:43.386Z] Time:          Wed Apr 16 2025 22:37:43 GMT-0500 (Central Daylight Time)
+[debug] [2025-04-17T03:37:43.386Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-04-17T03:37:43.522Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-04-17T03:37:43.522Z] > authorizing via signed-in user (clarissamshieh@gmail.com)
+[debug] [2025-04-17T03:37:43.523Z] [iam] checking project taste-mates-agile for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-04-17T03:37:43.523Z] Checked if tokens are valid: true, expires at: 1744864561831
+[debug] [2025-04-17T03:37:43.523Z] Checked if tokens are valid: true, expires at: 1744864561831
+[debug] [2025-04-17T03:37:43.524Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/taste-mates-agile:testIamPermissions [none]
+[debug] [2025-04-17T03:37:43.524Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/taste-mates-agile:testIamPermissions x-goog-quota-user=projects/taste-mates-agile
+[debug] [2025-04-17T03:37:43.524Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/taste-mates-agile:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-04-17T03:37:43.804Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/taste-mates-agile:testIamPermissions 200
+[debug] [2025-04-17T03:37:43.804Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/taste-mates-agile:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-04-17T03:37:43.805Z] Checked if tokens are valid: true, expires at: 1744864561831
+[debug] [2025-04-17T03:37:43.805Z] Checked if tokens are valid: true, expires at: 1744864561831
+[debug] [2025-04-17T03:37:43.805Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/taste-mates-agile/serviceAccounts/taste-mates-agile@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2025-04-17T03:37:43.805Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/taste-mates-agile/serviceAccounts/taste-mates-agile@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
