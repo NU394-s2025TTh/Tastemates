@@ -107,9 +107,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
     <div className="ConnectCard">
       <img className="connect-pic" src={profileImg} alt="profile pic"></img>
       <div>
-        <p className="wants-to-go">
-          {user} wants to go to {restaurantName}!
-        </p>
+        <p className="wants-to-go">{user}</p>
         {followStatus === 'accepted' && (
           <p className="contact-info">
             {phone && phone.trim() !== ''

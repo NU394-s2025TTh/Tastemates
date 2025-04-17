@@ -336,6 +336,9 @@ const Card: React.FC<CardProps> = ({
                 />
               </div>
               <div className="connect-scroll">
+                <p className="see-who-headline">
+                  These users want to go to {restaurantName}:
+                </p>
                 {wishlisters.map((w) => (
                   <ConnectCard
                     key={w.uid}
