@@ -33,25 +33,25 @@ interface Wishlister {
   email: string;
 }
 
-const Card: React.FC<CardProps> = ({
-  isFeed,
-  profileImg,
-  postUser,
-  caption,
-  imgSrc,
-  restaurantName,
-  rating,
-  reviewSrc,
-  cuisine,
-  price,
-  timestamp,
-  userId,
-  postId,
-}) => {
+const Card: React.FC<CardProps> = ({ ...props }) => {
+  const {
+    isFeed,
+    profileImg,
+    postUser,
+    caption,
+    imgSrc,
+    restaurantName,
+    rating,
+    reviewSrc,
+    cuisine,
+    price,
+    timestamp,
+    userId,
+    postId,
+  } = props;
+
   const [isOpen, setIsOpen] = useState(false);
-  const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>(
-    'none',
-  );
+  const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>('none',);
   const [isWishlist, setIsWishlist] = useState(false);
   const [wishlisters, setWishlisters] = useState<Wishlister[]>([]);
   const [loadingWishlisters, setLoadingWishlisters] = useState(true);
@@ -60,11 +60,7 @@ const Card: React.FC<CardProps> = ({
   const user = auth.currentUser;
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
   }, [isOpen]);
 
   // Check if restaurant is already in wishlist on mount
@@ -144,21 +140,20 @@ const Card: React.FC<CardProps> = ({
       if (!user || !postUser || user.uid === userId) return;
 
       const dbRef = getDatabase();
+      const receivedRef = ref(dbRef, `receivedTastemateRequests/${user.uid}/${userId}`);
+      const sentRef = ref(dbRef, `sentTastemateRequests/${user.uid}/${userId}`);
 
-      const receiverViewRef = ref(dbRef, `tastemateRequests/${userId}/${user.uid}`);
-      const senderViewRef = ref(dbRef, `tastemateRequests/${user.uid}/${userId}`);
-
-      const [receiverSnap, senderSnap] = await Promise.all([
-        get(receiverViewRef),
-        get(senderViewRef),
+      const [receivedSnap, sentSnap] = await Promise.all([
+        get(receivedRef),
+        get(sentRef)
       ]);
 
-      const receiverStatus = receiverSnap.exists() ? receiverSnap.val().status : null;
-      const senderStatus = senderSnap.exists() ? senderSnap.val().status : null;
+      const receivedStatus = receivedSnap.exists() ? receivedSnap.val().status : null;
+      const sentStatus = sentSnap.exists() ? sentSnap.val().status : null;
 
-      if (receiverStatus === 'accepted' || senderStatus === 'accepted') {
+      if (receivedStatus === 'accepted' || sentStatus === 'accepted') {
         setFollowStatus('accepted');
-      } else if (receiverStatus === 'pending') {
+      } else if (receivedStatus === 'pending' || sentStatus === 'pending') {
         setFollowStatus('pending');
       } else {
         setFollowStatus('none');
@@ -181,7 +176,7 @@ const Card: React.FC<CardProps> = ({
   };
 
   const handleDelete = async (id: string) => {
-    if (user && user.uid === userId) {
+    if (user?.uid === userId) {
       try {
         await remove(ref(db, `posts/${id}`));
       } catch (error) {
@@ -193,11 +188,11 @@ const Card: React.FC<CardProps> = ({
   const handleFollowClick = async () => {
     if (!user || !postUser || user.uid === userId) return;
 
+    const dbRef = getDatabase();
     const senderId = user.uid;
     const receiverId = userId;
-
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
-    const requestSnap = await get(requestRef);
+    const sentRef = ref(db, `sentTastemateRequests/${senderId}/${receiverId}`);
+    const receivedRef = ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`);
 
     if (followStatus === 'accepted') {
       // Already connected — maybe no action or toast
@@ -206,26 +201,18 @@ const Card: React.FC<CardProps> = ({
 
     if (followStatus === 'pending') {
       // Unsend the pending request
-      await remove(requestRef);
+      await Promise.all([remove(sentRef), remove(receivedRef)]);
       setFollowStatus('none');
       return;
     }
 
-    // Send a new request
-    const receiverSnap = await get(ref(db, `users/${receiverId}`));
-    if (!receiverSnap.exists()) return;
-
-    const receiverPhotoSnap = await get(
-      ref(db, `users/${receiverId}/preferences/photoURL`),
-    );
-    const receiverPhoto = receiverPhotoSnap.exists()
-      ? receiverPhotoSnap.val()
-      : '/assets/profile.svg';
-
     const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
     const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
 
-    await set(requestRef, {
+    const receiverPrefsSnap = await get(ref(db, `users/${receiverId}/preferences`));
+    const receiverPrefs = receiverPrefsSnap.exists() ? receiverPrefsSnap.val() : {};
+
+    const requestData = {
       senderId,
       senderName: user.displayName,
       senderPhoto: user.photoURL || '/assets/profile.svg',
@@ -236,10 +223,15 @@ const Card: React.FC<CardProps> = ({
       },
       receiverId,
       receiverName: postUser,
-      receiverPhoto,
+      receiverPhoto: receiverPrefs.photoURL || '/assets/profile.svg',
       status: 'pending',
-      timestamp: Date.now(),
-    });
+    };
+
+    await Promise.all([
+      set(sentRef, requestData),
+      set(receivedRef, requestData),
+    ]);
+
     setFollowStatus('pending');
   };
 
