@@ -32,8 +32,11 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
       if (!currentUserId || !targetUserId) return;
 
       const db = getDatabase();
-      const sentRef = ref(db, `sentTastemateRequests/${currentUserId}/${targetUserId}`)
-      const receivedRef = ref(db, `receivedTastemateRequests/${currentUserId}/${targetUserId}`)
+      const sentRef = ref(db, `sentTastemateRequests/${currentUserId}/${targetUserId}`);
+      const receivedRef = ref(
+        db,
+        `receivedTastemateRequests/${currentUserId}/${targetUserId}`,
+      );
 
       const [sentSnap, receivedSnap] = await Promise.all([
         get(sentRef),
@@ -60,7 +63,10 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
 
     const db = getDatabase();
     const sentRef = ref(db, `sentTastemateRequests/${currentUserId}/${targetUserId}`);
-    const receivedRef = ref(db, `receivedTastemateRequests/${targetUserId}/${currentUserId}`);
+    const receivedRef = ref(
+      db,
+      `receivedTastemateRequests/${targetUserId}/${currentUserId}`,
+    );
 
     if (followStatus === 'accepted') return;
 
@@ -78,7 +84,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
 
     const auth = getAuth();
     const user = auth.currentUser;
-    
+
     const requestData = {
       senderId: currentUserId,
       senderName: user?.displayName || '',
@@ -94,11 +100,8 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
       status: 'pending',
     };
 
-    await Promise.all([
-      set(sentRef, requestData),
-      set(receivedRef, requestData),
-    ]);
-    
+    await Promise.all([set(sentRef, requestData), set(receivedRef, requestData)]);
+
     setFollowStatus('pending');
   };
 
@@ -106,7 +109,9 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
     <div className="ConnectCard">
       <img className="connect-pic" src={profileImg} alt="profile pic"></img>
       <div>
-        <p className="wants-to-go">{user} wants to go to {restaurantName}!</p>
+        <p className="wants-to-go">
+          {user} wants to go to {restaurantName}!
+        </p>
         {followStatus === 'accepted' && (
           <p className="contact-info">
             {phone && phone.trim() !== ''

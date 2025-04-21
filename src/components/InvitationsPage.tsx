@@ -44,73 +44,61 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
   useEffect(() => {
     if (!user) return;
 
-    const requestsRef = ref(db, 'tastemateRequests');
+    const receivedRef = ref(db, `receivedTastemateRequests/${user.uid}`);
+    const sentRef = ref(db, `sentTastemateRequests/${user.uid}`);
+    const tastematesRef = ref(db, `tastemates/${user.uid}`);
 
-    const fetchTastemates = async (data: any) => {
-      const accepted: UserProfile[] = [];
+    const unsubscribeReceived = onValue(receivedRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const formatted: TastemateRequest[] = Object.entries(data).map(
+        ([senderId, request]: any) => ({
+          id: `${user.uid}_${senderId}`,
+          ...request,
+        }),
+      );
+      setReceivedRequests(formatted);
+    });
 
-      for (const receiverId in data) {
-        for (const senderId in data[receiverId]) {
-          const request = data[receiverId][senderId];
+    const unsubscribeSent = onValue(sentRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const formatted: TastemateRequest[] = Object.entries(data).map(
+        ([receiverId, request]: any) => ({
+          id: `${receiverId}_${user.uid}`,
+          ...request,
+        }),
+      );
+      const statuses: Record<string, 'none' | 'pending' | 'accepted'> = {};
+      formatted.forEach((req) => {
+        const status = req.status === 'declined' ? 'none' : req.status;
+        statuses[req.id] = status;
+      });
+      setSentRequests(formatted);
+      setFollowStatuses(statuses);
+    });
 
-          if (request.status === 'accepted') {
-            const isUserSender = request.senderId === user.uid;
-            const otherUserId = isUserSender ? request.receiverId : request.senderId;
+    const unsubscribeTastemates = onValue(tastematesRef, async (snapshot) => {
+      const data = snapshot.val() || {};
+      const ids = Object.keys(data);
+      const mates = await Promise.all(
+        ids.map(async (uid) => {
+          const snap = await get(ref(db, `users/${uid}/preferences`));
+          const prefs = snap.exists() ? snap.val() : {};
+          return {
+            uid,
+            displayName: prefs.displayName || 'User',
+            photoURL: prefs.photoURL || '/assets/profile.svg',
+            isUserSender: true,
+          };
+        }),
+      );
+      setTastemates(mates);
+    });
 
-            const userSnap = await get(ref(db, `users/${otherUserId}/preferences`));
-            const displayName = userSnap.val()?.displayName || 'Unnamed';
-            const photoURL = userSnap.val()?.photoURL || '/assets/profile.svg';
-
-            accepted.push({
-              uid: otherUserId,
-              displayName,
-              photoURL,
-              isUserSender,
-            });
-          }
-        }
-      }
-
-      setTastemates(accepted);
+    return () => {
+      unsubscribeReceived();
+      unsubscribeSent();
+      unsubscribeTastemates();
     };
-
-    onValue(
-      requestsRef,
-      (snapshot) => {
-        const data = snapshot.val();
-        const received: TastemateRequest[] = [];
-        const sent: TastemateRequest[] = [];
-        const statuses: Record<string, 'none' | 'pending' | 'accepted'> = {};
-
-        if (!data) return;
-
-        for (const receiverId in data) {
-          for (const senderId in data[receiverId]) {
-            const request = data[receiverId][senderId];
-            const id = `${receiverId}_${senderId}`;
-
-            if (request.receiverId === user.uid && request.status === 'pending') {
-              received.push({ id, ...request });
-            } else if (request.senderId === user.uid) {
-              if (request.status === 'declined') {
-                remove(ref(db, `tastemateRequests/${receiverId}/${senderId}`));
-              } else {
-                sent.push({ id, ...request });
-                statuses[id] = request.status;
-              }
-            }
-          }
-        }
-
-        setReceivedRequests(received);
-        setSentRequests(sent);
-        setFollowStatuses(statuses);
-        fetchTastemates(data);
-      },
-      (error) => {
-        console.error('Error fetching requests:', error);
-      },
-    );
   }, [user]);
 
   const handleFollowClick = async (
@@ -121,32 +109,26 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     if (!user) return;
 
     const senderId = user.uid;
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+    const sentRef = ref(db, `sentTastemateRequests/${senderId}/${receiverId}`);
+    const receivedRef = ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`);
     const status = followStatuses[requestId];
 
     if (status === 'accepted') return;
 
     if (status === 'pending') {
-      await remove(requestRef);
+      await Promise.all([remove(sentRef), remove(receivedRef)]);
       setFollowStatuses((prev) => ({ ...prev, [requestId]: 'none' }));
       setSentRequests((prev) => prev.filter((req) => req.id !== requestId));
       return;
     }
 
-    const receiverSnap = await get(ref(db, `users/${receiverId}`));
-    if (!receiverSnap.exists()) return;
+    const receiverSnap = await get(ref(db, `users/${receiverId}/preferences`));
+    const receiverPrefs = receiverSnap.exists() ? receiverSnap.val() : {};
 
-    const receiverPhotoSnap = await get(
-      ref(db, `users/${receiverId}/preferences/photoURL`),
-    );
-    const receiverPhoto = receiverPhotoSnap.exists()
-      ? receiverPhotoSnap.val()
-      : '/assets/profile.svg';
+    const senderSnap = await get(ref(db, `users/${senderId}/preferences`));
+    const senderPrefs = senderSnap.exists() ? senderSnap.val() : {};
 
-    const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
-    const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
-
-    await set(requestRef, {
+    const requestData = {
       senderId,
       senderName: user.displayName,
       senderPhoto: user.photoURL || '/assets/profile.svg',
@@ -157,20 +139,31 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
       },
       receiverId,
       receiverName,
-      receiverPhoto,
+      receiverPhoto: receiverPrefs.photoURL || '/assets/profile.svg',
       status: 'pending',
-      timestamp: Date.now(),
-    });
+    };
+
+    await Promise.all([set(sentRef, requestData), set(receivedRef, requestData)]);
 
     setFollowStatuses((prev) => ({ ...prev, [requestId]: 'pending' }));
   };
 
   const handleAcceptRequest = async (receiverId: string, senderId: string) => {
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
-    await set(requestRef, {
-      ...(await get(requestRef)).val(),
-      status: 'accepted',
-    });
+    const requestSnap = await get(
+      ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`),
+    );
+    const request = requestSnap.exists() ? requestSnap.val() : null;
+    if (!request) return;
+
+    await Promise.all([
+      set(
+        ref(db, `receivedTastemateRequests/${receiverId}/${senderId}/status`),
+        'accepted',
+      ),
+      set(ref(db, `sentTastemateRequests/${senderId}/${receiverId}/status`), 'accepted'),
+      set(ref(db, `tastemates/${receiverId}/${senderId}`), true),
+      set(ref(db, `tastemates/${senderId}/${receiverId}`), true),
+    ]);
 
     setReceivedRequests((prev) =>
       prev.filter((req) => !(req.receiverId === receiverId && req.senderId === senderId)),
@@ -178,11 +171,10 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
   };
 
   const handleDeclineRequest = async (receiverId: string, senderId: string) => {
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
-    await set(requestRef, {
-      ...(await get(requestRef)).val(),
-      status: 'declined',
-    });
+    await Promise.all([
+      remove(ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`)),
+      remove(ref(db, `sentTastemateRequests/${senderId}/${receiverId}`)),
+    ]);
 
     setReceivedRequests((prev) =>
       prev.filter((req) => !(req.receiverId === receiverId && req.senderId === senderId)),
@@ -280,11 +272,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
             <img src={mate.photoURL} alt={mate.displayName} className="request-photo" />
             <div className="request-info">
               <p className="request-info-name">{mate.displayName}</p>
-              <p className="request-info-sub">
-                {mate.isUserSender
-                  ? 'You sent this request'
-                  : 'You accepted this request'}
-              </p>
+              <p className="request-info-sub">You&apos;re connected!</p>
             </div>
             <div className="follow-button-wrapper">
               <input

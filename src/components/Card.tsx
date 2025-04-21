@@ -51,7 +51,9 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
   } = props;
 
   const [isOpen, setIsOpen] = useState(false);
-  const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>('none',);
+  const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>(
+    'none',
+  );
   const [isWishlist, setIsWishlist] = useState(false);
   const [wishlisters, setWishlisters] = useState<Wishlister[]>([]);
   const [loadingWishlisters, setLoadingWishlisters] = useState(true);
@@ -145,7 +147,7 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
 
       const [receivedSnap, sentSnap] = await Promise.all([
         get(receivedRef),
-        get(sentRef)
+        get(sentRef),
       ]);
 
       const receivedStatus = receivedSnap.exists() ? receivedSnap.val().status : null;
@@ -227,10 +229,7 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
       status: 'pending',
     };
 
-    await Promise.all([
-      set(sentRef, requestData),
-      set(receivedRef, requestData),
-    ]);
+    await Promise.all([set(sentRef, requestData), set(receivedRef, requestData)]);
 
     setFollowStatus('pending');
   };
