@@ -65,7 +65,7 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
     document.body.style.overflow = isOpen ? 'hidden' : 'auto';
   }, [isOpen]);
 
-  // Check if restaurant is already in wishlist on mount
+  // Firebase: check if the current user has wishlisted this restaurant
   useEffect(() => {
     const fetchWishlistStatus = async () => {
       if (!user || !restaurantName) return;
@@ -80,6 +80,7 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
   }, [user, restaurantName]);
 
   useEffect(() => {
+    // Firebase: fetch other users who have wishlisted this restaurant
     const fetchWishlisters = async () => {
       setLoadingWishlisters(true);
       try {
@@ -88,7 +89,7 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
           setWishlisters([]);
           return;
         }
-  
+
         const data = snapshot.val();
         const users: Wishlister[] = Object.entries(data)
           .map(([uid, info]: any) => ({
@@ -99,7 +100,7 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
             phoneNumber: info.phoneNumber || '',
           }))
           .filter((u) => u.uid !== user?.uid); // filter out current user
-  
+
         setWishlisters(users);
       } catch (error) {
         console.error('Error fetching wishlisters:', error);
@@ -108,9 +109,9 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
         setLoadingWishlisters(false);
       }
     };
-  
+
     fetchWishlisters();
-  }, [restaurantName, user?.uid]);  
+  }, [restaurantName, user?.uid]);
 
   useEffect(() => {
     const checkFollowStatus = async () => {
@@ -146,18 +147,20 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
     const uid = user.uid;
 
     const userWishlistRef = ref(dbRef, `wishlists/${uid}/${restaurantName}`);
-    const restaurantWishlistRef = ref(dbRef, `wishlistsByRestaurant/${restaurantName}/${uid}`);
+    const restaurantWishlistRef = ref(
+      dbRef,
+      `wishlistsByRestaurant/${restaurantName}/${uid}`,
+    );
 
     const userPrefsSnap = await get(ref(dbRef, `users/${uid}/preferences`));
     const prefs = userPrefsSnap.exists() ? userPrefsSnap.val() : {};
 
     if (isWishlist) {
-      await Promise.all([
-        remove(userWishlistRef),
-        remove(restaurantWishlistRef),
-      ]);
+      // Firebase: remove from both user-centric and restaurant-centric wishlist paths
+      await Promise.all([remove(userWishlistRef), remove(restaurantWishlistRef)]);
       setIsWishlist(false);
     } else {
+      // Firebase: write wishlist to both user and restaurant views
       const data = {
         rating,
         reviewSrc,

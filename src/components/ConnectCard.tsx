@@ -28,6 +28,7 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
   );
 
   useEffect(() => {
+    // Firebase: check if a tastemate request has been sent or accepted
     const checkFollowStatus = async () => {
       if (!currentUserId || !targetUserId) return;
 
@@ -71,11 +72,13 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
     if (followStatus === 'accepted') return;
 
     if (followStatus === 'pending') {
+      // Firebase: cancel the pending request
       await Promise.all([remove(sentRef), remove(receivedRef)]);
       setFollowStatus('none');
       return;
     }
 
+    // Firebase: send a new tastemate request
     const senderPrefsSnap = await get(ref(db, `users/${currentUserId}/preferences`));
     const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
 

@@ -44,6 +44,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
   useEffect(() => {
     if (!user) return;
 
+    // Firebase: fetch received tastemate requests
     const receivedRef = ref(db, `receivedTastemateRequests/${user.uid}`);
     const sentRef = ref(db, `sentTastemateRequests/${user.uid}`);
     const tastematesRef = ref(db, `tastemates/${user.uid}`);
@@ -55,10 +56,11 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
           id: `${user.uid}_${senderId}`,
           ...request,
         }))
-        .filter((req) => req.status === 'pending');
+        .filter((req) => req.status === 'pending'); // Only keep pending
       setReceivedRequests(formatted);
     });
 
+    // Firebase: fetch sent tastemate requests
     const unsubscribeSent = onValue(sentRef, (snapshot) => {
       const data = snapshot.val() || {};
       const formatted: TastemateRequest[] = Object.entries(data)
@@ -66,7 +68,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
           id: `${receiverId}_${user.uid}`,
           ...request,
         }))
-        .filter((req) => req.status === 'pending');
+        .filter((req) => req.status === 'pending'); // Only keep pending
       const statuses: Record<string, 'none' | 'pending' | 'accepted'> = {};
       formatted.forEach((req) => {
         const status = req.status === 'declined' ? 'none' : req.status;
@@ -76,6 +78,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
       setFollowStatuses(statuses);
     });
 
+    // Firebase: fetch confirmed tastemates and their preferences
     const unsubscribeTastemates = onValue(tastematesRef, async (snapshot) => {
       const data = snapshot.val() || {};
       const ids = Object.keys(data);
@@ -101,6 +104,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     };
   }, [user]);
 
+  // Firebase: send or cancel a request
   const handleFollowClick = async (
     receiverId: string,
     requestId: string,
@@ -116,6 +120,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     if (status === 'accepted') return;
 
     if (status === 'pending') {
+      // Firebase: cancel request
       await Promise.all([remove(sentRef), remove(receivedRef)]);
       setFollowStatuses((prev) => ({ ...prev, [requestId]: 'none' }));
       setSentRequests((prev) => prev.filter((req) => req.id !== requestId));
@@ -143,11 +148,13 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
       status: 'pending',
     };
 
+    // Firebase: send request to both sent and received paths
     await Promise.all([set(sentRef, requestData), set(receivedRef, requestData)]);
 
     setFollowStatuses((prev) => ({ ...prev, [requestId]: 'pending' }));
   };
 
+  // Firebase: accept a tastemate request
   const handleAcceptRequest = async (receiverId: string, senderId: string) => {
     const requestSnap = await get(
       ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`),
@@ -171,6 +178,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     );
   };
 
+  // Firebase: decline a tastemate request (removes both entries)
   const handleDeclineRequest = async (receiverId: string, senderId: string) => {
     await Promise.all([
       remove(ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`)),

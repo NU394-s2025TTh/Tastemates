@@ -16,11 +16,13 @@ import TastemateModal from './components/TastemateModal';
 import { auth, db, get, ref, set } from './firebase';
 import { Restaurant } from './firebaseUtils';
 
+// Constants for price slider
 const MIN = 0;
 const MAX = 100;
 const STEP = 1;
 
 const ProfilePage = () => {
+  // User data state
   const [preferences, setPreferences] = useState<any>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
   const [userName, setUserName] = useState<string>('User');
@@ -32,6 +34,7 @@ const ProfilePage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
+  // Firebase: sign out
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -41,6 +44,7 @@ const ProfilePage = () => {
     }
   };
 
+  // Firebase: update user preferences with new price range
   const handlePriceChange = async (values: [number, number]) => {
     setPriceRange(values);
     const user = auth.currentUser;
@@ -67,7 +71,7 @@ const ProfilePage = () => {
     setShowEditModal(true);
   };
 
-  //add profile picture functionality
+  // Firebase: upload and save profile photo to user preferences
   const handlePhotoUpload = async (event: any) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -100,6 +104,7 @@ const ProfilePage = () => {
     const changedUser = onAuthStateChanged(auth, (user) => {
       if (!user) return;
       const fetchData = async () => {
+        // Firebase: load user preferences
         setUserName(user.displayName || 'User');
 
         const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
@@ -111,17 +116,21 @@ const ProfilePage = () => {
           setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
         }
 
+        // Firebase: fetch user's wishlist (restaurantName as key)
         const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
         if (wishlistSnap.exists()) {
           const data = wishlistSnap.val();
-          const formatted = Object.entries(data).map(([restaurantName, info]: [string, any]) => ({
-            restaurantName,
-            ...info,
-          }));
+          const formatted = Object.entries(data).map(
+            ([restaurantName, info]: [string, any]) => ({
+              restaurantName,
+              ...info,
+            }),
+          );
           setWishlist(formatted);
         }
       };
 
+      // Firebase: load tastemates (confirmed connections)
       const fetchTastemates = async () => {
         const user = auth.currentUser;
         if (!user) return;
