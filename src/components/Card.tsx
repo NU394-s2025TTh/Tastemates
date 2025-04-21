@@ -81,51 +81,26 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
 
   useEffect(() => {
     const fetchWishlisters = async () => {
-      const db = getDatabase();
-
+      setLoadingWishlisters(true);
       try {
-        const snapshot = await get(ref(db, 'wishlists'));
-        if (snapshot.exists()) {
-          const allWishlists = snapshot.val() as Record<string, Record<string, any>>;
-
-          const matchingUsers = Object.entries(allWishlists)
-            .filter(([_, wishlist]) => {
-              if (!wishlist) return false;
-              return Object.keys(wishlist).some(
-                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
-              );
-            })
-            .map(([uid, wishlist]) => {
-              const restaurantKey = Object.keys(wishlist).find(
-                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
-              );
-              return restaurantKey ? uid : null;
-            })
-            .filter(Boolean) as string[];
-
-          const userDataPromises = matchingUsers.map(async (uid) => {
-            const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
-            const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
-            return {
-              uid,
-              photoURL: prefs.photoURL || '/assets/profile.svg',
-              displayName: prefs.displayName || 'Anonymous',
-              phoneNumber: prefs.phoneNumber || '',
-              email: prefs.email || '',
-            };
-          });
-
-          const usersData = await Promise.all(userDataPromises);
-
-          // Filter out the current user from the wishlisters
-          const filteredUsersData = usersData.filter(
-            (userData) => userData.uid !== user?.uid,
-          );
-
-          setWishlisters(filteredUsersData);
-        } else {
+        const snapshot = await get(ref(db, `wishlistsByRestaurant/${restaurantName}`));
+        if (!snapshot.exists()) {
           setWishlisters([]);
+          return;
         }
+  
+        const data = snapshot.val();
+        const users: Wishlister[] = Object.entries(data)
+          .map(([uid, info]: any) => ({
+            uid,
+            photoURL: info.photoURL || '/assets/profile.svg',
+            displayName: info.displayName || 'Anonymous',
+            email: info.email || '',
+            phoneNumber: info.phoneNumber || '',
+          }))
+          .filter((u) => u.uid !== user?.uid); // filter out current user
+  
+        setWishlisters(users);
       } catch (error) {
         console.error('Error fetching wishlisters:', error);
         setWishlisters([]);
@@ -133,9 +108,9 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
         setLoadingWishlisters(false);
       }
     };
-
+  
     fetchWishlisters();
-  }, [restaurantName, user?.uid]); // Added user?.uid as dependency to ensure correct filtering
+  }, [restaurantName, user?.uid]);  
 
   useEffect(() => {
     const checkFollowStatus = async () => {
@@ -167,14 +142,39 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
 
   const handleWishlistClick = async () => {
     if (!user) return;
-    const newState = await toggleWishlist({
-      restaurantName,
-      rating,
-      reviewSrc,
-      cuisine,
-      price,
-    });
-    setIsWishlist(newState);
+    const dbRef = getDatabase();
+    const uid = user.uid;
+
+    const userWishlistRef = ref(dbRef, `wishlists/${uid}/${restaurantName}`);
+    const restaurantWishlistRef = ref(dbRef, `wishlistsByRestaurant/${restaurantName}/${uid}`);
+
+    const userPrefsSnap = await get(ref(dbRef, `users/${uid}/preferences`));
+    const prefs = userPrefsSnap.exists() ? userPrefsSnap.val() : {};
+
+    if (isWishlist) {
+      await Promise.all([
+        remove(userWishlistRef),
+        remove(restaurantWishlistRef),
+      ]);
+      setIsWishlist(false);
+    } else {
+      const data = {
+        rating,
+        reviewSrc,
+        cuisine,
+        price,
+      };
+      await Promise.all([
+        set(userWishlistRef, data),
+        set(restaurantWishlistRef, {
+          photoURL: prefs.photoURL || '/assets/profile.svg',
+          displayName: prefs.displayName || 'Anonymous',
+          email: prefs.email || '',
+          phoneNumber: prefs.phoneNumber || '',
+        }),
+      ]);
+      setIsWishlist(true);
+    }
   };
 
   const handleDelete = async (id: string) => {

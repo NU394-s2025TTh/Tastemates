@@ -50,23 +50,23 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
 
     const unsubscribeReceived = onValue(receivedRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const formatted: TastemateRequest[] = Object.entries(data).map(
-        ([senderId, request]: any) => ({
+      const formatted: TastemateRequest[] = Object.entries(data)
+        .map(([senderId, request]: any) => ({
           id: `${user.uid}_${senderId}`,
           ...request,
-        }),
-      ).filter((req) => req.status === 'pending');
+        }))
+        .filter((req) => req.status === 'pending');
       setReceivedRequests(formatted);
     });
 
     const unsubscribeSent = onValue(sentRef, (snapshot) => {
       const data = snapshot.val() || {};
-      const formatted: TastemateRequest[] = Object.entries(data).map(
-        ([receiverId, request]: any) => ({
+      const formatted: TastemateRequest[] = Object.entries(data)
+        .map(([receiverId, request]: any) => ({
           id: `${receiverId}_${user.uid}`,
           ...request,
-        }),
-      ).filter((req) => req.status === 'pending');
+        }))
+        .filter((req) => req.status === 'pending');
       const statuses: Record<string, 'none' | 'pending' | 'accepted'> = {};
       formatted.forEach((req) => {
         const status = req.status === 'declined' ? 'none' : req.status;
@@ -156,8 +156,12 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     if (!request) return;
 
     await Promise.all([
-      update(ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`), { status: 'accepted' }),
-      update(ref(db, `sentTastemateRequests/${senderId}/${receiverId}`), { status: 'accepted' }),
+      update(ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`), {
+        status: 'accepted',
+      }),
+      update(ref(db, `sentTastemateRequests/${senderId}/${receiverId}`), {
+        status: 'accepted',
+      }),
       set(ref(db, `tastemates/${receiverId}/${senderId}`), true),
       set(ref(db, `tastemates/${senderId}/${receiverId}`), true),
     ]);

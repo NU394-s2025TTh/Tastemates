@@ -114,20 +114,24 @@ const ProfilePage = () => {
         const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
         if (wishlistSnap.exists()) {
           const data = wishlistSnap.val();
-          setWishlist(Object.values(data));
+          const formatted = Object.entries(data).map(([restaurantName, info]: [string, any]) => ({
+            restaurantName,
+            ...info,
+          }));
+          setWishlist(formatted);
         }
       };
 
       const fetchTastemates = async () => {
         const user = auth.currentUser;
         if (!user) return;
-      
+
         try {
           const tastematesSnap = await get(ref(db, `tastemates/${user.uid}`));
           if (!tastematesSnap.exists()) return;
-      
+
           const tastemateIds = Object.keys(tastematesSnap.val());
-      
+
           const tastematePromises = tastemateIds.map(async (uid) => {
             const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
             const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
@@ -136,13 +140,13 @@ const ProfilePage = () => {
               ...prefs,
             };
           });
-      
+
           const tastemateData = await Promise.all(tastematePromises);
           setTastemates(tastemateData);
         } catch (error) {
           console.error('Error fetching tastemates:', error);
         }
-      };      
+      };
 
       fetchData();
       fetchTastemates();
