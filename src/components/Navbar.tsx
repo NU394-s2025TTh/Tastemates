@@ -1,5 +1,6 @@
 import './Navbar.css';
 
+import { MapPin, MessageSquare, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar = () => {
@@ -7,21 +8,21 @@ const Navbar = () => {
   const location = useLocation();
 
   const navItems = [
-    { path: '/feed', icon: '/assets/feed.svg', label: 'Feed' },
-    { path: '/explore', icon: '/assets/explore.svg', label: 'Explore' },
-    { path: '/profile', icon: '/assets/profile-page.svg', label: 'Profile' },
+    { path: '/feed', icon: MessageSquare, label: 'Feed' },
+    { path: '/explore', icon: MapPin, label: 'Explore' },
+    { path: '/profile', icon: User, label: 'Profile' },
   ];
 
   return (
     <div className="navbar">
-      {navItems.map(({ path, icon, label }) => (
+      {navItems.map(({ path, icon: Icon, label }) => (
         <button
           key={path}
           className={`nav-item ${location.pathname === path ? 'active' : ''}`}
           onClick={() => navigate(path)}
           aria-label={label} // Improve accessibility by adding an aria-label
         >
-          <img src={icon} alt={label} className="nav-icon" />
+          <Icon className="nav-icon" />
           <p className="nav-label">{label}</p>
         </button>
       ))}

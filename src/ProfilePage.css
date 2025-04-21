@@ -1,6 +1,6 @@
 .Profile {
   text-align: center;
-  background: #e8e4de;
+  background: #CCE0D7;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -64,7 +64,7 @@
 }
 
 .pref-card {
-  background-color: white;
+  background-color: #FAF9F0;
   padding-left: 1rem;
   padding-right: 1rem;
   border-radius: 1rem;
@@ -94,9 +94,9 @@
 }
 
 .cuisine-tag {
-  background-color: #a3d9b1;
+  background-color: #F2CC8F;
   border-radius: 100px;
-  color: black;
+  color: #3D405B;
   padding: 1rem;
   margin: 0;
 }
@@ -145,7 +145,8 @@
   align-items: center;
   justify-content: left;
   gap: 0.3rem;
-  background-color: #a3d9b1;
+  background-color: #3D405B;
+  color: #FAF9F0;
   border-radius: 100px;
   padding: 1rem;
   padding-right: 2rem;
@@ -184,7 +185,7 @@
 }
 
 .signout-button {
-  background-color: #444;
+  background-color: #3D405B;;
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
@@ -197,7 +198,7 @@
 }
 
 .signout-button:hover {
-  background-color: #222;
+  background-color: #5A5E87;
 }
 
 .view-details-button {

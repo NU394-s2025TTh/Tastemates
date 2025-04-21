@@ -13,7 +13,7 @@
 }
 
 .modal-content {
-  background: white;
+  background: #FAF9F0;
   padding: 2rem;
   border-radius: 8px;
   width: 90%;
@@ -33,8 +33,8 @@
 
 .cuisine-buttons button {
   border: none;
-  background-color: #eee;
-  color: black;
+  background-color: #F2CC8F;
+  color: #3D405B;
   border-radius: 100px;
   padding: 1rem;
   cursor: pointer;
@@ -45,9 +45,9 @@
 .cuisine-buttons button.selected {
   /* background-color: #98897e; */
   color: white;
-  background-color: #a3d9b1;
+  background-color: #E07A5F;
   border-radius: 100px;
-  color: black;
+  color: #3D405B;
   padding: 1rem;
   margin: 0;
 }
@@ -64,14 +64,16 @@
     background-color 0.2s ease;
 }
 .modal-actions button {
-  background-color: #98897e;
+  background-color: #3D405B;
+  color: white;
   padding: 1rem;
   font-weight: bold;
   font-size: medium;
+  border-radius: 100px;
 }
 .modal-actions button:hover {
-  transform: scale(1.05);
-  background-color: #7c6c60; /* slightly darker on hover */
+  /* transform: scale(1.05); */
+  background-color: #5A5E87; 
 }
 
 .phone-row {
