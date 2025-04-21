@@ -15,7 +15,7 @@
 
 .card-container {
   text-align: center;
-  background: white;
+  background: #FAF9F0;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -69,6 +69,23 @@
   margin-top: 0.5rem;
 }
 
+.wishlist-button:hover {
+  color: #DE7254;
+  fill: #DE7254;
+}
+
+.wishlist-button.selected {
+  color: #CE4B27;
+  fill: #CE4B27;
+  transition: 0.3s ease;
+}
+
+.wishlist-button.selected:hover {
+  color: #DE7254;
+  fill: #DE7254;
+  transition: 0.3s ease;
+}
+
 .delete-button {
   background: gray;
   padding: 0.5rem;
@@ -100,7 +117,7 @@
   justify-content: flex-start;
   align-items: center;
   gap: 0.5rem;
-  color: #127335;
+  color: #E07A5F;
 }
 
 .review-box {
@@ -122,8 +139,8 @@
   padding-bottom: 6px;
   padding-left: 14px;
   padding-right: 14px;
-  background-color: #a3d9b1;
-  color: black;
+  background-color: #F2CC8F;
+  color: #3D405B;
   margin-right: 10px;
   border-radius: 30px;
   display: flex;
@@ -144,6 +161,7 @@
   border-radius: 50%;
   margin-left: -15px;
   border: 2px solid white;
+  object-fit: cover;
 }
 
 .who-else-box {
@@ -169,7 +187,7 @@
 .see-who-text {
   font-size: 1rem;
   font-weight: bold;
-  color: #0b8036;
+  color: #E07A5F;
   margin: 0;
 }
 
@@ -195,6 +213,7 @@ p {
 }
 
 dialog {
+  background: #CCE0D7;
   position: fixed;
   top: 50%;
   left: 50%;
