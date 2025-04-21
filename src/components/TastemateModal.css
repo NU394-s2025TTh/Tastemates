@@ -41,14 +41,14 @@
   padding: 0.5rem 0.5rem;
   border-radius: 7px;
   border: none;
-  background: #98897e;
+  background: #3D405B;
   color: white;
   cursor: pointer;
   font-size: 1.3rem;
 }
 
 .modal-close:hover {
-  opacity: 0.7;
+  background-color: #5A5E87; 
 }
 
 .contact-centered {
