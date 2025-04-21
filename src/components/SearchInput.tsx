@@ -114,7 +114,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
           onClick={() => setIsPref(!isPref)}
           className={`pref-button ${isPref ? 'active' : ''}`}
         >
-          Based on my preferences
+          Apply my preferences
         </button>
       )}
       {isLoading ? (
