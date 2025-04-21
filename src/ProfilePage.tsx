@@ -2,9 +2,7 @@ import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { Info } from 'lucide-react';
-// import editIcon from './assets/edit.svg';
-import { Edit } from 'lucide-react';
+import { Info, Edit, Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
 import { useNavigate } from 'react-router-dom';
@@ -170,12 +168,21 @@ const ProfilePage = () => {
       <Navbar />
       <div className="profile-container">
         <div className="pic-container">
-          <img
-            className="user-pic"
-            src={photoURL || '/assets/profile.svg'}
-            alt="your user profile"
+        <img 
+          className="user-pic" 
+          src={photoURL || '/assets/profile.svg'} 
+          alt="your user profile" 
+        />
+        <label htmlFor="upload-photo" className="upload-icon-button">
+          <input
+            id="upload-photo"
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            hidden
           />
-          <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+          <Camera size={16} strokeWidth={2} />
+        </label>
         </div>
         <div className="name-row">
           <h2 className="user-name">{userName}</h2>
