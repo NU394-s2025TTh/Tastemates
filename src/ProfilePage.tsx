@@ -121,32 +121,14 @@ const ProfilePage = () => {
       const fetchTastemates = async () => {
         const user = auth.currentUser;
         if (!user) return;
-
+      
         try {
-          const tastemateSnap = await get(ref(db, 'tastemateRequests'));
-          if (!tastemateSnap.exists()) return;
-
-          const requests = tastemateSnap.val();
-          const tastemateIds = new Set<string>();
-
-          for (const otherUserId in requests) {
-            const nestedRequests = requests[otherUserId];
-
-            for (const nestedUserId in nestedRequests) {
-              const request = nestedRequests[nestedUserId];
-
-              const isAccepted = request.status === 'accepted';
-              const involvesCurrentUser =
-                otherUserId === user.uid || nestedUserId === user.uid;
-
-              if (isAccepted && involvesCurrentUser) {
-                const tastemateId = otherUserId === user.uid ? nestedUserId : otherUserId;
-                tastemateIds.add(tastemateId);
-              }
-            }
-          }
-
-          const tastematePromises = Array.from(tastemateIds).map(async (uid) => {
+          const tastematesSnap = await get(ref(db, `tastemates/${user.uid}`));
+          if (!tastematesSnap.exists()) return;
+      
+          const tastemateIds = Object.keys(tastematesSnap.val());
+      
+          const tastematePromises = tastemateIds.map(async (uid) => {
             const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
             const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
             return {
@@ -154,13 +136,13 @@ const ProfilePage = () => {
               ...prefs,
             };
           });
-
+      
           const tastemateData = await Promise.all(tastematePromises);
           setTastemates(tastemateData);
         } catch (error) {
           console.error('Error fetching tastemates:', error);
         }
-      };
+      };      
 
       fetchData();
       fetchTastemates();

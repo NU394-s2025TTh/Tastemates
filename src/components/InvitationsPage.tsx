@@ -1,6 +1,6 @@
 import './InvitationsPage.css';
 
-import { get, onValue, ref, remove, set } from 'firebase/database';
+import { get, onValue, ref, remove, set, update } from 'firebase/database';
 import { Check, ChevronLeft, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -55,7 +55,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
           id: `${user.uid}_${senderId}`,
           ...request,
         }),
-      );
+      ).filter((req) => req.status === 'pending');
       setReceivedRequests(formatted);
     });
 
@@ -66,7 +66,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
           id: `${receiverId}_${user.uid}`,
           ...request,
         }),
-      );
+      ).filter((req) => req.status === 'pending');
       const statuses: Record<string, 'none' | 'pending' | 'accepted'> = {};
       formatted.forEach((req) => {
         const status = req.status === 'declined' ? 'none' : req.status;
@@ -156,11 +156,8 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     if (!request) return;
 
     await Promise.all([
-      set(
-        ref(db, `receivedTastemateRequests/${receiverId}/${senderId}/status`),
-        'accepted',
-      ),
-      set(ref(db, `sentTastemateRequests/${senderId}/${receiverId}/status`), 'accepted'),
+      update(ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`), { status: 'accepted' }),
+      update(ref(db, `sentTastemateRequests/${senderId}/${receiverId}`), { status: 'accepted' }),
       set(ref(db, `tastemates/${receiverId}/${senderId}`), true),
       set(ref(db, `tastemates/${senderId}/${receiverId}`), true),
     ]);
@@ -226,41 +223,37 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
       )}
 
       <h2 className="second-header">Sent Requests</h2>
-      {sentRequests.filter((req) => req.status === 'pending').length > 0 ? (
-        sentRequests
-          .filter((req) => req.status === 'pending')
-          .map((req) => (
-            <div key={req.id} className="request-card">
-              <img
-                src={req.receiverPhoto}
-                alt={req.receiverName}
-                className="request-photo"
-              />
-              <div className="request-info">
-                <p className="request-info-name">{req.receiverName}</p>
-                <p className="request-info-sub">Sent request - {req.status}</p>
-              </div>
-              <div className="follow-button-wrapper">
-                <input
-                  onClick={() =>
-                    handleFollowClick(req.receiverId, req.id, req.receiverName)
-                  }
-                  type="image"
-                  src={
-                    followStatuses[req.id] === 'pending'
-                      ? '/assets/following.svg'
-                      : followStatuses[req.id] === 'accepted'
-                        ? '/assets/following.svg'
-                        : '/assets/add-user.svg'
-                  }
-                  className={
-                    followStatuses[req.id] === 'accepted' ? 'accepted-request' : ''
-                  }
-                  alt="add user icon"
-                />
-              </div>
+      {sentRequests.length > 0 ? (
+        sentRequests.map((req) => (
+          <div key={req.id} className="request-card">
+            <img
+              src={req.receiverPhoto}
+              alt={req.receiverName}
+              className="request-photo"
+            />
+            <div className="request-info">
+              <p className="request-info-name">{req.receiverName}</p>
+              <p className="request-info-sub">Sent request - {req.status}</p>
             </div>
-          ))
+            <div className="follow-button-wrapper">
+              <input
+                onClick={() =>
+                  handleFollowClick(req.receiverId, req.id, req.receiverName)
+                }
+                type="image"
+                src={
+                  followStatuses[req.id] === 'pending'
+                    ? '/assets/following.svg'
+                    : '/assets/add-user.svg'
+                }
+                className={
+                  followStatuses[req.id] === 'accepted' ? 'accepted-request' : ''
+                }
+                alt="add user icon"
+              />
+            </div>
+          </div>
+        ))
       ) : (
         <p>No pending requests</p>
       )}
@@ -277,7 +270,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
             <div className="follow-button-wrapper">
               <input
                 type="image"
-                src="/assets/following.svg"
+                src="/assets/friends.svg"
                 className="accepted-request"
                 alt="add user icon"
               />

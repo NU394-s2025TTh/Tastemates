@@ -58,13 +58,15 @@ const FeedPage = () => {
     const user = auth.currentUser;
     if (!user) return;
 
-    const requestsRef = ref(db, `tastemateRequests/${user.uid}`);
+    const requestsRef = ref(db, `receivedTastemateRequests/${user.uid}`);
     const unsubscribe = onValue(requestsRef, (snapshot) => {
       const data = snapshot.val();
-      const pending = data
-        ? Object.values(data).filter((req: any) => req.status === 'pending').length
-        : 0;
-
+      let pending = 0;
+      if (data) {
+        for (const senderId in data) {
+          if (data[senderId].status === 'pending') pending++;
+        }
+      }
       localStorage.setItem('pendingCount', pending.toString());
       setPendingCount(pending);
     });
