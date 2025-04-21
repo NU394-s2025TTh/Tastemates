@@ -2,9 +2,7 @@ import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { Info } from 'lucide-react';
-// import editIcon from './assets/edit.svg';
-import { Edit } from 'lucide-react';
+import { Info, Edit, Camera } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
 import { useNavigate } from 'react-router-dom';
@@ -16,11 +14,13 @@ import TastemateModal from './components/TastemateModal';
 import { auth, db, get, ref, set } from './firebase';
 import { Restaurant } from './firebaseUtils';
 
+// Constants for price slider
 const MIN = 0;
 const MAX = 100;
 const STEP = 1;
 
 const ProfilePage = () => {
+  // User data state
   const [preferences, setPreferences] = useState<any>(null);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 100]);
   const [userName, setUserName] = useState<string>('User');
@@ -32,6 +32,7 @@ const ProfilePage = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
+  // Firebase: sign out
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -41,6 +42,7 @@ const ProfilePage = () => {
     }
   };
 
+  // Firebase: update user preferences with new price range
   const handlePriceChange = async (values: [number, number]) => {
     setPriceRange(values);
     const user = auth.currentUser;
@@ -67,7 +69,7 @@ const ProfilePage = () => {
     setShowEditModal(true);
   };
 
-  //add profile picture functionality
+  // Firebase: upload and save profile photo to user preferences
   const handlePhotoUpload = async (event: any) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -100,6 +102,7 @@ const ProfilePage = () => {
     const changedUser = onAuthStateChanged(auth, (user) => {
       if (!user) return;
       const fetchData = async () => {
+        // Firebase: load user preferences
         setUserName(user.displayName || 'User');
 
         const prefSnap = await get(ref(db, `users/${user.uid}/preferences`));
@@ -111,42 +114,32 @@ const ProfilePage = () => {
           setPhotoURL(prefs.photoURL || user.photoURL || '/assets/profile.svg');
         }
 
+        // Firebase: fetch user's wishlist (restaurantName as key)
         const wishlistSnap = await get(ref(db, `wishlists/${user.uid}`));
         if (wishlistSnap.exists()) {
           const data = wishlistSnap.val();
-          setWishlist(Object.values(data));
+          const formatted = Object.entries(data).map(
+            ([restaurantName, info]: [string, any]) => ({
+              restaurantName,
+              ...info,
+            }),
+          );
+          setWishlist(formatted);
         }
       };
 
+      // Firebase: load tastemates (confirmed connections)
       const fetchTastemates = async () => {
         const user = auth.currentUser;
         if (!user) return;
 
         try {
-          const tastemateSnap = await get(ref(db, 'tastemateRequests'));
-          if (!tastemateSnap.exists()) return;
+          const tastematesSnap = await get(ref(db, `tastemates/${user.uid}`));
+          if (!tastematesSnap.exists()) return;
 
-          const requests = tastemateSnap.val();
-          const tastemateIds = new Set<string>();
+          const tastemateIds = Object.keys(tastematesSnap.val());
 
-          for (const otherUserId in requests) {
-            const nestedRequests = requests[otherUserId];
-
-            for (const nestedUserId in nestedRequests) {
-              const request = nestedRequests[nestedUserId];
-
-              const isAccepted = request.status === 'accepted';
-              const involvesCurrentUser =
-                otherUserId === user.uid || nestedUserId === user.uid;
-
-              if (isAccepted && involvesCurrentUser) {
-                const tastemateId = otherUserId === user.uid ? nestedUserId : otherUserId;
-                tastemateIds.add(tastemateId);
-              }
-            }
-          }
-
-          const tastematePromises = Array.from(tastemateIds).map(async (uid) => {
+          const tastematePromises = tastemateIds.map(async (uid) => {
             const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
             const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
             return {
@@ -175,12 +168,21 @@ const ProfilePage = () => {
       <Navbar />
       <div className="profile-container">
         <div className="pic-container">
-          <img
-            className="user-pic"
-            src={photoURL || '/assets/profile.svg'}
-            alt="your user profile"
+        <img 
+          className="user-pic" 
+          src={photoURL || '/assets/profile.svg'} 
+          alt="your user profile" 
+        />
+        <label htmlFor="upload-photo" className="upload-icon-button">
+          <input
+            id="upload-photo"
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            hidden
           />
-          <input type="file" accept="image/*" onChange={handlePhotoUpload} />
+          <Camera size={16} strokeWidth={2} />
+        </label>
         </div>
         <div className="name-row">
           <h2 className="user-name">{userName}</h2>

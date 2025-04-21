@@ -28,28 +28,28 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
   );
 
   useEffect(() => {
+    // Firebase: check if a tastemate request has been sent or accepted
     const checkFollowStatus = async () => {
       if (!currentUserId || !targetUserId) return;
 
       const db = getDatabase();
-
-      const receiverViewRef = ref(
+      const sentRef = ref(db, `sentTastemateRequests/${currentUserId}/${targetUserId}`);
+      const receivedRef = ref(
         db,
-        `tastemateRequests/${targetUserId}/${currentUserId}`,
+        `receivedTastemateRequests/${currentUserId}/${targetUserId}`,
       );
-      const senderViewRef = ref(db, `tastemateRequests/${currentUserId}/${targetUserId}`);
 
-      const [receiverSnap, senderSnap] = await Promise.all([
-        get(receiverViewRef),
-        get(senderViewRef),
+      const [sentSnap, receivedSnap] = await Promise.all([
+        get(sentRef),
+        get(receivedRef),
       ]);
 
-      const receiverStatus = receiverSnap.exists() ? receiverSnap.val().status : null;
-      const senderStatus = senderSnap.exists() ? senderSnap.val().status : null;
+      const sentStatus = sentSnap.exists() ? sentSnap.val().status : null;
+      const receivedStatus = receivedSnap.exists() ? receivedSnap.val().status : null;
 
-      if (receiverStatus === 'accepted' || senderStatus === 'accepted') {
+      if (sentStatus === 'accepted' || receivedStatus === 'accepted') {
         setFollowStatus('accepted');
-      } else if (receiverStatus === 'pending') {
+      } else if (sentStatus === 'pending' || receivedStatus === 'pending') {
         setFollowStatus('pending');
       } else {
         setFollowStatus('none');
@@ -63,28 +63,32 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
     if (!currentUserId || !targetUserId) return;
 
     const db = getDatabase();
-    const requestRef = ref(db, `tastemateRequests/${targetUserId}/${currentUserId}`);
-    const requestSnap = await get(requestRef);
+    const sentRef = ref(db, `sentTastemateRequests/${currentUserId}/${targetUserId}`);
+    const receivedRef = ref(
+      db,
+      `receivedTastemateRequests/${targetUserId}/${currentUserId}`,
+    );
 
     if (followStatus === 'accepted') return;
 
     if (followStatus === 'pending') {
-      await remove(requestRef);
+      // Firebase: cancel the pending request
+      await Promise.all([remove(sentRef), remove(receivedRef)]);
       setFollowStatus('none');
       return;
     }
 
-    const auth = getAuth();
-    const user = auth.currentUser;
+    // Firebase: send a new tastemate request
     const senderPrefsSnap = await get(ref(db, `users/${currentUserId}/preferences`));
     const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
 
-    const receiverSnap = await get(ref(db, `users/${targetUserId}`));
-    const receiverName = receiverSnap.val()?.preferences?.displayName || 'Unknown';
-    const receiverPhoto =
-      receiverSnap.val()?.preferences?.photoURL || '/assets/profile.svg';
+    const receiverPrefsSnap = await get(ref(db, `users/${targetUserId}/preferences`));
+    const receiverPrefs = receiverPrefsSnap.exists() ? receiverPrefsSnap.val() : {};
 
-    await set(requestRef, {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    const requestData = {
       senderId: currentUserId,
       senderName: user?.displayName || '',
       senderPhoto: user?.photoURL || '/assets/profile.svg',
@@ -94,11 +98,12 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
         max: senderPrefs.maxPrice ?? 100,
       },
       receiverId: targetUserId,
-      receiverName,
-      receiverPhoto,
+      receiverName: receiverPrefs.displayName || 'User',
+      receiverPhoto: receiverPrefs.photoURL || '/assets/profile.svg',
       status: 'pending',
-      timestamp: Date.now(),
-    });
+    };
+
+    await Promise.all([set(sentRef, requestData), set(receivedRef, requestData)]);
 
     setFollowStatus('pending');
   };
@@ -107,7 +112,9 @@ const ConnectCard: React.FC<ConnectCardProps> = ({
     <div className="ConnectCard">
       <img className="connect-pic" src={profileImg} alt="profile pic"></img>
       <div>
-        <p className="wants-to-go">{user}</p>
+        <p className="wants-to-go">
+          {user} wants to go to {restaurantName}!
+        </p>
         {followStatus === 'accepted' && (
           <p className="contact-info">
             {phone && phone.trim() !== ''

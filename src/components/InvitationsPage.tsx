@@ -1,6 +1,6 @@
 import './InvitationsPage.css';
 
-import { get, onValue, ref, remove, set } from 'firebase/database';
+import { get, onValue, ref, remove, set, update } from 'firebase/database';
 import { Check, ChevronLeft, X } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 
@@ -44,75 +44,67 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
   useEffect(() => {
     if (!user) return;
 
-    const requestsRef = ref(db, 'tastemateRequests');
+    // Firebase: fetch received tastemate requests
+    const receivedRef = ref(db, `receivedTastemateRequests/${user.uid}`);
+    const sentRef = ref(db, `sentTastemateRequests/${user.uid}`);
+    const tastematesRef = ref(db, `tastemates/${user.uid}`);
 
-    const fetchTastemates = async (data: any) => {
-      const accepted: UserProfile[] = [];
+    const unsubscribeReceived = onValue(receivedRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const formatted: TastemateRequest[] = Object.entries(data)
+        .map(([senderId, request]: any) => ({
+          id: `${user.uid}_${senderId}`,
+          ...request,
+        }))
+        .filter((req) => req.status === 'pending'); // Only keep pending
+      setReceivedRequests(formatted);
+    });
 
-      for (const receiverId in data) {
-        for (const senderId in data[receiverId]) {
-          const request = data[receiverId][senderId];
+    // Firebase: fetch sent tastemate requests
+    const unsubscribeSent = onValue(sentRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      const formatted: TastemateRequest[] = Object.entries(data)
+        .map(([receiverId, request]: any) => ({
+          id: `${receiverId}_${user.uid}`,
+          ...request,
+        }))
+        .filter((req) => req.status === 'pending'); // Only keep pending
+      const statuses: Record<string, 'none' | 'pending' | 'accepted'> = {};
+      formatted.forEach((req) => {
+        const status = req.status === 'declined' ? 'none' : req.status;
+        statuses[req.id] = status;
+      });
+      setSentRequests(formatted);
+      setFollowStatuses(statuses);
+    });
 
-          if (request.status === 'accepted') {
-            const isUserSender = request.senderId === user.uid;
-            const otherUserId = isUserSender ? request.receiverId : request.senderId;
+    // Firebase: fetch confirmed tastemates and their preferences
+    const unsubscribeTastemates = onValue(tastematesRef, async (snapshot) => {
+      const data = snapshot.val() || {};
+      const ids = Object.keys(data);
+      const mates = await Promise.all(
+        ids.map(async (uid) => {
+          const snap = await get(ref(db, `users/${uid}/preferences`));
+          const prefs = snap.exists() ? snap.val() : {};
+          return {
+            uid,
+            displayName: prefs.displayName || 'User',
+            photoURL: prefs.photoURL || '/assets/profile.svg',
+            isUserSender: true,
+          };
+        }),
+      );
+      setTastemates(mates);
+    });
 
-            const userSnap = await get(ref(db, `users/${otherUserId}/preferences`));
-            const displayName = userSnap.val()?.displayName || 'Unnamed';
-            const photoURL = userSnap.val()?.photoURL || '/assets/profile.svg';
-
-            accepted.push({
-              uid: otherUserId,
-              displayName,
-              photoURL,
-              isUserSender,
-            });
-          }
-        }
-      }
-
-      setTastemates(accepted);
+    return () => {
+      unsubscribeReceived();
+      unsubscribeSent();
+      unsubscribeTastemates();
     };
-
-    onValue(
-      requestsRef,
-      (snapshot) => {
-        const data = snapshot.val();
-        const received: TastemateRequest[] = [];
-        const sent: TastemateRequest[] = [];
-        const statuses: Record<string, 'none' | 'pending' | 'accepted'> = {};
-
-        if (!data) return;
-
-        for (const receiverId in data) {
-          for (const senderId in data[receiverId]) {
-            const request = data[receiverId][senderId];
-            const id = `${receiverId}_${senderId}`;
-
-            if (request.receiverId === user.uid && request.status === 'pending') {
-              received.push({ id, ...request });
-            } else if (request.senderId === user.uid) {
-              if (request.status === 'declined') {
-                remove(ref(db, `tastemateRequests/${receiverId}/${senderId}`));
-              } else {
-                sent.push({ id, ...request });
-                statuses[id] = request.status;
-              }
-            }
-          }
-        }
-
-        setReceivedRequests(received);
-        setSentRequests(sent);
-        setFollowStatuses(statuses);
-        fetchTastemates(data);
-      },
-      (error) => {
-        console.error('Error fetching requests:', error);
-      },
-    );
   }, [user]);
 
+  // Firebase: send or cancel a request
   const handleFollowClick = async (
     receiverId: string,
     requestId: string,
@@ -121,32 +113,27 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
     if (!user) return;
 
     const senderId = user.uid;
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
+    const sentRef = ref(db, `sentTastemateRequests/${senderId}/${receiverId}`);
+    const receivedRef = ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`);
     const status = followStatuses[requestId];
 
     if (status === 'accepted') return;
 
     if (status === 'pending') {
-      await remove(requestRef);
+      // Firebase: cancel request
+      await Promise.all([remove(sentRef), remove(receivedRef)]);
       setFollowStatuses((prev) => ({ ...prev, [requestId]: 'none' }));
       setSentRequests((prev) => prev.filter((req) => req.id !== requestId));
       return;
     }
 
-    const receiverSnap = await get(ref(db, `users/${receiverId}`));
-    if (!receiverSnap.exists()) return;
+    const receiverSnap = await get(ref(db, `users/${receiverId}/preferences`));
+    const receiverPrefs = receiverSnap.exists() ? receiverSnap.val() : {};
 
-    const receiverPhotoSnap = await get(
-      ref(db, `users/${receiverId}/preferences/photoURL`),
-    );
-    const receiverPhoto = receiverPhotoSnap.exists()
-      ? receiverPhotoSnap.val()
-      : '/assets/profile.svg';
+    const senderSnap = await get(ref(db, `users/${senderId}/preferences`));
+    const senderPrefs = senderSnap.exists() ? senderSnap.val() : {};
 
-    const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
-    const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
-
-    await set(requestRef, {
+    const requestData = {
       senderId,
       senderName: user.displayName,
       senderPhoto: user.photoURL || '/assets/profile.svg',
@@ -157,32 +144,46 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
       },
       receiverId,
       receiverName,
-      receiverPhoto,
+      receiverPhoto: receiverPrefs.photoURL || '/assets/profile.svg',
       status: 'pending',
-      timestamp: Date.now(),
-    });
+    };
+
+    // Firebase: send request to both sent and received paths
+    await Promise.all([set(sentRef, requestData), set(receivedRef, requestData)]);
 
     setFollowStatuses((prev) => ({ ...prev, [requestId]: 'pending' }));
   };
 
+  // Firebase: accept a tastemate request
   const handleAcceptRequest = async (receiverId: string, senderId: string) => {
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
-    await set(requestRef, {
-      ...(await get(requestRef)).val(),
-      status: 'accepted',
-    });
+    const requestSnap = await get(
+      ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`),
+    );
+    const request = requestSnap.exists() ? requestSnap.val() : null;
+    if (!request) return;
+
+    await Promise.all([
+      update(ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`), {
+        status: 'accepted',
+      }),
+      update(ref(db, `sentTastemateRequests/${senderId}/${receiverId}`), {
+        status: 'accepted',
+      }),
+      set(ref(db, `tastemates/${receiverId}/${senderId}`), true),
+      set(ref(db, `tastemates/${senderId}/${receiverId}`), true),
+    ]);
 
     setReceivedRequests((prev) =>
       prev.filter((req) => !(req.receiverId === receiverId && req.senderId === senderId)),
     );
   };
 
+  // Firebase: decline a tastemate request (removes both entries)
   const handleDeclineRequest = async (receiverId: string, senderId: string) => {
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
-    await set(requestRef, {
-      ...(await get(requestRef)).val(),
-      status: 'declined',
-    });
+    await Promise.all([
+      remove(ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`)),
+      remove(ref(db, `sentTastemateRequests/${senderId}/${receiverId}`)),
+    ]);
 
     setReceivedRequests((prev) =>
       prev.filter((req) => !(req.receiverId === receiverId && req.senderId === senderId)),
@@ -234,41 +235,37 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
       )}
 
       <h2 className="second-header">Sent Requests</h2>
-      {sentRequests.filter((req) => req.status === 'pending').length > 0 ? (
-        sentRequests
-          .filter((req) => req.status === 'pending')
-          .map((req) => (
-            <div key={req.id} className="request-card">
-              <img
-                src={req.receiverPhoto}
-                alt={req.receiverName}
-                className="request-photo"
-              />
-              <div className="request-info">
-                <p className="request-info-name">{req.receiverName}</p>
-                <p className="request-info-sub">Sent request - {req.status}</p>
-              </div>
-              <div className="follow-button-wrapper">
-                <input
-                  onClick={() =>
-                    handleFollowClick(req.receiverId, req.id, req.receiverName)
-                  }
-                  type="image"
-                  src={
-                    followStatuses[req.id] === 'pending'
-                      ? '/assets/following.svg'
-                      : followStatuses[req.id] === 'accepted'
-                        ? '/assets/following.svg'
-                        : '/assets/add-user.svg'
-                  }
-                  className={
-                    followStatuses[req.id] === 'accepted' ? 'accepted-request' : ''
-                  }
-                  alt="add user icon"
-                />
-              </div>
+      {sentRequests.length > 0 ? (
+        sentRequests.map((req) => (
+          <div key={req.id} className="request-card">
+            <img
+              src={req.receiverPhoto}
+              alt={req.receiverName}
+              className="request-photo"
+            />
+            <div className="request-info">
+              <p className="request-info-name">{req.receiverName}</p>
+              <p className="request-info-sub">Sent request - {req.status}</p>
             </div>
-          ))
+            <div className="follow-button-wrapper">
+              <input
+                onClick={() =>
+                  handleFollowClick(req.receiverId, req.id, req.receiverName)
+                }
+                type="image"
+                src={
+                  followStatuses[req.id] === 'pending'
+                    ? '/assets/following.svg'
+                    : '/assets/add-user.svg'
+                }
+                className={
+                  followStatuses[req.id] === 'accepted' ? 'accepted-request' : ''
+                }
+                alt="add user icon"
+              />
+            </div>
+          </div>
+        ))
       ) : (
         <p>No pending requests</p>
       )}
@@ -280,16 +277,12 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
             <img src={mate.photoURL} alt={mate.displayName} className="request-photo" />
             <div className="request-info">
               <p className="request-info-name">{mate.displayName}</p>
-              <p className="request-info-sub">
-                {mate.isUserSender
-                  ? 'You sent this request'
-                  : 'You accepted this request'}
-              </p>
+              <p className="request-info-sub">You&apos;re connected!</p>
             </div>
             <div className="follow-button-wrapper">
               <input
                 type="image"
-                src="/assets/following.svg"
+                src="/assets/friends.svg"
                 className="accepted-request"
                 alt="add user icon"
               />

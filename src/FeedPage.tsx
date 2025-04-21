@@ -34,6 +34,7 @@ const FeedPage = () => {
   const [pendingCount, setPendingCount] = useState(0);
 
   useEffect(() => {
+    // Firebase: listen for new posts from all users
     const postsRef = ref(db, 'posts');
     const unsubscribe = onValue(postsRef, (snapshot) => {
       const data = snapshot.val();
@@ -42,6 +43,7 @@ const FeedPage = () => {
           ...(post as Post),
           postId: id,
         }));
+        // Sort posts by timestamp (most recent first)
         loadedPosts.sort((a, b) => b.timestamp - a.timestamp);
         setPosts(loadedPosts);
       }
@@ -51,6 +53,7 @@ const FeedPage = () => {
   }, []);
 
   useEffect(() => {
+    // Firebase: track number of pending tastemate requests received
     const cachedCount = localStorage.getItem('pendingCount');
     if (cachedCount) setPendingCount(Number(cachedCount));
 
@@ -58,13 +61,15 @@ const FeedPage = () => {
     const user = auth.currentUser;
     if (!user) return;
 
-    const requestsRef = ref(db, `tastemateRequests/${user.uid}`);
+    const requestsRef = ref(db, `receivedTastemateRequests/${user.uid}`);
     const unsubscribe = onValue(requestsRef, (snapshot) => {
       const data = snapshot.val();
-      const pending = data
-        ? Object.values(data).filter((req: any) => req.status === 'pending').length
-        : 0;
-
+      let pending = 0;
+      if (data) {
+        for (const senderId in data) {
+          if (data[senderId].status === 'pending') pending++;
+        }
+      }
       localStorage.setItem('pendingCount', pending.toString());
       setPendingCount(pending);
     });

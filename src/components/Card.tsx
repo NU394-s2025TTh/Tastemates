@@ -33,21 +33,23 @@ interface Wishlister {
   email: string;
 }
 
-const Card: React.FC<CardProps> = ({
-  isFeed,
-  profileImg,
-  postUser,
-  caption,
-  imgSrc,
-  restaurantName,
-  rating,
-  reviewSrc,
-  cuisine,
-  price,
-  timestamp,
-  userId,
-  postId,
-}) => {
+const Card: React.FC<CardProps> = ({ ...props }) => {
+  const {
+    isFeed,
+    profileImg,
+    postUser,
+    caption,
+    imgSrc,
+    restaurantName,
+    rating,
+    reviewSrc,
+    cuisine,
+    price,
+    timestamp,
+    userId,
+    postId,
+  } = props;
+
   const [isOpen, setIsOpen] = useState(false);
   const [followStatus, setFollowStatus] = useState<'none' | 'pending' | 'accepted'>(
     'none',
@@ -60,14 +62,10 @@ const Card: React.FC<CardProps> = ({
   const user = auth.currentUser;
 
   useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'auto';
-    }
+    document.body.style.overflow = isOpen ? 'hidden' : 'auto';
   }, [isOpen]);
 
-  // Check if restaurant is already in wishlist on mount
+  // Firebase: check if the current user has wishlisted this restaurant
   useEffect(() => {
     const fetchWishlistStatus = async () => {
       if (!user || !restaurantName) return;
@@ -82,52 +80,28 @@ const Card: React.FC<CardProps> = ({
   }, [user, restaurantName]);
 
   useEffect(() => {
+    // Firebase: fetch other users who have wishlisted this restaurant
     const fetchWishlisters = async () => {
-      const db = getDatabase();
-
+      setLoadingWishlisters(true);
       try {
-        const snapshot = await get(ref(db, 'wishlists'));
-        if (snapshot.exists()) {
-          const allWishlists = snapshot.val() as Record<string, Record<string, any>>;
-
-          const matchingUsers = Object.entries(allWishlists)
-            .filter(([_, wishlist]) => {
-              if (!wishlist) return false;
-              return Object.keys(wishlist).some(
-                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
-              );
-            })
-            .map(([uid, wishlist]) => {
-              const restaurantKey = Object.keys(wishlist).find(
-                (key) => key.toLowerCase().trim() === restaurantName.toLowerCase().trim(),
-              );
-              return restaurantKey ? uid : null;
-            })
-            .filter(Boolean) as string[];
-
-          const userDataPromises = matchingUsers.map(async (uid) => {
-            const prefsSnap = await get(ref(db, `users/${uid}/preferences`));
-            const prefs = prefsSnap.exists() ? prefsSnap.val() : {};
-            return {
-              uid,
-              photoURL: prefs.photoURL || '/assets/profile.svg',
-              displayName: prefs.displayName || 'Anonymous',
-              phoneNumber: prefs.phoneNumber || '',
-              email: prefs.email || '',
-            };
-          });
-
-          const usersData = await Promise.all(userDataPromises);
-
-          // Filter out the current user from the wishlisters
-          const filteredUsersData = usersData.filter(
-            (userData) => userData.uid !== user?.uid,
-          );
-
-          setWishlisters(filteredUsersData);
-        } else {
+        const snapshot = await get(ref(db, `wishlistsByRestaurant/${restaurantName}`));
+        if (!snapshot.exists()) {
           setWishlisters([]);
+          return;
         }
+
+        const data = snapshot.val();
+        const users: Wishlister[] = Object.entries(data)
+          .map(([uid, info]: any) => ({
+            uid,
+            photoURL: info.photoURL || '/assets/profile.svg',
+            displayName: info.displayName || 'Anonymous',
+            email: info.email || '',
+            phoneNumber: info.phoneNumber || '',
+          }))
+          .filter((u) => u.uid !== user?.uid); // filter out current user
+
+        setWishlisters(users);
       } catch (error) {
         console.error('Error fetching wishlisters:', error);
         setWishlisters([]);
@@ -137,28 +111,27 @@ const Card: React.FC<CardProps> = ({
     };
 
     fetchWishlisters();
-  }, [restaurantName, user?.uid]); // Added user?.uid as dependency to ensure correct filtering
+  }, [restaurantName, user?.uid]);
 
   useEffect(() => {
     const checkFollowStatus = async () => {
       if (!user || !postUser || user.uid === userId) return;
 
       const dbRef = getDatabase();
+      const receivedRef = ref(dbRef, `receivedTastemateRequests/${user.uid}/${userId}`);
+      const sentRef = ref(dbRef, `sentTastemateRequests/${user.uid}/${userId}`);
 
-      const receiverViewRef = ref(dbRef, `tastemateRequests/${userId}/${user.uid}`);
-      const senderViewRef = ref(dbRef, `tastemateRequests/${user.uid}/${userId}`);
-
-      const [receiverSnap, senderSnap] = await Promise.all([
-        get(receiverViewRef),
-        get(senderViewRef),
+      const [receivedSnap, sentSnap] = await Promise.all([
+        get(receivedRef),
+        get(sentRef),
       ]);
 
-      const receiverStatus = receiverSnap.exists() ? receiverSnap.val().status : null;
-      const senderStatus = senderSnap.exists() ? senderSnap.val().status : null;
+      const receivedStatus = receivedSnap.exists() ? receivedSnap.val().status : null;
+      const sentStatus = sentSnap.exists() ? sentSnap.val().status : null;
 
-      if (receiverStatus === 'accepted' || senderStatus === 'accepted') {
+      if (receivedStatus === 'accepted' || sentStatus === 'accepted') {
         setFollowStatus('accepted');
-      } else if (receiverStatus === 'pending') {
+      } else if (receivedStatus === 'pending' || sentStatus === 'pending') {
         setFollowStatus('pending');
       } else {
         setFollowStatus('none');
@@ -170,18 +143,45 @@ const Card: React.FC<CardProps> = ({
 
   const handleWishlistClick = async () => {
     if (!user) return;
-    const newState = await toggleWishlist({
-      restaurantName,
-      rating,
-      reviewSrc,
-      cuisine,
-      price,
-    });
-    setIsWishlist(newState);
+    const dbRef = getDatabase();
+    const uid = user.uid;
+
+    const userWishlistRef = ref(dbRef, `wishlists/${uid}/${restaurantName}`);
+    const restaurantWishlistRef = ref(
+      dbRef,
+      `wishlistsByRestaurant/${restaurantName}/${uid}`,
+    );
+
+    const userPrefsSnap = await get(ref(dbRef, `users/${uid}/preferences`));
+    const prefs = userPrefsSnap.exists() ? userPrefsSnap.val() : {};
+
+    if (isWishlist) {
+      // Firebase: remove from both user-centric and restaurant-centric wishlist paths
+      await Promise.all([remove(userWishlistRef), remove(restaurantWishlistRef)]);
+      setIsWishlist(false);
+    } else {
+      // Firebase: write wishlist to both user and restaurant views
+      const data = {
+        rating,
+        reviewSrc,
+        cuisine,
+        price,
+      };
+      await Promise.all([
+        set(userWishlistRef, data),
+        set(restaurantWishlistRef, {
+          photoURL: prefs.photoURL || '/assets/profile.svg',
+          displayName: prefs.displayName || 'Anonymous',
+          email: prefs.email || '',
+          phoneNumber: prefs.phoneNumber || '',
+        }),
+      ]);
+      setIsWishlist(true);
+    }
   };
 
   const handleDelete = async (id: string) => {
-    if (user && user.uid === userId) {
+    if (user?.uid === userId) {
       try {
         await remove(ref(db, `posts/${id}`));
       } catch (error) {
@@ -193,11 +193,11 @@ const Card: React.FC<CardProps> = ({
   const handleFollowClick = async () => {
     if (!user || !postUser || user.uid === userId) return;
 
+    const dbRef = getDatabase();
     const senderId = user.uid;
     const receiverId = userId;
-
-    const requestRef = ref(db, `tastemateRequests/${receiverId}/${senderId}`);
-    const requestSnap = await get(requestRef);
+    const sentRef = ref(db, `sentTastemateRequests/${senderId}/${receiverId}`);
+    const receivedRef = ref(db, `receivedTastemateRequests/${receiverId}/${senderId}`);
 
     if (followStatus === 'accepted') {
       // Already connected — maybe no action or toast
@@ -206,26 +206,18 @@ const Card: React.FC<CardProps> = ({
 
     if (followStatus === 'pending') {
       // Unsend the pending request
-      await remove(requestRef);
+      await Promise.all([remove(sentRef), remove(receivedRef)]);
       setFollowStatus('none');
       return;
     }
 
-    // Send a new request
-    const receiverSnap = await get(ref(db, `users/${receiverId}`));
-    if (!receiverSnap.exists()) return;
-
-    const receiverPhotoSnap = await get(
-      ref(db, `users/${receiverId}/preferences/photoURL`),
-    );
-    const receiverPhoto = receiverPhotoSnap.exists()
-      ? receiverPhotoSnap.val()
-      : '/assets/profile.svg';
-
     const senderPrefsSnap = await get(ref(db, `users/${senderId}/preferences`));
     const senderPrefs = senderPrefsSnap.exists() ? senderPrefsSnap.val() : {};
 
-    await set(requestRef, {
+    const receiverPrefsSnap = await get(ref(db, `users/${receiverId}/preferences`));
+    const receiverPrefs = receiverPrefsSnap.exists() ? receiverPrefsSnap.val() : {};
+
+    const requestData = {
       senderId,
       senderName: user.displayName,
       senderPhoto: user.photoURL || '/assets/profile.svg',
@@ -236,10 +228,12 @@ const Card: React.FC<CardProps> = ({
       },
       receiverId,
       receiverName: postUser,
-      receiverPhoto,
+      receiverPhoto: receiverPrefs.photoURL || '/assets/profile.svg',
       status: 'pending',
-      timestamp: Date.now(),
-    });
+    };
+
+    await Promise.all([set(sentRef, requestData), set(receivedRef, requestData)]);
+
     setFollowStatus('pending');
   };
 
