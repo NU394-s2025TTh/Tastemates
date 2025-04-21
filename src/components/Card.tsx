@@ -2,7 +2,7 @@ import './Card.css';
 
 import { getAuth } from 'firebase/auth';
 import { get, getDatabase, ref, remove, set } from 'firebase/database';
-import { ChevronRight } from 'lucide-react';
+import { Bookmark, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import { db } from '../firebase';
@@ -278,12 +278,12 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
         )}
         <div className="name-box">
           <h1>{restaurantName}</h1>
-          <input
-            onClick={handleWishlistClick}
-            type="image"
-            src={isWishlist ? '/assets/wishlisted.svg' : '/assets/heart.svg'}
-            alt="heart"
-          />
+          <button onClick={handleWishlistClick}>
+            <Bookmark
+              size={28}
+              className={`${isWishlist ? `selected` : ``} wishlist-button`}
+            />
+          </button>
         </div>
         <div className="review-box">
           <div className="rating-box">

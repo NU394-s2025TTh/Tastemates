@@ -69,6 +69,23 @@
   margin-top: 0.5rem;
 }
 
+.wishlist-button:hover {
+  color: #DE7254;
+  fill: #DE7254;
+}
+
+.wishlist-button.selected {
+  color: #CE4B27;
+  fill: #CE4B27;
+  transition: 0.3s ease;
+}
+
+.wishlist-button.selected:hover {
+  color: #DE7254;
+  fill: #DE7254;
+  transition: 0.3s ease;
+}
+
 .delete-button {
   background: gray;
   padding: 0.5rem;
