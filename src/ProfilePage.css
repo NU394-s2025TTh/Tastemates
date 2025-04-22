@@ -173,6 +173,7 @@
 }
 
 .child {
+  flex: 1;
   height: 100%;
 }
 
@@ -183,6 +184,8 @@
   align-items: center;
   box-sizing: border-box;
   margin-left: 1rem;
+  margin-top: 0rem;
+  margin-bottom: 0rem;
 }
 
 .child .Card .card-container {
