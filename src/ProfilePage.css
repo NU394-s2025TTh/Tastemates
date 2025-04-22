@@ -165,22 +165,29 @@
 
 .wishlist {
   display: flex;
-  height: 100%;
+  height: 280px; /*added fixed height to wishlist container to the cards would have height to reference and stretch to */
   overflow-x: scroll;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  align-items: stretch;
+}
+
+.child {
+  height: 100%;
 }
 
 .child .Card {
   display: flex;
-  overflow-y: hidden;
-  justify-content: center;
-  align-items: flex-start;
-  max-width: 100%;
-  height: 100%;
-  margin: 0;
-  margin-left: 1rem;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   box-sizing: border-box;
+  margin-left: 1rem;
+}
+
+.child .Card .card-container {
+  flex: 1;
+  height: 100%;
 }
 
 .signout-button {
