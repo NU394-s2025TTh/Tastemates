@@ -165,7 +165,7 @@
 
 .wishlist {
   display: flex;
-  height: 280px; /*added fixed height to wishlist container to the cards would have height to reference and stretch to */
+  height: 340px; /*added fixed height to wishlist container to the cards would have height to reference and stretch to */
   overflow-x: scroll;
   margin-top: 1rem;
   margin-bottom: 1rem;
