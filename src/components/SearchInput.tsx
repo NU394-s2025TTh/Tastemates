@@ -96,6 +96,7 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = event.target.value;
+    window.scrollTo({ top: 0, behavior: 'auto' });
     setSearchText(newValue);
     onSearch(newValue);
   };
