@@ -58,29 +58,30 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
       const lat = 42.055984;
       const lng = -87.675171;
       const radius = 10000;
-      let term = searchText + '+restaurant';
+      let term = 'restaurant';
+      let categories = ''
       let price = [1, 2, 3, 4];
 
       if (!searchText.trim()) {
-        term = 'restaurant';
+        //term = 'restaurant';
       } else {
         setIsPref(false);
       }
+      let url = `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&term=${term}&radius=${radius}`
       if (isPref) {
         preferences.cuisines.map((pref: string) => {
-          term += '+' + pref;
+          categories += pref.toLowerCase() + ',';
         });
-
+        if (categories) {
+          categories = categories.slice(0, -1);
+          url += `&categories=${categories}`
+        }
         price = priceRange;
+        url += `&price=${price}`
       }
-      console.log(
-        `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}&price=${price}`,
-      );
-
+      console.log(url);
       try {
-        const response = await fetch(
-          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}&price=${price}`,
-        );
+        const response = await fetch(url);
         const data = await response.json();
         console.log(data);
         setRestaurants(data);
