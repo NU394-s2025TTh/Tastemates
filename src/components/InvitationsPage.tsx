@@ -195,7 +195,7 @@ const InvitationsPage: React.FC<InvitationsPageProps> = ({ onBack }) => {
       <Navbar />
       <button className="back-container" onClick={onBack}>
         <ChevronLeft className="back-button" size={30} strokeWidth={2.5} />
-        <h1 className="back-title">Back To Feed</h1>
+        <h1 className="back-title">Back</h1>
       </button>
 
       <h2 className="first-header">Received Requests</h2>
