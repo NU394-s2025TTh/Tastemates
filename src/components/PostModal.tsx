@@ -40,7 +40,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
       setLoading(true);
       // Reset input fields when modal is opened
       setSearchText('');
-      setRating('');
+      setRating('0');
       setCaption('');
       setError('');
       setShowDropdown(false);
@@ -192,7 +192,8 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
         </div>
 
         {/* Rating */}
-        {/* <div className="rating">
+        <div className="rating">
+          <h2>{rating}</h2>
           <button className="soup" onMouseEnter={() => handleRating(1)}>
             🍲
           </button>
@@ -208,9 +209,8 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
           <button className="soup" onMouseEnter={() => handleRating(5)}>
             🍲
           </button>
-          <h2>{rating}</h2>
-        </div> */}
-        <input
+        </div>
+        {/* <input
           type="number"
           placeholder="Rating (0.0 - 5.0)"
           min="0"
@@ -219,7 +219,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
           value={rating}
           onChange={(e) => setRating(e.target.value)}
           className="modal-input"
-        />
+        /> */}
 
         {/* Caption */}
         <textarea
@@ -227,7 +227,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
           value={caption}
           onChange={(e) => setCaption(e.target.value)}
           className="modal-input"
-        />
+        /> 
 
         {error && <p className="error-message">{error}</p>}
 
