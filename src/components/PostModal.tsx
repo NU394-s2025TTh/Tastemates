@@ -21,7 +21,7 @@ interface PostModalProps {
 
 const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
-  const [search, setSearch] = useState('');
+  const [searchText, setSearchText] = useState('');
   const [rating, setRating] = useState('');
   const [caption, setCaption] = useState('');
   const [error, setError] = useState('');
@@ -29,11 +29,23 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (isOpen) {
+      setLoading(true);
+      // Reset input fields when modal is opened
+      setSearchText('');
+      setRating('');
+      setCaption('');
+      setError('');
+      setShowDropdown(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
     console.log('FeedPage re-rendered');
     const fetchRestaurants = async () => {
       try {
         const response = await fetch(
-          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&term=restaurant&price=1,2,3,4`,
+          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&term=${searchText}&price=1,2,3,4`,
         );
 
         const data = await response.json();
@@ -51,24 +63,15 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
       }
     };
 
-    if (isOpen) {
-      fetchRestaurants();
-      // setLoading(true);
-      // Reset input fields when modal is opened
-      setSearch('');
-      setRating('');
-      setCaption('');
-      setError('');
-      setShowDropdown(false);
-    }
-  }, [isOpen]);
+    fetchRestaurants();
+  }, [searchText]);
 
   const handleSubmit = async () => {
     const matchedRestaurant = restaurants.find(
-      (r) => r.name.toLowerCase() === search.toLowerCase(),
+      (r) => r.name.toLowerCase() === searchText.toLowerCase(),
     );
 
-    if (!search || !rating || !caption) {
+    if (!searchText || !rating || !caption) {
       setError('Please fill out all fields.');
       return;
     }
@@ -115,11 +118,11 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
   };
 
   const filteredRestaurants = restaurants.filter((r) =>
-    r.name.toLowerCase().includes(search.toLowerCase()),
+    r.name.toLowerCase().includes(searchText.toLowerCase()),
   );
 
   const handleSelect = (name: string) => {
-    setSearch(name);
+    setSearchText(name);
     setShowDropdown(false);
   };
 
@@ -127,6 +130,11 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
     if (event.key === 'Enter') {
       handleSelect(name);
     }
+  };
+
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newValue = event.target.value;
+    setSearchText(newValue);
   };
 
   if (!isOpen) return null;
@@ -145,9 +153,9 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
             <input
               type="text"
               placeholder="Search restaurants..."
-              value={search}
+              value={searchText}
               onChange={(e) => {
-                setSearch(e.target.value);
+                handleChange(e);
                 setShowDropdown(true);
               }}
               onFocus={() => setShowDropdown(true)}
@@ -155,7 +163,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
             />
             {showDropdown && (
               <ul className="dropdown-list">
-                {(search ? filteredRestaurants : restaurants).slice(0, 10).map((r, i) => (
+                {(searchText ? filteredRestaurants : restaurants).map((r, i) => (
                   <li key={i} className="dropdown-item">
                     <button
                       onClick={() => handleSelect(r.name)}
@@ -166,7 +174,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
                     </button>
                   </li>
                 ))}
-                {(search ? filteredRestaurants : restaurants).length === 0 && (
+                {(searchText ? filteredRestaurants : restaurants).length === 0 && (
                   <li className="no-match">No matches found</li>
                 )}
               </ul>

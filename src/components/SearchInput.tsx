@@ -73,9 +73,6 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch }) => {
 
         price = priceRange;
       }
-      console.log(
-        `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&radius=${radius}&term=${term}&price=${price}`,
-      );
 
       try {
         const response = await fetch(

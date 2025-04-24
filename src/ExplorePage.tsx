@@ -11,7 +11,6 @@ const ExplorePage = () => {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     console.log('Searched for: ', query);
-    // TO DO: actually search and connect w Yelp API
   };
   return (
     <div className="explore-page">

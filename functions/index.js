@@ -12,15 +12,20 @@ const corsHandler = cors({ origin: true });
 // Fetches data from the yelp api, must be done in the backend for security purposes
 exports.restaurants = functions.https.onRequest(async (req, res) => {
   corsHandler(req, res, async () => {
-    const { lat, lng, term, radius, price } = req.query;
+    const { lat, lng, term, radius, categories, price } = req.query;
 
-    if (!lat || !lng || !term || !radius || !price) {
+    if (!lat || !lng || !term || !radius) {
       return res
         .status(400)
         .json({ error: 'Missing required query parameters: lat, lng, term, and price' });
     }
-    const url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&radius=${radius}&term=${term}&price=${price}&limit=20`;
-
+    let url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&radius=${radius}&term=${term}`;
+    if (categories) {
+      url += `&categories=${categories}`;
+    }
+    if (price) {
+      url += `&price=${price}`;
+    }
     try {
       const response = await fetch(url, {
         headers: {
