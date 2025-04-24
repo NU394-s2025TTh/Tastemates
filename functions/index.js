@@ -20,12 +20,10 @@ exports.restaurants = functions.https.onRequest(async (req, res) => {
         .json({ error: 'Missing required query parameters: lat, lng, term, and price' });
     }
     let url = `https://api.yelp.com/v3/businesses/search?latitude=${lat}&longitude=${lng}&radius=${radius}&term=${term}`;
-    if (categories) {
-      url += `&categories=${categories}`;
-    }
-    if (price) {
-      url += `&price=${price}`;
-    }
+
+    if (categories) {url += `&categories=${categories}`} 
+    if (price) {url += `&price=${price}`}
+
     try {
       const response = await fetch(url, {
         headers: {
