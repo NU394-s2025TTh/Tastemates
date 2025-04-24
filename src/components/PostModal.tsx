@@ -40,7 +40,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
       setLoading(true);
       // Reset input fields when modal is opened
       setSearchText('');
-      setRating('0');
+      setRating('');
       setCaption('');
       setError('');
       setShowDropdown(false);
@@ -192,7 +192,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
         </div>
 
         {/* Rating */}
-        <div className="rating">
+        {/* <div className="rating">
           <button className="soup" onMouseEnter={() => handleRating(1)}>
             🍲
           </button>
@@ -209,17 +209,17 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
             🍲
           </button>
           <h2>{rating}</h2>
-        </div>
-        {/* <input
-            type="number"
-            placeholder="Rating (0.0 - 5.0)"
-            min="0"
-            max="5"
-            step="0.1"
-            value={rating}
-            onChange={(e) => setRating(e.target.value)}
-            className="modal-input"
-          /> */}
+        </div> */}
+        <input
+          type="number"
+          placeholder="Rating (0.0 - 5.0)"
+          min="0"
+          max="5"
+          step="0.1"
+          value={rating}
+          onChange={(e) => setRating(e.target.value)}
+          className="modal-input"
+        />
 
         {/* Caption */}
         <textarea
