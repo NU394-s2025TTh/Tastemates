@@ -2,6 +2,7 @@ import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
+import { onValue} from 'firebase/database';
 import { Camera, Edit, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
@@ -11,6 +12,7 @@ import Card from './components/Card';
 import EditPreferencesModal from './components/EditPreferencesModal';
 import Navbar from './components/Navbar';
 import TastemateModal from './components/TastemateModal';
+import InvitationsPage from './components/InvitationsPage';
 import { auth, db, get, ref, set } from './firebase';
 import { Restaurant } from './firebaseUtils';
 
@@ -31,6 +33,8 @@ const ProfilePage = () => {
   const [number, setNumber] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
+  const [showRequests, setShowRequests] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
 
   // Firebase: sign out
   const handleSignOut = async () => {
@@ -155,15 +159,43 @@ const ProfilePage = () => {
         }
       };
 
+      // Firebase: track number of pending tastemate requests received
+      const fetchPendingCount = () => {
+        const authUser = auth.currentUser;
+        if (!authUser) return;
+
+        const requestsRef = ref(db, `receivedTastemateRequests/${authUser.uid}`);
+        const unsubscribe = onValue(requestsRef, (snapshot) => {
+          const data = snapshot.val();
+          let pending = 0;
+          if (data) {
+            for (const senderId in data) {
+              if (data[senderId].status === 'pending') pending++;
+            }
+          }
+          localStorage.setItem('pendingCount', pending.toString());
+          setPendingCount(pending);
+        });
+
+        return unsubscribe;
+      };
+
       fetchData();
       fetchTastemates();
+      const unsubscribePending = fetchPendingCount();
+      return () => {
+        changedUser();
+        if (unsubscribePending) unsubscribePending();
+      };
     });
     return () => changedUser();
   }, []);
 
   if (!preferences) return <div>Loading preferences...</div>;
 
-  return (
+  return showRequests ? (
+    <InvitationsPage onBack={() => setShowRequests(false)} />
+  ) : (
     <div className="Profile">
       <Navbar />
       <div className="profile-container">
@@ -273,6 +305,22 @@ const ProfilePage = () => {
               tastemates.length > 0 ? 'tastemates-container' : 'tastemates-empty'
             }
           >
+            <button
+              onClick={() => setShowRequests((prev) => !prev)}
+              className="requests-button-profile"
+            >
+              <span className="requests-content-profile" style={{ position: 'relative' }}>
+                <svg
+                  className="icon-white"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M12 6.5a4.5 4.5 0 1 1 4.5 4.5A4.49 4.49 0 0 1 12 6.5m6 6.5h-3a3 3 0 0 0-3 3v6h9v-6a3 3 0 0 0-3-3M6.5 6A3.5 3.5 0 1 0 10 9.5 3.5 3.5 0 0 0 6.5 6m1 9h-2A2.5 2.5 0 0 0 3 17.5V22h7v-4.5A2.5 2.5 0 0 0 7.5 15" />
+                </svg>
+                Tastemate Requests
+                {pendingCount > 0 && <span className="badge">{pendingCount}</span>}
+              </span>
+            </button>
             {tastemates.length > 0 ? (
               tastemates.map((mate) => (
                 <div className="tastemate-box" key={mate.uid}>
