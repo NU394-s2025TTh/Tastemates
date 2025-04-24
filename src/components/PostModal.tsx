@@ -22,18 +22,25 @@ interface PostModalProps {
 const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [searchText, setSearchText] = useState('');
-  const [rating, setRating] = useState('');
+  const [rating, setRating] = useState('0');
   const [caption, setCaption] = useState('');
   const [error, setError] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [soupHovers, setSoupHovers] = useState<boolean[]>([
+    false,
+    false,
+    false,
+    false,
+    false,
+  ]);
 
   useEffect(() => {
     if (isOpen) {
       setLoading(true);
       // Reset input fields when modal is opened
       setSearchText('');
-      setRating('');
+      setRating('0');
       setCaption('');
       setError('');
       setShowDropdown(false);
@@ -45,7 +52,7 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
     const fetchRestaurants = async () => {
       try {
         const response = await fetch(
-          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&term=${searchText}&price=1,2,3,4`,
+          `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=42.055984&lng=-87.675171&radius=10000&categories=restaurants&term=${searchText}&price=1,2,3,4`,
         );
 
         const data = await response.json();
@@ -137,52 +144,73 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
     setSearchText(newValue);
   };
 
+  const handleRating = (index: number) => {
+    setRating(index.toString());
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <>
-          <button className="close-button" onClick={onClose}>
-            &times;
-          </button>
-          <h2>Create a Post</h2>
+        <button className="close-button" onClick={onClose}>
+          &times;
+        </button>
+        <h2>Create a Post</h2>
 
-          {/* Restaurant Autocomplete */}
-          <div className="dropdown-container">
-            <input
-              type="text"
-              placeholder="Search restaurants..."
-              value={searchText}
-              onChange={(e) => {
-                handleChange(e);
-                setShowDropdown(true);
-              }}
-              onFocus={() => setShowDropdown(true)}
-              className="modal-input"
-            />
-            {showDropdown && (
-              <ul className="dropdown-list">
-                {(searchText ? filteredRestaurants : restaurants).map((r, i) => (
-                  <li key={i} className="dropdown-item">
-                    <button
-                      onClick={() => handleSelect(r.name)}
-                      onKeyDown={(e) => handleKeyDown(e, r.name)}
-                      className="dropdown-item-button"
-                    >
-                      {r.name}
-                    </button>
-                  </li>
-                ))}
-                {(searchText ? filteredRestaurants : restaurants).length === 0 && (
-                  <li className="no-match">No matches found</li>
-                )}
-              </ul>
-            )}
-          </div>
-
-          {/* Rating */}
+        {/* Restaurant Autocomplete */}
+        <div className="dropdown-container">
           <input
+            type="text"
+            placeholder="Search restaurants..."
+            value={searchText}
+            onChange={(e) => {
+              handleChange(e);
+              setShowDropdown(true);
+            }}
+            onFocus={() => setShowDropdown(true)}
+            className="modal-input"
+          />
+          {showDropdown && (
+            <ul className="dropdown-list">
+              {(searchText ? filteredRestaurants : restaurants).map((r, i) => (
+                <li key={i} className="dropdown-item">
+                  <button
+                    onClick={() => handleSelect(r.name)}
+                    onKeyDown={(e) => handleKeyDown(e, r.name)}
+                    className="dropdown-item-button"
+                  >
+                    {r.name}
+                  </button>
+                </li>
+              ))}
+              {(searchText ? filteredRestaurants : restaurants).length === 0 && (
+                <li className="no-match">No matches found</li>
+              )}
+            </ul>
+          )}
+        </div>
+
+        {/* Rating */}
+        <div className="rating">
+          <button className="soup" onMouseEnter={() => handleRating(1)}>
+            🍲
+          </button>
+          <button className="soup" onMouseEnter={() => handleRating(2)}>
+            🍲
+          </button>
+          <button className="soup" onMouseEnter={() => handleRating(3)}>
+            🍲
+          </button>
+          <button className="soup" onMouseEnter={() => handleRating(4)}>
+            🍲
+          </button>
+          <button className="soup" onMouseEnter={() => handleRating(5)}>
+            🍲
+          </button>
+          <h2>{rating}</h2>
+        </div>
+        {/* <input
             type="number"
             placeholder="Rating (0.0 - 5.0)"
             min="0"
@@ -191,22 +219,21 @@ const PostModal: React.FC<PostModalProps> = ({ onClose, isOpen }) => {
             value={rating}
             onChange={(e) => setRating(e.target.value)}
             className="modal-input"
-          />
+          /> */}
 
-          {/* Caption */}
-          <textarea
-            placeholder="Write your caption..."
-            value={caption}
-            onChange={(e) => setCaption(e.target.value)}
-            className="modal-input"
-          />
+        {/* Caption */}
+        <textarea
+          placeholder="Write your caption..."
+          value={caption}
+          onChange={(e) => setCaption(e.target.value)}
+          className="modal-input"
+        />
 
-          {error && <p className="error-message">{error}</p>}
+        {error && <p className="error-message">{error}</p>}
 
-          <button onClick={handleSubmit} className="submit-button">
-            Submit
-          </button>
-        </>
+        <button onClick={handleSubmit} className="submit-button">
+          Submit
+        </button>
       </div>
     </div>
   );

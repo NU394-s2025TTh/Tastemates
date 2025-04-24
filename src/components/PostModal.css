@@ -13,7 +13,7 @@
 
 .modal-content {
   background: white;
-  padding: 1.5rem;
+  /* padding: 1.5rem; */
   border-radius: 20px;
   width: 90%;
   max-width: 350px;
@@ -21,6 +21,20 @@
   position: relative;
   box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
   font-family: 'Inter';
+}
+
+.rating {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.soup:hover {
+  filter: brightness(0.7);
+}
+
+h2 {
+  padding-left: 0.5rem;
 }
 
 .close-button {
