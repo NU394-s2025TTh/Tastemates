@@ -246,3 +246,38 @@
   color: #5a4d45;
   cursor: pointer;
 }
+
+.badge {
+  position: absolute;
+  top: -20px;
+  right: -25px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  font-size: 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.requests-button-profile {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  background-color: #E07A5F;
+  color: #fff;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+}
+
+.requests-button-profile:hover {
+  opacity: .9;
+}
+
+.requests-content-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
