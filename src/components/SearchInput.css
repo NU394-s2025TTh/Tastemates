@@ -14,13 +14,13 @@
   border-radius: 40px;
   background-color: #EAB69F;
   border-width: 2px;
-  border-color: #3D405B;
+  border-color: #EAB69F;
   color: #3D405B;
   border-style: solid;
   margin-top: 1rem;
   padding: 0.7rem;
   transition: color 0.3s ease;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 7px 3px rgba(0, 0, 0, 0.2);
 }
 
 .pref-button:hover {

@@ -185,7 +185,7 @@ const ProfilePage = () => {
           </label>
         </div>
         <div className="name-row">
-          <h2 className="user-name">{userName}</h2>
+          <h1 className="user-name">{userName}</h1>
         </div>
         {number && <p className="phone-number">Phone: {number}</p>}
 

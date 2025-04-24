@@ -143,13 +143,12 @@
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: left;
+  justify-content: center;
   gap: 0.3rem;
   background-color: #3D405B;
   color: #FAF9F0;
   border-radius: 100px;
   padding: 1rem;
-  padding-right: 2rem;
   height: 30px;
 }
 
@@ -166,22 +165,32 @@
 
 .wishlist {
   display: flex;
-  height: 100%;
+  height: 340px; /*added fixed height to wishlist container to the cards would have height to reference and stretch to */
   overflow-x: scroll;
   margin-top: 1rem;
   margin-bottom: 1rem;
+  align-items: stretch;
+}
+
+.child {
+  flex: 1;
+  height: 100%;
 }
 
 .child .Card {
   display: flex;
-  overflow-y: hidden;
-  justify-content: center;
-  align-items: flex-start;
-  max-width: 100%;
-  height: 100%;
-  margin: 0;
-  margin-left: 1rem;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
   box-sizing: border-box;
+  margin-left: 1rem;
+  margin-top: 0rem;
+  margin-bottom: 0rem;
+}
+
+.child .Card .card-container {
+  flex: 1;
+  height: 100%;
 }
 
 .signout-button {
@@ -203,7 +212,7 @@
 
 .view-details-button {
   margin: 0;
-  color: #5a4d45;
+  color: #FAF9F0;
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.15s ease;
@@ -211,7 +220,7 @@
 
 .view-details-button:hover {
   transform: scale(1.15);
-  color: #5a4d45;
+  color: #FAF9F0;
 }
 
 .phone-number {

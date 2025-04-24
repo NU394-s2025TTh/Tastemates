@@ -92,11 +92,14 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
     fetchRestaurants();
   }, [tab, searchText, isPref, preferences, priceRange]);
 
+
   /* ── search box handler ──────────────────────────────────────────── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
+    window.scrollTo({ top: 0, behavior: 'auto' });
     setSearchText(value);
     onSearch(value); // Users tab needs this
+
   };
 
   /* ── render ──────────────────────────────────────────────────────── */
