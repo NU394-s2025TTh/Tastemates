@@ -1,10 +1,137 @@
+/* ───────────────────────────────────────────────────────── */
+/*  Explore container                                       */
+/* ───────────────────────────────────────────────────────── */
 .explore-page {
-  text-align: center;
-  background: #CCE0D7;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  max-width: 400px;
-  width: 100%;
-  min-height: 40rem;
-}
+	text-align: center;
+	background: #cce0d7;
+	padding: 2rem;
+	border-radius: 12px;
+	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	max-width: 400px;
+	width: 100%;
+	min-height: 40rem;
+  }
+  
+  /* ───────────────────────────────────────────────────────── */
+  /*  Tab navigation (“Restaurants” | “Users”)                */
+  /* ───────────────────────────────────────────────────────── */
+  .tab-navigation {
+	display: flex;
+	justify-content: center;
+	gap: 1.25rem;
+	margin-bottom: 1rem;
+  }
+  
+  .tab-btn {
+	padding: 0.4rem 1.2rem;
+	font-weight: 600;
+	font-size: 0.95rem;
+	background: transparent;
+	border: none;
+	border-bottom: 3px solid transparent;
+	cursor: pointer;
+	transition: border-color 0.15s;
+  }
+  
+  .tab-btn:hover {
+	border-bottom-color: rgba(11, 128, 54, 0.4);
+  }
+  
+  .tab-btn.active {
+	border-bottom-color: #0b8036;
+  }
+  
+  /* ───────────────────────────────────────────────────────── */
+  /*  Search bar wrapper (assumes SearchInput renders a div)  */
+  /* ───────────────────────────────────────────────────────── */
+  .search-input-wrapper,
+  .search-input-container,
+  .search-input {
+	margin-bottom: 0.75rem;
+  }
+  
+  
+  .search-label {
+	margin: 0.5rem 0 1rem;
+	font-size: 0.9rem;
+	color: #444;
+  }
+  
+  
+  .user-feed {
+	display: flex;
+	flex-direction: column;
+	gap: 0.75rem;
+  }
+  
+  /* ───── 1. Uniform space beneath the search bar ─────────── */
+.user-feed {
+	margin-top: 1rem;         /* ⇦ extra gap only above the first card */
+	gap: 0.75rem;             /* card-to-card spacing stays the same */
+  }
+  
+  /* ───── 2. Tab bar color + underline tweaks ─────────────── */
+  .tab-btn {
+	padding: 0.4rem 1.2rem;
+	font-size: 1rem;
+	font-weight: 600;
+	background: transparent;
+	border: none;
+	border-bottom: 3px solid transparent;
+	color: #3D405B;           /* deep slate text */
+	cursor: pointer;
+	transition: color .15s, border-color .15s;
+  }
+  
+  .tab-btn:hover {
+	color: #CE4B27;           /* terracotta on hover */
+  }
+  
+  .tab-btn.active {
+	color: #CE4B27;           /* terracotta when active */
+	border-bottom-color: #CE4B27;
+  }
+  
+  /* optional: soften hover underline only (remove if not needed) */
+  .tab-btn:not(.active):hover {
+	border-bottom-color: rgba(206, 75, 39, 0.35);
+  }
+  /* ─────────  PILL-STYLE TAB BAR  ─────────────────────────── */
+.tab-navigation {
+	background: #faf9f0;          /* cream pill behind both tabs */
+	border-radius: 2rem;          /* full pill */
+	padding: 0.25rem;
+	display: flex;
+	justify-content: center;
+	gap: 0;                       /* each tab butt-ups next to the other */
+	margin-bottom: 1.25rem;
+	box-shadow: 0 2px 4px rgba(0,0,0,.06);
+  }
+  
+  .tab-btn {
+	flex: 1;
+	border: none;
+	background: transparent;
+	color: #3d405b;               /* slate */
+	font-weight: 600;
+	font-size: 0.95rem;
+	padding: 0.5rem 1rem;
+	border-radius: 1.75rem;       /* slightly inside the pill */
+	cursor: pointer;
+	transition: background .15s, color .15s;
+  }
+  
+  /* inactive hover: faint underline */
+  .tab-btn:not(.active):hover {
+	text-decoration: underline;
+	text-underline-offset: 2px;
+	text-decoration-color: rgba(206, 75, 39, 0.45); /* terracotta tint */
+  }
+  
+  /* ACTIVE tab */
+  .tab-btn.active {
+	background: #ce4b27;          /* terracotta */
+	color: #faf9f0;               /* cream text */
+	box-shadow: 0 2px 4px rgba(0,0,0,.12);
+  }
+  
