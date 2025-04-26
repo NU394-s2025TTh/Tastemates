@@ -1,6 +1,6 @@
 .Profile {
   text-align: center;
-  background: #CCE0D7;
+  background: #cce0d7;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -64,7 +64,7 @@
 }
 
 .pref-card {
-  background-color: #FAF9F0;
+  background-color: #faf9f0;
   padding-left: 1rem;
   padding-right: 1rem;
   border-radius: 1rem;
@@ -94,9 +94,9 @@
 }
 
 .cuisine-tag {
-  background-color: #F2CC8F;
+  background-color: #f2cc8f;
   border-radius: 100px;
-  color: #3D405B;
+  color: #3d405b;
   padding: 1rem;
   margin: 0;
 }
@@ -145,8 +145,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.3rem;
-  background-color: #3D405B;
-  color: #FAF9F0;
+  background-color: #3d405b;
+  color: #faf9f0;
   border-radius: 100px;
   padding: 1rem;
   height: 30px;
@@ -194,7 +194,7 @@
 }
 
 .signout-button {
-  background-color: #3D405B;;
+  background-color: #3d405b;
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
@@ -207,12 +207,12 @@
 }
 
 .signout-button:hover {
-  background-color: #5A5E87;
+  background-color: #5a5e87;
 }
 
 .view-details-button {
   margin: 0;
-  color: #FAF9F0;
+  color: #faf9f0;
   border-radius: 50%;
   cursor: pointer;
   transition: transform 0.15s ease;
@@ -220,7 +220,7 @@
 
 .view-details-button:hover {
   transform: scale(1.15);
-  color: #FAF9F0;
+  color: #faf9f0;
 }
 
 .phone-number {
@@ -265,7 +265,7 @@
 .requests-button-profile {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: #E07A5F;
+  background-color: #e07a5f;
   color: #fff;
   border: none;
   border-radius: 100px;
@@ -273,7 +273,7 @@
 }
 
 .requests-button-profile:hover {
-  opacity: .9;
+  opacity: 0.9;
 }
 
 .requests-content-profile {

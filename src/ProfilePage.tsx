@@ -2,7 +2,7 @@ import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { onValue} from 'firebase/database';
+import { onValue } from 'firebase/database';
 import { Camera, Edit, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
@@ -10,9 +10,9 @@ import { useNavigate } from 'react-router-dom';
 
 import Card from './components/Card';
 import EditPreferencesModal from './components/EditPreferencesModal';
+import InvitationsPage from './components/InvitationsPage';
 import Navbar from './components/Navbar';
 import TastemateModal from './components/TastemateModal';
-import InvitationsPage from './components/InvitationsPage';
 import { auth, db, get, ref, set } from './firebase';
 import { Restaurant } from './firebaseUtils';
 

@@ -9,7 +9,6 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showAllCuisines, setShowAllCuisines] = useState(false);
 
-
   useEffect(() => {
     setSelectedCuisines(new Set(existingPrefs.cuisines || []));
     setPhoneNumber(existingPrefs.phoneNumber || '');
@@ -73,7 +72,7 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
     'Southern',
     'Vegetarian',
     'Vegan',
-  ]
+  ];
 
   const displayedCuisines = showAllCuisines
     ? [...defaultCuisines, ...extraCuisines]
@@ -114,7 +113,6 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
             >
               {showAllCuisines ? 'Show Less' : 'Show More'}
             </button>
-            
           </div>
 
           <div className="modal-actions">

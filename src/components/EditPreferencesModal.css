@@ -13,7 +13,7 @@
 }
 
 .modal-content {
-  background: #FAF9F0;
+  background: #faf9f0;
   padding: 2rem;
   border-radius: 8px;
   width: 90%;
@@ -29,14 +29,14 @@
   gap: 0.5rem;
   align-items: start;
   justify-content: left;
-  max-height: 350px;
+  max-height: 363px;
   overflow-y: auto;
 }
 
 .cuisine-buttons button {
   border: none;
-  background-color: #F2CC8F;
-  color: #3D405B;
+  background-color: #f2cc8f;
+  color: #3d405b;
   border-radius: 100px;
   padding: 1rem;
   cursor: pointer;
@@ -47,9 +47,9 @@
 .cuisine-buttons button.selected {
   /* background-color: #98897e; */
   color: white;
-  background-color: #E07A5F;
+  background-color: #e07a5f;
   border-radius: 100px;
-  color: #3D405B;
+  color: #3d405b;
   padding: 1rem;
   margin: 0;
 }
@@ -66,7 +66,7 @@
     background-color 0.2s ease;
 }
 .modal-actions button {
-  background-color: #3D405B;
+  background-color: #3d405b;
   color: white;
   padding: 1rem;
   font-weight: bold;
@@ -75,7 +75,7 @@
 }
 .modal-actions button:hover {
   /* transform: scale(1.05); */
-  background-color: #5A5E87; 
+  background-color: #5a5e87;
 }
 
 .phone-row {

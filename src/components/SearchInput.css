@@ -3,7 +3,7 @@
   width: 18rem;
   height: 0.5rem;
   border-radius: 200px;
-  background-color: #F3F7F5;
+  background-color: #f3f7f5;
   border: 0rem;
   font-size: large;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
@@ -12,10 +12,10 @@
 .pref-button {
   font-size: large;
   border-radius: 40px;
-  background-color: #EAB69F;
+  background-color: #eab69f;
   border-width: 2px;
-  border-color: #EAB69F;
-  color: #3D405B;
+  border-color: #eab69f;
+  color: #3d405b;
   border-style: solid;
   margin-top: 1rem;
   padding: 0.7rem;
@@ -24,12 +24,12 @@
 }
 
 .pref-button:hover {
-  border-color: #DE7254;
-  color: #DE7254;
+  border-color: #de7254;
+  color: #de7254;
 }
 
 .pref-button.active {
-  background-color: #E07A5F;
-  border-color: #E07A5F;
-  color: #F4F1DE;
+  background-color: #e07a5f;
+  border-color: #e07a5f;
+  color: #f4f1de;
 }

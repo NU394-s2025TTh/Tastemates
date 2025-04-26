@@ -68,8 +68,8 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
       const lng = -87.675171;
       const radius = 10000;
 
-      let term = 'restaurant';
-      let categories = ''
+      const term = 'restaurant';
+      let categories = '';
       let price = [1, 2, 3, 4];
 
       if (!searchText.trim()) {
@@ -77,18 +77,18 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
       } else {
         setIsPref(false);
       }
-      let url = `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&term=${term}&radius=${radius}`
+      let url = `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&term=${term}&radius=${radius}`;
       if (isPref) {
         preferences.cuisines.map((pref: string) => {
           categories += pref.toLowerCase() + ',';
         });
         if (categories) {
           categories = categories.slice(0, -1);
-          url += `&categories=${categories}`
+          url += `&categories=${categories}`;
         }
 
         price = priceRange;
-        url += `&price=${price}`
+        url += `&price=${price}`;
       }
 
       console.log(url);
@@ -108,14 +108,12 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
     fetchRestaurants();
   }, [tab, searchText, isPref, preferences, priceRange]);
 
-
   /* ── search box handler ──────────────────────────────────────────── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     window.scrollTo({ top: 0, behavior: 'auto' });
     setSearchText(value);
     onSearch(value); // Users tab needs this
-
   };
 
   /* ── render ──────────────────────────────────────────────────────── */

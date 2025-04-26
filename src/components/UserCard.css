@@ -1,44 +1,41 @@
-
 .user-card {
-	display: flex;
-	align-items: center;
-	background: #FAF9F0;
-	box-shadow: 0 4px 6px rgba(0,0,0,.1);
-	border-radius: 12px;
-	padding: 1rem 1.25rem;
-	margin: 0.2rem auto;                      
-	max-width: 400px;
-	width: 100%;
-	gap: 1rem;
-	box-sizing: border-box;           
-  }
-  
-  .user-profile-pic {
-	width: 3rem;
-	height: 3rem;
-	border-radius: 50%;
-	object-fit: cover;
-  }
-  
-  .user-name {
-	font-size: 1.1rem;                
-	font-weight: 700;                
-	color: #3D405B;                  
-	flex: 1;                           
-	text-align: center;             
-  }
-  
-  .user-card:hover {
-	transform: translateY(-2px);
-	transition: transform 0.15s ease;
-  }
-  
-  .user-profile-pic[src$="profile.svg"] {
-	background: #CCE0D7;               
-  }
-  .view-details-button {
-	margin-left: auto;
-	cursor: pointer;
-  }
-  
-  
+  display: flex;
+  align-items: center;
+  background: #faf9f0;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  margin: 0.2rem auto;
+  max-width: 400px;
+  width: 100%;
+  gap: 1rem;
+  box-sizing: border-box;
+}
+
+.user-profile-pic {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-name {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #3d405b;
+  flex: 1;
+  text-align: center;
+}
+
+.user-card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.15s ease;
+}
+
+.user-profile-pic[src$='profile.svg'] {
+  background: #cce0d7;
+}
+.view-details-button {
+  margin-left: auto;
+  cursor: pointer;
+}
