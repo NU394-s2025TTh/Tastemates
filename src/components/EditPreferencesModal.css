@@ -29,6 +29,8 @@
   gap: 0.5rem;
   align-items: start;
   justify-content: left;
+  max-height: 350px;
+  overflow-y: auto;
 }
 
 .cuisine-buttons button {
@@ -92,4 +94,9 @@
   font-size: 1rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+#displayCuisines {
+  background-color: grey;
+  font-weight: bold;
 }

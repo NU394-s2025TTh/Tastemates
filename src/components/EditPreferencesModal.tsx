@@ -7,6 +7,8 @@ import { auth, db, get, ref, set } from '../firebase';
 const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
   const [phoneNumber, setPhoneNumber] = useState('');
+  const [showAllCuisines, setShowAllCuisines] = useState(false);
+
 
   useEffect(() => {
     setSelectedCuisines(new Set(existingPrefs.cuisines || []));
@@ -41,6 +43,42 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
     }
   };
 
+  const defaultCuisines = [
+    'Mexican',
+    'Caribbean',
+    'Indian',
+    'Italian',
+    'Brazilian',
+    'Filipino',
+    'Korean',
+    'Chinese',
+    'Japanese',
+    'American',
+    'Thai',
+    'French',
+  ];
+  const extraCuisines = [
+    'Vietnamese',
+    'African',
+    'Armenian',
+    'German',
+    'Belgian',
+    'British',
+    'Halal',
+    'Greek',
+    'Kosher',
+    'Mediterranean',
+    'Mongolian',
+    'Scandinavian',
+    'Southern',
+    'Vegetarian',
+    'Vegan',
+  ]
+
+  const displayedCuisines = showAllCuisines
+    ? [...defaultCuisines, ...extraCuisines]
+    : defaultCuisines;
+
   return (
     <div className="modal-backdrop">
       <div className="modal-content">
@@ -58,20 +96,7 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
 
           <p>Choose Favorite Cuisines:</p>
           <div className="cuisine-buttons">
-            {[
-              'Mexican',
-              'Caribbean',
-              'Indian',
-              'Italian',
-              'Brazilian',
-              'Filipino',
-              'Korean',
-              'Chinese',
-              'Japanese',
-              'American',
-              'Thai',
-              'French',
-            ].map((cuisine) => (
+            {displayedCuisines.map((cuisine) => (
               <button
                 type="button"
                 key={cuisine}
@@ -81,6 +106,15 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
                 {cuisine}
               </button>
             ))}
+            <button
+              type="button"
+              className="modal-actions"
+              id="displayCuisines"
+              onClick={() => setShowAllCuisines(!showAllCuisines)}
+            >
+              {showAllCuisines ? 'Show Less' : 'Show More'}
+            </button>
+            
           </div>
 
           <div className="modal-actions">
