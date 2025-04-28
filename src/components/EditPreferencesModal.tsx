@@ -1,9 +1,9 @@
 import './EditPreferencesModal.css';
-import CuisineSelector from './CuisineSelector'
 
 import { useEffect, useState } from 'react';
 
 import { auth, db, get, ref, set } from '../firebase';
+import CuisineSelector from './CuisineSelector';
 
 const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
@@ -102,7 +102,7 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
             showAllCuisines={showAllCuisines}
             setShowAllCuisines={setShowAllCuisines}
           />
-          
+
           <div className="modal-actions">
             <button type="submit">Save</button>
             <button type="button" onClick={onClose}>

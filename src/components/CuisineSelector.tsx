@@ -7,7 +7,12 @@ interface CuisineSelectorProps {
   setShowAllCuisines: (show: boolean) => void;
 }
 
-const CuisineSelector = ({ selectedCuisines, toggleCuisine, showAllCuisines, setShowAllCuisines }: CuisineSelectorProps) => {
+const CuisineSelector = ({
+  selectedCuisines,
+  toggleCuisine,
+  showAllCuisines,
+  setShowAllCuisines,
+}: CuisineSelectorProps) => {
   const defaultCuisines = [
     'Mexican',
     'Caribbean',
@@ -22,7 +27,7 @@ const CuisineSelector = ({ selectedCuisines, toggleCuisine, showAllCuisines, set
     'Thai',
     'French',
   ];
-  
+
   const extraCuisines = [
     'Vietnamese',
     'African',
@@ -53,20 +58,19 @@ const CuisineSelector = ({ selectedCuisines, toggleCuisine, showAllCuisines, set
           key={cuisine}
           onClick={() => toggleCuisine(cuisine)}
           className={selectedCuisines.has(cuisine) ? 'selected' : ''}
-          >
+        >
           {cuisine}
         </button>
       ))}
-        <button
-          type="button"
-          className="modal-actions"
-          id="displayCuisines"
-          onClick={() => setShowAllCuisines(!showAllCuisines)}
-          >
-          {showAllCuisines ? 'Show Less' : 'Show More'}
-        </button>
-      </div>
- 
+      <button
+        type="button"
+        className="modal-actions"
+        id="displayCuisines"
+        onClick={() => setShowAllCuisines(!showAllCuisines)}
+      >
+        {showAllCuisines ? 'Show Less' : 'Show More'}
+      </button>
+    </div>
   );
 };
 

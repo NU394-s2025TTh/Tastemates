@@ -1,10 +1,10 @@
 import './SearchInput.css';
-import FilterModal from './FilterModal'
 
 import React, { useEffect, useState } from 'react';
 
 import { auth, db, get, ref } from '../firebase';
 import Card from './Card';
+import FilterModal from './FilterModal';
 
 interface SearchInputProps {
   onSearch: (query: string) => void;
@@ -84,13 +84,12 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
       let url = `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&term=${term}&radius=${radius}`;
       if (isPref) {
         setIsFilter(false);
-        console.log("preferences: ", preferences)
+        console.log('preferences: ', preferences);
         preferences.cuisines.map((pref: string) => {
           categories += pref.toLowerCase() + ',';
         });
         price = priceRange;
         url += `&price=${price}`;
-
       } else if (isFilter) {
         Array.from(selectedCuisines).map((pref: string) => {
           categories += pref.toLowerCase() + ',';
@@ -123,15 +122,24 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
   /* ── open/close the filter modal ──────────────────────────────────────────── */
   const openFilterModal = () => {
     setShowFilterModal(true);
-  }
+  };
 
   const closeFilterModal = () => {
     setShowFilterModal(false);
-  }
+  };
 
   const setFilter = () => {
     setIsFilter(true);
     setIsPref(false);
+  };
+
+  const removeCuisine =(cuisine: string) => {
+    const newSet = new Set(selectedCuisines)
+    const removed = newSet.delete(cuisine);
+    if (removed) {
+      setSelectedCuisines(newSet);
+    }
+    console.log(selectedCuisines);
   }
 
   /* ── search box handler ──────────────────────────────────────────── */
@@ -157,38 +165,41 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
       {tab === 'restaurants' && (
         <>
           {!isLoading && (
-            <div className='pref-buttons'>
+            <div className="pref-buttons">
               <button
-              onClick={() => {
-                setIsPref(!isPref)
-                setIsFilter(false)
-              }}
-              className={`pref-button ${isPref ? 'active' : ''}`}
+                onClick={() => {
+                  setIsPref(!isPref);
+                  setIsFilter(false);
+                }}
+                className={`pref-button ${isPref ? 'active' : ''}`}
               >
-              Based on my preferences
-            </button>
-            <button
-              onClick={openFilterModal}
-              className={`pref-button ${isFilter ? 'active' : ''}`}
+                Based on my preferences
+              </button>
+              <button
+                onClick={openFilterModal}
+                className={`pref-button ${isFilter ? 'active' : ''}`}
               >
-              Search By Cuisine
-            </button>
+                Search By Cuisine
+              </button>
             </div>
           )}
           {isFilter && (
-            Array.from(selectedCuisines).map((cuisine) => (
-              <button
-                type="button"
-                key={cuisine}
-
-                className={selectedCuisines.has(cuisine) ? 'selected' : ''}
+            <div className="filters">
+              {Array.from(selectedCuisines).map((cuisine) => (
+                <div
+                  key={cuisine}
+                  className="filter"
                 >
-                {cuisine}
-              </button>
-            ))
+                  <button
+                    type="button"
+                    onClick={() => removeCuisine(cuisine)}
+                    >
+                    </button>
+                  {cuisine}
+                </div>
+              ))}
+            </div>
           )}
-          
-
           {isLoading ? (
             <div style={{ fontSize: '2rem', marginTop: '3rem', fontWeight: 'bold' }}>
               Loading restaurants...
@@ -215,10 +226,10 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
           )}
           {showFilterModal && (
             <FilterModal
-            onClose={closeFilterModal}
-            filters={selectedCuisines}
-            setFilters={setSelectedCuisines}
-            isFilter={setFilter}
+              onClose={closeFilterModal}
+              filters={selectedCuisines}
+              setFilters={setSelectedCuisines}
+              isFilter={setFilter}
             />
           )}
         </>

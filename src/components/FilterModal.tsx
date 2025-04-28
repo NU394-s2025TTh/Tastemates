@@ -1,21 +1,20 @@
 import './EditPreferencesModal.css';
-import CuisineSelector from './CuisineSelector'
 
 import { useEffect, useState } from 'react';
 
+import CuisineSelector from './CuisineSelector';
 
 // interface FilterModalProps {
 //   onClose: () => void;
 //   selectedCuisines: Set<string>;
 //   setSelectedCuisines: React.Dispatch<React.SetStateAction<Set<string>>>;
-  // selectedPriceRange: string;
-  // setSelectedPriceRange: React.Dispatch<React.SetStateAction<string>>;
+// selectedPriceRange: string;
+// setSelectedPriceRange: React.Dispatch<React.SetStateAction<string>>;
 // }
 
 const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
   const [showAllCuisines, setShowAllCuisines] = useState(false);
-
 
   const toggleCuisine = (cuisine: string) => {
     setSelectedCuisines((prev) => {
@@ -27,7 +26,7 @@ const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     try {
       setFilters(selectedCuisines);
       isFilter(true);
@@ -36,8 +35,7 @@ const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
     } catch (error) {
       console.error('Error updating cuisine filters:', error);
     }
-  }
-  
+  };
 
   return (
     <div className="modal-backdrop">
@@ -51,9 +49,7 @@ const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
             setShowAllCuisines={setShowAllCuisines}
           />
           <div className="modal-actions">
-            <button type="submit">
-              Save
-            </button>
+            <button type="submit">Save</button>
             <button type="button" onClick={onClose}>
               Cancel
             </button>

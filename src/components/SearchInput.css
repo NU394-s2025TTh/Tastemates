@@ -39,3 +39,35 @@
   border-color: #e07a5f;
   color: #f4f1de;
 }
+
+.filters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+
+}
+.filter {
+  font-size: medium;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 14px;
+  padding-right: 14px;
+  background-color: #f2cc8f;
+  color: #3d405b;
+  margin-right: 12px;
+  margin-top: 12px;
+  border-radius: 30px;
+  border: solid 2px orange;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.filter button {
+  width: 15px;
+  height: 15px;
+  /* background-color: red; */
+  background-image: url('../assets/remove.png');
+  background-size: cover;
+}
