@@ -2,7 +2,7 @@ import './ProfilePage.css';
 
 import { signOut } from 'firebase/auth';
 import { onAuthStateChanged } from 'firebase/auth';
-import { onValue} from 'firebase/database';
+import { onValue } from 'firebase/database';
 import { Camera, Edit, Info } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Range } from 'react-range';
@@ -10,9 +10,9 @@ import { useNavigate } from 'react-router-dom';
 
 import Card from './components/Card';
 import EditPreferencesModal from './components/EditPreferencesModal';
+import InvitationsPage from './components/InvitationsPage';
 import Navbar from './components/Navbar';
 import TastemateModal from './components/TastemateModal';
-import InvitationsPage from './components/InvitationsPage';
 import { auth, db, get, ref, set } from './firebase';
 import { Restaurant } from './firebaseUtils';
 
@@ -191,6 +191,48 @@ const ProfilePage = () => {
     return () => changedUser();
   }, []);
 
+  // take in and parse text input to change price range
+  const [inputs, setInputs] = useState<[string, string]>([
+    String(priceRange[0]),
+    priceRange[1] === MAX ? `${MAX}+` : String(priceRange[1]),
+  ]);
+
+  useEffect(() => {
+    setInputs([
+      String(priceRange[0]),
+      priceRange[1] === MAX ? `${MAX}+` : String(priceRange[1]),
+    ]);
+  }, [priceRange]);
+
+  const commitInput = (idx: 0 | 1) => {
+    // parse the inputs
+    const raw =
+      idx === 0 ? inputs[0].replace(/[^-\d]/g, '') : inputs[1].replace(/[^\d]/g, '');
+    if (!raw || raw === '' || raw === '-') return;
+
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed)) return;
+    let v: number;
+
+    if (idx === 0) {
+      // MIN bound and also <= current max
+      v = Math.max(MIN, Math.min(parsed, priceRange[1]));
+    } else {
+      // HIGH bound must be >= current min, <= MAX
+      if (inputs[1].endsWith('+')) {
+        // if user inputs something like number+, it'll just default to max value
+        v = MAX;
+      } else {
+        v = Math.max(priceRange[0], Math.min(parsed, MAX));
+      }
+    }
+
+    const next: [number, number] = [priceRange[0], priceRange[1]];
+    next[idx] = v;
+    setPriceRange(next);
+    handlePriceChange(next);
+  };
+
   if (!preferences) return <div>Loading preferences...</div>;
 
   return showRequests ? (
@@ -254,9 +296,48 @@ const ProfilePage = () => {
         <div className="pref-card">
           <p className="pref-card-title">Your Price Range</p>
           <div className="slider-wrapper">
-            <p className="price-text">
+            {/* <p className="price-text">
               ${priceRange[0]} — {priceRange[1] === MAX ? `${MAX}+` : `$${priceRange[1]}`}
-            </p>
+            </p> */}
+            <div className="price-text">
+              <div>
+                $
+                <input
+                  className="input-text"
+                  type="text"
+                  value={inputs[0]}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setInputs(([_, high]) => [e.target.value, high])
+                  }
+                  onBlur={() => commitInput(0)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      commitInput(0);
+                    }
+                  }}
+                  style={{ width: 40 }}
+                />
+              </div>
+              <div>
+                $
+                <input
+                  className="input-text"
+                  type="text"
+                  value={inputs[1]}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setInputs(([low, _]) => [low, e.target.value])
+                  }
+                  onBlur={() => commitInput(1)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      commitInput(1);
+                    }
+                  }}
+                  style={{ width: 40 }}
+                />
+              </div>
+            </div>
+
             <Range
               step={STEP}
               min={MIN}
