@@ -133,14 +133,14 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
     setIsPref(false);
   };
 
-  const removeCuisine =(cuisine: string) => {
-    const newSet = new Set(selectedCuisines)
+  const removeCuisine = (cuisine: string) => {
+    const newSet = new Set(selectedCuisines);
     const removed = newSet.delete(cuisine);
     if (removed) {
       setSelectedCuisines(newSet);
     }
     console.log(selectedCuisines);
-  }
+  };
 
   /* ── search box handler ──────────────────────────────────────────── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,15 +186,8 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
           {isFilter && (
             <div className="filters">
               {Array.from(selectedCuisines).map((cuisine) => (
-                <div
-                  key={cuisine}
-                  className="filter"
-                >
-                  <button
-                    type="button"
-                    onClick={() => removeCuisine(cuisine)}
-                    >
-                    </button>
+                <div key={cuisine} className="filter">
+                  <button type="button" onClick={() => removeCuisine(cuisine)}></button>
                   {cuisine}
                 </div>
               ))}

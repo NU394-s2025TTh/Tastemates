@@ -4,17 +4,14 @@ import { useEffect, useState } from 'react';
 
 import CuisineSelector from './CuisineSelector';
 
-// interface FilterModalProps {
-//   onClose: () => void;
-//   selectedCuisines: Set<string>;
-//   setSelectedCuisines: React.Dispatch<React.SetStateAction<Set<string>>>;
-// selectedPriceRange: string;
-// setSelectedPriceRange: React.Dispatch<React.SetStateAction<string>>;
-// }
 
 const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
   const [showAllCuisines, setShowAllCuisines] = useState(false);
+
+  useEffect(() => {
+    setSelectedCuisines(new Set(filters || []));
+  }, [filters]);
 
   const toggleCuisine = (cuisine: string) => {
     setSelectedCuisines((prev) => {
