@@ -8,8 +8,14 @@
   font-size: large;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
+.pref-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
 
 .pref-button {
+  flex: 1;
   font-size: large;
   border-radius: 40px;
   background-color: #eab69f;

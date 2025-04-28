@@ -1,4 +1,5 @@
 import './EditPreferencesModal.css';
+import CuisineSelector from './CuisineSelector'
 
 import { useEffect, useState } from 'react';
 
@@ -56,6 +57,7 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
     'Thai',
     'French',
   ];
+
   const extraCuisines = [
     'Vietnamese',
     'African',
@@ -94,27 +96,13 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
           </div>
 
           <p>Choose Favorite Cuisines:</p>
-          <div className="cuisine-buttons">
-            {displayedCuisines.map((cuisine) => (
-              <button
-                type="button"
-                key={cuisine}
-                onClick={() => toggleCuisine(cuisine)}
-                className={selectedCuisines.has(cuisine) ? 'selected' : ''}
-              >
-                {cuisine}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="modal-actions"
-              id="displayCuisines"
-              onClick={() => setShowAllCuisines(!showAllCuisines)}
-            >
-              {showAllCuisines ? 'Show Less' : 'Show More'}
-            </button>
-          </div>
-
+          <CuisineSelector
+            selectedCuisines={selectedCuisines}
+            toggleCuisine={toggleCuisine}
+            showAllCuisines={showAllCuisines}
+            setShowAllCuisines={setShowAllCuisines}
+          />
+          
           <div className="modal-actions">
             <button type="submit">Save</button>
             <button type="button" onClick={onClose}>
