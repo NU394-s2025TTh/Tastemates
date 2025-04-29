@@ -32,6 +32,7 @@ const ProfilePage = () => {
   const [selectedTastemate, setSelectedTastemate] = useState<any>(null);
   const [number, setNumber] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [posts, setPosts] = useState<any[]>([]);
   const navigate = useNavigate();
   const [showRequests, setShowRequests] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
@@ -132,7 +133,34 @@ const ProfilePage = () => {
         }
       };
 
-      // Firebase: load tastemates (confirmed connections)
+      /* ─── live listener for my posts ───────────────────────────── */
+      const listenToMyPosts = () => {
+        const user = auth.currentUser;
+        if (!user) return () => {};
+
+        const postsRef = ref(db, 'posts');
+
+        // Subscribe
+        const unsubscribe = onValue(postsRef, (snap) => {
+          if (!snap.exists()) {
+            setPosts([]);
+            return;
+          }
+
+          const arr: any[] = [];
+          snap.forEach((c) => {
+            const v = c.val();
+            if (v.userId === user.uid) {
+              arr.push({ postId: c.key, ...v });
+            }
+          });
+          arr.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
+          setPosts(arr);
+        });
+
+        return unsubscribe; // cleanup for unmount
+      };
+
       const fetchTastemates = async () => {
         const user = auth.currentUser;
         if (!user) return;
@@ -181,10 +209,12 @@ const ProfilePage = () => {
       };
 
       fetchData();
+      const unsubscribePosts = listenToMyPosts();
       fetchTastemates();
       const unsubscribePending = fetchPendingCount();
       return () => {
         changedUser();
+        unsubscribePosts();
         if (unsubscribePending) unsubscribePending();
       };
     });
@@ -447,6 +477,36 @@ const ProfilePage = () => {
           </div>
         </div>
 
+        {/* see own posts */}
+        <div>
+          <h2>Your Posts</h2>
+          <div className={posts.length > 0 ? 'post-container' : 'tastemates-empty'}>
+            {posts.length > 0 ? (
+              posts.map((p) => (
+                <div key={p.postId} className="child">
+                  <Card
+                    key={p.postId}
+                    isFeed={true}
+                    profileImg={photoURL ?? undefined}
+                    postUser={userName}
+                    caption={p.caption}
+                    imgSrc={p.imgSrc}
+                    restaurantName={p.restaurantName}
+                    rating={p.rating}
+                    reviewSrc={p.reviewSrc}
+                    cuisine={p.cuisine}
+                    price={p.price}
+                    timestamp={p.timestamp}
+                    userId={p.userId}
+                    postId={p.postId}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="no-tastemates">No posts yet</p>
+            )}
+          </div>
+        </div>
         <button className="signout-button" onClick={handleSignOut}>
           Sign Out
         </button>
