@@ -66,7 +66,6 @@
 .filter button {
   width: 15px;
   height: 15px;
-  /* background-color: red; */
   background-image: url('../assets/remove.png');
   background-size: cover;
 }

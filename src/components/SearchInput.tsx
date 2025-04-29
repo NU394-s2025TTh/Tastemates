@@ -167,6 +167,12 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
           {!isLoading && (
             <div className="pref-buttons">
               <button
+                onClick={openFilterModal}
+                className={`pref-button ${isFilter ? 'active' : ''}`}
+              >
+                Search By Cuisine
+              </button>
+              <button
                 onClick={() => {
                   setIsPref(!isPref);
                   setIsFilter(false);
@@ -174,12 +180,6 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
                 className={`pref-button ${isPref ? 'active' : ''}`}
               >
                 Based on my preferences
-              </button>
-              <button
-                onClick={openFilterModal}
-                className={`pref-button ${isFilter ? 'active' : ''}`}
-              >
-                Search By Cuisine
               </button>
             </div>
           )}

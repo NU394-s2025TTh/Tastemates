@@ -43,42 +43,6 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
     }
   };
 
-  // const defaultCuisines = [
-  //   'Mexican',
-  //   'Caribbean',
-  //   'Indian',
-  //   'Italian',
-  //   'Brazilian',
-  //   'Filipino',
-  //   'Korean',
-  //   'Chinese',
-  //   'Japanese',
-  //   'American',
-  //   'Thai',
-  //   'French',
-  // ];
-
-  // const extraCuisines = [
-  //   'Vietnamese',
-  //   'African',
-  //   'Armenian',
-  //   'German',
-  //   'Belgian',
-  //   'British',
-  //   'Halal',
-  //   'Greek',
-  //   'Kosher',
-  //   'Mediterranean',
-  //   'Mongolian',
-  //   'Scandinavian',
-  //   'Southern',
-  //   'Vegetarian',
-  //   'Vegan',
-  // ];
-
-  // const displayedCuisines = showAllCuisines
-  //   ? [...defaultCuisines, ...extraCuisines]
-  //   : defaultCuisines;
 
   return (
     <div className="modal-backdrop">

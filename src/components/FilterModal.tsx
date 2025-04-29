@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 
 import CuisineSelector from './CuisineSelector';
 
-
 const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
   const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
+  const [filterPrice, setFilterPrice] = useState<string>();
   const [showAllCuisines, setShowAllCuisines] = useState(false);
 
   useEffect(() => {
@@ -21,13 +21,13 @@ const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
     });
   };
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
       setFilters(selectedCuisines);
       isFilter(true);
-      // setSelectedPriceRange(selectedPriceRange)
       onClose(); // close modal after saving
     } catch (error) {
       console.error('Error updating cuisine filters:', error);
@@ -46,7 +46,7 @@ const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
             setShowAllCuisines={setShowAllCuisines}
           />
           <div className="modal-actions">
-            <button type="submit">Save</button>
+            <button type="submit">Search</button>
             <button type="button" onClick={onClose}>
               Cancel
             </button>
