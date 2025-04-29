@@ -171,6 +171,14 @@
   margin-bottom: 1rem;
   align-items: stretch;
 }
+.post-container {
+	display: flex;
+	height: 870px;       
+	overflow-x: scroll;
+	margin: 1rem 0;
+	align-items: stretch;
+  }
+    
 
 .child {
   flex: 1;
@@ -294,3 +302,6 @@
 .input-text {
   font-size: medium;
 }
+
+
+  
