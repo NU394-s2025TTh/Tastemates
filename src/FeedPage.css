@@ -85,3 +85,23 @@
   align-items: center;
   justify-content: center;
 }
+
+.header {
+  position: sticky;
+  width: 100%;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999999;
+  background: #CCE0D7;   
+  margin: -40px;         /*janky fix but this is so that the header container actually touches the top*/
+  padding-top: 30px;
+  padding-bottom: 12px;
+}
+
+.posts {
+  padding-top: 32px; /*jank fix to make the post scroll show up under the header*/
+}
+
+

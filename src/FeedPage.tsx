@@ -82,33 +82,35 @@ const FeedPage = () => {
   ) : (
     <div className="feed-page">
       <Navbar />
-      <div className="top-wrapper">
-        <img src={logoPic} alt="Tastemates Logo" className="logo-img" />
-        <img src={logoText} alt="Tastemates" className="logo-text" />
-      </div>
-      <div className="button-row">
-        <button onClick={() => setPostModalOpen(true)} className="new-post-button">
-          + New Post
-        </button>
-        <button
-          onClick={() => setShowRequests((prev) => !prev)}
-          className="requests-button"
-        >
-          <span className="requests-content" style={{ position: 'relative' }}>
-            <svg
-              className="icon-white"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <path d="M12 6.5a4.5 4.5 0 1 1 4.5 4.5A4.49 4.49 0 0 1 12 6.5m6 6.5h-3a3 3 0 0 0-3 3v6h9v-6a3 3 0 0 0-3-3M6.5 6A3.5 3.5 0 1 0 10 9.5 3.5 3.5 0 0 0 6.5 6m1 9h-2A2.5 2.5 0 0 0 3 17.5V22h7v-4.5A2.5 2.5 0 0 0 7.5 15" />
-            </svg>
-            Tastemate Requests
-            {pendingCount > 0 && <span className="badge">{pendingCount}</span>}
-          </span>
-        </button>
+      <div className="header">
+        <div className="top-wrapper">
+          <img src={logoPic} alt="Tastemates Logo" className="logo-img" />
+          <img src={logoText} alt="Tastemates" className="logo-text" />
+        </div>
+        <div className="button-row">
+          <button onClick={() => setPostModalOpen(true)} className="new-post-button">
+            + New Post
+          </button>
+          <button
+            onClick={() => setShowRequests((prev) => !prev)}
+            className="requests-button"
+          >
+            <span className="requests-content" style={{ position: 'relative' }}>
+              <svg
+                className="icon-white"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <path d="M12 6.5a4.5 4.5 0 1 1 4.5 4.5A4.49 4.49 0 0 1 12 6.5m6 6.5h-3a3 3 0 0 0-3 3v6h9v-6a3 3 0 0 0-3-3M6.5 6A3.5 3.5 0 1 0 10 9.5 3.5 3.5 0 0 0 6.5 6m1 9h-2A2.5 2.5 0 0 0 3 17.5V22h7v-4.5A2.5 2.5 0 0 0 7.5 15" />
+              </svg>
+              Tastemate Requests
+              {pendingCount > 0 && <span className="badge">{pendingCount}</span>}
+            </span>
+          </button>
+        </div>
       </div>
       <PostModal isOpen={isPostModalOpen} onClose={() => setPostModalOpen(false)} />
-      <div>
+      <div className="posts">
         {posts.length > 0 ? (
           posts.map((post, i) => (
             <Card

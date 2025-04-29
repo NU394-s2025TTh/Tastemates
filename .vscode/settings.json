@@ -1,5 +1,6 @@
 {
   "cSpell.words": [
+<<<<<<< Updated upstream
     "degit",
     "firebaseapp",
     "firebasestorage",
@@ -12,4 +13,14 @@
     "toddwseattle",
     "Wishlisted"
   ]
+=======
+	"degit",
+	"loglevel",
+	"reactts",
+	"riesbeck",
+	"Tastemate",
+	"Tastemates",
+	"toddwseattle"
+]
+>>>>>>> Stashed changes
 }

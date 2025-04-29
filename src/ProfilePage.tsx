@@ -32,6 +32,7 @@ const ProfilePage = () => {
   const [selectedTastemate, setSelectedTastemate] = useState<any>(null);
   const [number, setNumber] = useState<any>(null);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [posts, setPosts] = useState<any[]>([]);
   const navigate = useNavigate();
   const [showRequests, setShowRequests] = useState(false);
   const [pendingCount, setPendingCount] = useState(0);
@@ -132,7 +133,34 @@ const ProfilePage = () => {
         }
       };
 
-      // Firebase: load tastemates (confirmed connections)
+      /* ─── live listener for my posts ───────────────────────────── */
+      const listenToMyPosts = () => {
+        const user = auth.currentUser;
+        if (!user) return () => {};
+
+        const postsRef = ref(db, 'posts');
+
+        // Subscribe
+        const unsubscribe = onValue(postsRef, (snap) => {
+          if (!snap.exists()) {
+            setPosts([]);
+            return;
+          }
+
+          const arr: any[] = [];
+          snap.forEach((c) => {
+            const v = c.val();
+            if (v.userId === user.uid) {
+              arr.push({ postId: c.key, ...v });
+            }
+          });
+          arr.sort((a, b) => (b.timestamp ?? 0) - (a.timestamp ?? 0));
+          setPosts(arr);
+        });
+
+        return unsubscribe; // cleanup for unmount
+      };
+
       const fetchTastemates = async () => {
         const user = auth.currentUser;
         if (!user) return;
@@ -181,15 +209,59 @@ const ProfilePage = () => {
       };
 
       fetchData();
+      const unsubscribePosts = listenToMyPosts();
       fetchTastemates();
       const unsubscribePending = fetchPendingCount();
       return () => {
         changedUser();
+        unsubscribePosts();
         if (unsubscribePending) unsubscribePending();
       };
     });
     return () => changedUser();
   }, []);
+
+  // take in and parse text input to change price range
+  const [inputs, setInputs] = useState<[string, string]>([
+    String(priceRange[0]),
+    priceRange[1] === MAX ? `${MAX}+` : String(priceRange[1]),
+  ]);
+
+  useEffect(() => {
+    setInputs([
+      String(priceRange[0]),
+      priceRange[1] === MAX ? `${MAX}+` : String(priceRange[1]),
+    ]);
+  }, [priceRange]);
+
+  const commitInput = (idx: 0 | 1) => {
+    // parse the inputs
+    const raw =
+      idx === 0 ? inputs[0].replace(/[^-\d]/g, '') : inputs[1].replace(/[^\d]/g, '');
+    if (!raw || raw === '' || raw === '-') return;
+
+    const parsed = parseInt(raw, 10);
+    if (isNaN(parsed)) return;
+    let v: number;
+
+    if (idx === 0) {
+      // MIN bound and also <= current max
+      v = Math.max(MIN, Math.min(parsed, priceRange[1]));
+    } else {
+      // HIGH bound must be >= current min, <= MAX
+      if (inputs[1].endsWith('+')) {
+        // if user inputs something like number+, it'll just default to max value
+        v = MAX;
+      } else {
+        v = Math.max(priceRange[0], Math.min(parsed, MAX));
+      }
+    }
+
+    const next: [number, number] = [priceRange[0], priceRange[1]];
+    next[idx] = v;
+    setPriceRange(next);
+    handlePriceChange(next);
+  };
 
   if (!preferences) return <div>Loading preferences...</div>;
 
@@ -254,9 +326,48 @@ const ProfilePage = () => {
         <div className="pref-card">
           <p className="pref-card-title">Your Price Range</p>
           <div className="slider-wrapper">
-            <p className="price-text">
+            {/* <p className="price-text">
               ${priceRange[0]} — {priceRange[1] === MAX ? `${MAX}+` : `$${priceRange[1]}`}
-            </p>
+            </p> */}
+            <div className="price-text">
+              <div>
+                $
+                <input
+                  className="input-text"
+                  type="text"
+                  value={inputs[0]}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setInputs(([_, high]) => [e.target.value, high])
+                  }
+                  onBlur={() => commitInput(0)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      commitInput(0);
+                    }
+                  }}
+                  style={{ width: 40 }}
+                />
+              </div>
+              <div>
+                $
+                <input
+                  className="input-text"
+                  type="text"
+                  value={inputs[1]}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                    setInputs(([low, _]) => [low, e.target.value])
+                  }
+                  onBlur={() => commitInput(1)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      commitInput(1);
+                    }
+                  }}
+                  style={{ width: 40 }}
+                />
+              </div>
+            </div>
+
             <Range
               step={STEP}
               min={MIN}
@@ -366,6 +477,36 @@ const ProfilePage = () => {
           </div>
         </div>
 
+        {/* see own posts */}
+        <div>
+          <h2>Your Posts</h2>
+          <div className={posts.length > 0 ? 'post-container' : 'tastemates-empty'}>
+            {posts.length > 0 ? (
+              posts.map((p) => (
+                <div key={p.postId} className="child">
+                  <Card
+                    key={p.postId}
+                    isFeed={true}
+                    profileImg={photoURL ?? undefined}
+                    postUser={userName}
+                    caption={p.caption}
+                    imgSrc={p.imgSrc}
+                    restaurantName={p.restaurantName}
+                    rating={p.rating}
+                    reviewSrc={p.reviewSrc}
+                    cuisine={p.cuisine}
+                    price={p.price}
+                    timestamp={p.timestamp}
+                    userId={p.userId}
+                    postId={p.postId}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="no-tastemates">No posts yet</p>
+            )}
+          </div>
+        </div>
         <button className="signout-button" onClick={handleSignOut}>
           Sign Out
         </button>
