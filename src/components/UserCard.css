@@ -10,6 +10,7 @@
   width: 100%;
   gap: 1rem;
   box-sizing: border-box;
+  cursor: pointer;
 }
 
 .user-profile-pic {
