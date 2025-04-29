@@ -3,19 +3,25 @@
   width: 18rem;
   height: 0.5rem;
   border-radius: 200px;
-  background-color: #F3F7F5;
+  background-color: #f3f7f5;
   border: 0rem;
   font-size: large;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
 }
+.pref-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
 
 .pref-button {
+  flex: 1;
   font-size: large;
   border-radius: 40px;
-  background-color: #EAB69F;
+  background-color: #eab69f;
   border-width: 2px;
-  border-color: #EAB69F;
-  color: #3D405B;
+  border-color: #eab69f;
+  color: #3d405b;
   border-style: solid;
   margin-top: 1rem;
   padding: 0.7rem;
@@ -24,12 +30,42 @@
 }
 
 .pref-button:hover {
-  border-color: #DE7254;
-  color: #DE7254;
+  border-color: #de7254;
+  color: #de7254;
 }
 
 .pref-button.active {
-  background-color: #E07A5F;
-  border-color: #E07A5F;
-  color: #F4F1DE;
+  background-color: #e07a5f;
+  border-color: #e07a5f;
+  color: #f4f1de;
+}
+
+.filters {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+.filter {
+  font-size: medium;
+  padding-top: 6px;
+  padding-bottom: 6px;
+  padding-left: 14px;
+  padding-right: 14px;
+  background-color: #f2cc8f;
+  color: #3d405b;
+  margin-right: 12px;
+  margin-top: 12px;
+  border-radius: 30px;
+  border: solid 2px orange;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.filter button {
+  width: 15px;
+  height: 15px;
+  background-image: url('../assets/remove.png');
+  background-size: cover;
 }

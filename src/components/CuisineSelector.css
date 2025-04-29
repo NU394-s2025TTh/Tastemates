@@ -1,0 +1,35 @@
+.cuisine-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: start;
+  justify-content: left;
+  max-height: 363px;
+  overflow-y: auto;
+}
+
+.cuisine-buttons button {
+  border: none;
+  background-color: #f2cc8f;
+  color: #3d405b;
+  border-radius: 100px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-size: medium;
+}
+
+.cuisine-buttons button.selected {
+  /* background-color: #98897e; */
+  color: white;
+  background-color: #e07a5f;
+  border-radius: 100px;
+  color: #3d405b;
+  padding: 1rem;
+  margin: 0;
+}
+
+#displayCuisines {
+  background-color: grey;
+  font-weight: bold;
+}

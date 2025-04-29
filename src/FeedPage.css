@@ -4,7 +4,7 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  background: #CCE0D7;
+  background: #cce0d7;
   padding: 2rem;
   border-radius: 12px;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -36,7 +36,7 @@
 .new-post-button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: #3D405B;
+  background-color: #3d405b;
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -46,7 +46,7 @@
 .requests-button {
   padding: 0.5rem 1rem;
   font-size: 1rem;
-  background-color: #3D405B;
+  background-color: #3d405b;
   color: #fff;
   border: none;
   border-radius: 8px;

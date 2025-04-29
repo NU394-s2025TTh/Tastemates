@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 
 import { auth, db, get, ref } from '../firebase';
 import Card from './Card';
+import FilterModal from './FilterModal';
 
 interface SearchInputProps {
   onSearch: (query: string) => void;
@@ -25,6 +26,9 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isPref, setIsPref] = useState(false);
+  const [showFilterModal, setShowFilterModal] = useState(false);
+  const [isFilter, setIsFilter] = useState(false);
+  const [selectedCuisines, setSelectedCuisines] = useState<Set<string>>(new Set());
 
   const [preferences, setPreferences] = useState<any>(null);
   const [priceRange, setPriceRange] = useState<number[]>([1, 2, 3, 4]);
@@ -68,30 +72,37 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
       const lng = -87.675171;
       const radius = 10000;
 
-      let term = 'restaurant';
-      let categories = ''
+      const term = 'restaurant';
+      let categories = '';
       let price = [1, 2, 3, 4];
 
-      if (!searchText.trim()) {
-        //term = 'restaurant';
-      } else {
+      if (searchText.trim()) {
         setIsPref(false);
+        setIsFilter(false);
       }
-      let url = `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&term=${term}&radius=${radius}`
+
+      let url = `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&term=${term}&radius=${radius}`;
       if (isPref) {
+        setIsFilter(false);
+        console.log('preferences: ', preferences);
         preferences.cuisines.map((pref: string) => {
           categories += pref.toLowerCase() + ',';
         });
-        if (categories) {
-          categories = categories.slice(0, -1);
-          url += `&categories=${categories}`
-        }
-
         price = priceRange;
-        url += `&price=${price}`
+        url += `&price=${price}`;
+      } else if (isFilter) {
+        Array.from(selectedCuisines).map((pref: string) => {
+          categories += pref.toLowerCase() + ',';
+        });
+        price = priceRange;
+        url += `&price=${price}`;
       }
 
-      console.log(url);
+      if (categories) {
+        categories = categories.slice(0, -1);
+        url += `&categories=${categories}`;
+      }
+
       try {
         const response = await fetch(url);
         const data = await response.json();
@@ -106,8 +117,30 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
     };
 
     fetchRestaurants();
-  }, [tab, searchText, isPref, preferences, priceRange]);
+  }, [tab, searchText, isPref, isFilter, selectedCuisines, preferences, priceRange]);
 
+  /* ── open/close the filter modal ──────────────────────────────────────────── */
+  const openFilterModal = () => {
+    setShowFilterModal(true);
+  };
+
+  const closeFilterModal = () => {
+    setShowFilterModal(false);
+  };
+
+  const setFilter = () => {
+    setIsFilter(true);
+    setIsPref(false);
+  };
+
+  const removeCuisine = (cuisine: string) => {
+    const newSet = new Set(selectedCuisines);
+    const removed = newSet.delete(cuisine);
+    if (removed) {
+      setSelectedCuisines(newSet);
+    }
+    console.log(selectedCuisines);
+  };
 
   /* ── search box handler ──────────────────────────────────────────── */
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -115,7 +148,6 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
     window.scrollTo({ top: 0, behavior: 'auto' });
     setSearchText(value);
     onSearch(value); // Users tab needs this
-
   };
 
   /* ── render ──────────────────────────────────────────────────────── */
@@ -133,14 +165,34 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
       {tab === 'restaurants' && (
         <>
           {!isLoading && (
-            <button
-              onClick={() => setIsPref(!isPref)}
-              className={`pref-button ${isPref ? 'active' : ''}`}
-            >
-              Based on my preferences
-            </button>
+            <div className="pref-buttons">
+              <button
+                onClick={openFilterModal}
+                className={`pref-button ${isFilter ? 'active' : ''}`}
+              >
+                Search By Cuisine
+              </button>
+              <button
+                onClick={() => {
+                  setIsPref(!isPref);
+                  setIsFilter(false);
+                }}
+                className={`pref-button ${isPref ? 'active' : ''}`}
+              >
+                Based on my preferences
+              </button>
+            </div>
           )}
-
+          {isFilter && (
+            <div className="filters">
+              {Array.from(selectedCuisines).map((cuisine) => (
+                <div key={cuisine} className="filter">
+                  <button type="button" onClick={() => removeCuisine(cuisine)}></button>
+                  {cuisine}
+                </div>
+              ))}
+            </div>
+          )}
           {isLoading ? (
             <div style={{ fontSize: '2rem', marginTop: '3rem', fontWeight: 'bold' }}>
               Loading restaurants...
@@ -164,6 +216,14 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
             <div style={{ fontSize: '2rem', marginTop: '3rem', fontWeight: 'bold' }}>
               No restaurants found.
             </div>
+          )}
+          {showFilterModal && (
+            <FilterModal
+              onClose={closeFilterModal}
+              filters={selectedCuisines}
+              setFilters={setSelectedCuisines}
+              isFilter={setFilter}
+            />
           )}
         </>
       )}

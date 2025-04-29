@@ -47,20 +47,3 @@
   background-color: #5a5e87;
 }
 
-.phone-row {
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
-}
-
-.phone-row label {
-  white-space: nowrap;
-  font-weight: bold;
-}
-
-.phone-row input {
-  padding: 0.5rem;
-  font-size: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
