@@ -47,12 +47,15 @@ const UserFeed: React.FC<UserFeedProps> = ({ searchQuery }) => {
             query(
               ref(db, 'users'),
               orderByChild('preferences/displayName'),
-              limitToFirst(5),
+              //   limitToFirst(5),
             ),
           );
-          snap.forEach((c) => void arr.push(mapSnap(c)));
+          snap.forEach((c) => {
+            const user = mapSnap(c);
+            if (user) arr.push(user);
+          });
         } else {
-          /* ---download 50, filter in JS ----------------- */
+          /* ---download 50 ----------------- */
           const snap = await get(
             query(
               ref(db, 'users'),
@@ -63,7 +66,7 @@ const UserFeed: React.FC<UserFeedProps> = ({ searchQuery }) => {
           const term = searchQuery.toLowerCase();
           snap.forEach((c) => {
             const user = mapSnap(c);
-            if (user.displayName.toLowerCase().startsWith(term)) arr.push(user);
+            if (user && user.displayName.toLowerCase().startsWith(term)) arr.push(user);
           });
         }
 
@@ -80,12 +83,13 @@ const UserFeed: React.FC<UserFeedProps> = ({ searchQuery }) => {
   }, [searchQuery]);
 
   /** helper to convert a DataSnapshot to User */
-  const mapSnap = (child: any): User => {
+  const mapSnap = (child: any): User | null => {
     const v = child.val();
     const p = v.preferences ?? {};
+    if (!p.displayName) return null; // <-- Ignore invalid entries
     return {
       uid: child.key as string,
-      displayName: v.preferences?.displayName ?? 'User',
+      displayName: v.preferences?.displayName,
       photoURL: p.photoURL ?? '/assets/profile.svg',
       email: p.email,
       phoneNumber: p.phoneNumber,
