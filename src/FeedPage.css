@@ -94,8 +94,8 @@
   flex-direction: column;
   align-items: center;
   z-index: 998;
-  background: #CCE0D7;   
-  margin: -40px;         /*janky fix but this is so that the header container actually touches the top*/
+  background: #cce0d7;
+  margin: -40px; /*janky fix but this is so that the header container actually touches the top*/
   padding-top: 30px;
   padding-bottom: 12px;
 }
@@ -103,5 +103,3 @@
 .posts {
   padding-top: 32px; /*jank fix to make the post scroll show up under the header*/
 }
-
-

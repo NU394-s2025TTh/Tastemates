@@ -43,7 +43,6 @@ const EditPreferencesModal = ({ onClose, existingPrefs, setPreferences }: any) =
     }
   };
 
-
   return (
     <div className="modal-backdrop">
       <div className="modal-content">
