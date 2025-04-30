@@ -72,13 +72,21 @@ const SearchInput: React.FC<SearchInputProps> = ({ onSearch, tab }) => {
       const lng = -87.675171;
       const radius = 10000;
 
-      const term = 'restaurant';
+      let term = searchText + '+restaurant';
       let categories = '';
       let price = [1, 2, 3, 4];
 
-      if (searchText.trim()) {
+      if (!searchText.trim()) {
+        term = 'restaurant';
+      } else {
         setIsPref(false);
-        setIsFilter(false);
+      }
+      if (isPref) {
+        preferences.cuisines.map((pref: string) => {
+          term += '+' + pref;
+        });
+
+        price = priceRange;
       }
 
       let url = `https://restaurants-e5uwjqpdqa-uc.a.run.app/restaurants?lat=${lat}&lng=${lng}&term=${term}&radius=${radius}`;
