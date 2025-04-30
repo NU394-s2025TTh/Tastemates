@@ -21,7 +21,6 @@ const FilterModal = ({ onClose, filters, setFilters, isFilter }: any) => {
     });
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 

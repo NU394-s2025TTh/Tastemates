@@ -19,7 +19,7 @@ interface CardProps {
   rating: number;
   reviewSrc: string;
   cuisine: string;
-  price: string;
+  price?: string;
   timestamp?: number;
   userId?: string;
   postId?: string;
@@ -161,11 +161,12 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
       setIsWishlist(false);
     } else {
       // Firebase: write wishlist to both user and restaurant views
+
       const data = {
         rating,
         reviewSrc,
         cuisine,
-        price,
+        price: price ?? '$?',
       };
       await Promise.all([
         set(userWishlistRef, data),
@@ -296,7 +297,7 @@ const Card: React.FC<CardProps> = ({ ...props }) => {
         </div>
         <div className="tags-box">
           <div className="tags">{cuisine}</div>
-          <div className="tags">{price}</div>
+          {price && <div className="tags">{price}</div>}
         </div>
         <div className="profiles-box">
           <div className="who-else-pics">
